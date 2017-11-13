@@ -205,22 +205,6 @@ void GPIO_WritePort(GPIO_TypeDef *port, uint16_t data)
 	return;
 }
 
-
-
-/**********************清除指定IO中断*****************************/
-void GPIO_Clear_INT(GPIO_TypeDef *port, uint16_t pin)
-{
-		port->IC.all |= pin;
-}
-
-/**********************读取中断状态*****************************/
-uint16_t GPIO_Read_INTState(GPIO_TypeDef *port)
-{
-	return 	(uint16_t)port->MIS.all;
-}
-
-
-
 /*****************************************************************************
 Function Name	GPIO_EnableInt
 Function Definition	void GPIO_EnableInt(GPIO_TypeDef *port, uint16_t pin, uint8_t triggeredge)

@@ -10,11 +10,11 @@
 #define LOG_CRIT  "CRTCL"  
  
 #define LOG(level, format, ...)  \
-														do {fprintf(stderr, "[%s|%s@%s,%d] " \
+														do {UART_Send_t(0xA5);fprintf(stderr, "[%s|%s@%s,%d] " \
 														format "\n",  level, __func__, __FILE__, __LINE__, \
-														##__VA_ARGS__ ); } \
+														##__VA_ARGS__ );UART_Send_t(0xAA);} \
 														while (0)
-#if false
+#if true
 	#define  DeBug 
 #endif 
 

@@ -747,8 +747,10 @@ Function called	-
 
 Last Chang Date: 2015/09/12			
 *****************************************************************************/
-void CT16B2_EnableInt(CT16B2_TypeDef *ct, uint8_t intbit)
+void CT16B2_EnableInt(CT16B2_TypeDef *ct, uint16_t intbit)
 {
+	ct->MCR.all |= intbit;
+	return;
 }
 /*****************************************************************************
 Function Name	CT16B2_DisableInt
@@ -762,6 +764,32 @@ Function called	-
 
 Last Chang Date: 2015/09/12			
 *****************************************************************************/
-void CT16B2_DisableInt(CT16B2_TypeDef *ct, uint8_t intbit)
+void CT16B2_DisableInt(CT16B2_TypeDef *ct, uint16_t intbit)
 {
+	ct->MCR.all &= ~intbit;
+	return;
+}
+
+/*****************************************************************************
+Function Name	TIM_PWMConfig
+Function Definition	void TIM_PWMConfig(HHD32F0_CT16B2_TypeDef *ct, uint8_t intbit)
+Function Description	Disable event interrupt
+Input Parameters	*ct: pointer to CT16B2/CT16B3
+intbit: bit0~7 related match0~match3,capture0~capture3
+Return Value	No
+Condition	No
+Function called	-
+
+Last Chang Date: 2015/09/12			
+*****************************************************************************/
+void TIM_PWMConfig(CT16B2_TypeDef *ct, uint16_t cycle, uint16_t v_mr0, uint16_t v_mr1, uint16_t v_mr2)
+{
+	ct->MR0.bit.MATCH=v_mr0;
+	ct->MR1.bit.MATCH=v_mr1;
+	ct->MR2.bit.MATCH=v_mr2;
+	ct->MR3.bit.MATCH=cycle;	
+	ct->PWMC.bit.PWM0EN = 1;
+	ct->PWMC.bit.PWM1EN = 1;
+	ct->PWMC.bit.PWM2EN = 1;
+	return;
 }

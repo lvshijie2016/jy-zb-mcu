@@ -9,20 +9,23 @@ static _KAR_STATE	 	kar_state 	= KAR_STOP;
 static _KAR_STATE	 	kar_state_t = MAX_KAR_STATE;
 static _KEY_EVENT  		key_event 	= MAX_KEYS_EVENT;
 static uint16_t key_timer = 0;
-static uint8_t 	bat_value = 0;
-static uint8_t  bat_alarm_flag = 0;
-static bool		rest_WDT_flag = false;
+static uint8_t 	bat_value = 100;
 static uint8_t  get_Com[10] = {0};
+
+
+void LowPowerConsumptionConfig(void);
+
+
 
 
 void configpad(uint32_t pinstat)
 {
-	IOCON->PIOA_0.all  = pinstat;
+//	IOCON->PIOA_0.all  = pinstat;  //POWERR_KEY
 	IOCON->PIOA_1.all  = pinstat;
 	IOCON->PIOA_2.all  = pinstat;
 	IOCON->PIOA_3.all  = pinstat;
 	IOCON->PIOA_4.all  = pinstat;
-	IOCON->PIOA_5.all  = pinstat;
+	//IOCON->PIOA_5.all  = pinstat; //RTC_INT
 	IOCON->PIOA_6.all  = pinstat;
 	IOCON->PIOA_7.all  = pinstat;
 	IOCON->PIOA_8.all  = pinstat;
@@ -32,8 +35,9 @@ void configpad(uint32_t pinstat)
 	IOCON->PIOA_12.all = pinstat;
 	IOCON->PIOA_13.all = pinstat;
 	IOCON->PIOA_14.all = pinstat;
-	IOCON->PIOA_15.all = pinstat;
-
+	
+	//IOCON->PIOA_15.all = pinstat; //MCU_INT
+	
 	IOCON->PIOB_0.all  = pinstat;
 	IOCON->PIOB_1.all  = pinstat;
 	IOCON->PIOB_2.all  = pinstat;
@@ -47,10 +51,29 @@ void configpad(uint32_t pinstat)
 	IOCON->PIOC_1.all  = pinstat;
 	IOCON->PIOC_2.all  = pinstat;
 	IOCON->PIOC_3.all  = pinstat;
-	
-	
-	
 }
+
+void LowPowerConsumptionConfig(void)
+{
+	WDT_Disable;
+	aperture_all_off();
+	moto_P();
+	DisablePhrClk_t();
+	configpad(0);
+	SYS_SetDeepSleepWakeupPin(PIN0|PIN5,FALL_EDGE);//设置唤醒引脚	
+	SYS_DisablePhrClk(0xfffffff0 & (~(1<<29)));//关闭GPIOA时钟
+	
+	IOCON->PIOA_0.all  = PIN0|PIN5;//设置唤醒引脚上拉
+	SYS_EnterDeepSleep(PD_RTCOSC | PD_BOD, 0);	
+	sys_init_t();//重新初始化所有配置
+	
+	Information_events = get_Alarm_Int_state() ? RTC_INT_EVENTS : POWER_KEY_EVENTS;
+	# if defined(DeBug)
+		LOG(LOG_DEBUG," exit sleep mode\r\n");
+	#endif
+}
+
+
 /**
   *****************************************************************************
   * @Name   : C6板关机初始化状态
@@ -66,26 +89,14 @@ void configpad(uint32_t pinstat)
 **/
 static void kar_off(void)
 {
+	kar_state_t =  KAR_STOP;
+	kar_state   =  KAR_STOP;
+	LOG(LOG_DEBUG,"power OFF...... \r\n");
+	POWER_OFF;
 	#if defined( DeBug )
-		LOG(LOG_DEBUG," 关闭所有外设\r\n");
-	#else
-		
-		configpad(0);
-		moto_P();
-		led_mode_get_t(0x01,0x06,0xff );		//关机灯效
-		UART_Close(UART0);
-		UART_DisableInt(UART0);
-		get_gpio(IOCON_GPIOA,	PIN2,	PA2_FUNC_GPIO,	IO_Output,	IO_LOW); //POWER_ON_OFF
-		get_gpio(IOCON_GPIOA,	PIN3,	PA3_FUNC_GPIO,	IO_Output,	IO_LOW); //POWER_ON_OFF
-		kar_state_t = KAR_STOP;
+		LOG(LOG_DEBUG," Shut down all of the peripherals \r\n");
 	#endif
-	
-	
-	
-	
-	
-
-
+	LowPowerConsumptionConfig();//进入睡眠
 }
 /**
   *****************************************************************************
@@ -103,16 +114,27 @@ static void kar_off(void)
 
 static void kar_on(void)
 {
+	//sys_init();
+	if(bat_value > (BAT_VALUE_LOW+5)|| GPIO_GetPinState(GPIOA,USB_DET))//电池电量大于10%开机
+	{
+		POWER_ON; //C6板电源开启
+		led_mode_get_t(0x04,0xff,20 ); //开机灯效
+		#if defined( DeBug )
+			LOG(LOG_DEBUG,"power ON...... \r\n");
+		#endif
+		kar_state_t = KAR_RUN;  //开始接收串口数据
+	}else 
+	{
+		led_mode_get_t(0x01,0x03,8 );	
+		#if defined( DeBug )
+			LOG(LOG_DEBUG,"Low energy...... \r\n");
+		#endif
+		kar_off();//进入睡眠
+	}
 	
-	#if defined( DeBug )
-		LOG(LOG_DEBUG," 已经打开所有外设\r\n");
-	#else
-		get_gpio(IOCON_GPIOA,	PIN2,	PA2_FUNC_TXD0,	IO_Output,	IO_LOW); //POWER_ON_OFF
-		get_gpio(IOCON_GPIOA,	PIN3,	PA3_FUNC_RXD0,	IO_Output,	IO_LOW); //POWER_ON_OFF
-		UART_Open(UART0, 115200, UART_NO_PARITY, UART_RX_NOT_EMPTY);    
-		NVIC_EnableIRQ(UART0_IRQn);
-		kar_state_t = KAR_RUN;
-	#endif
+	
+	
+	
 	
 	
 }
@@ -143,7 +165,7 @@ static void power_key_event(void)
 			{
 				key_event = LONG_PRESS; //长按
 				#if defined( DeBug )
-					LOG(LOG_DEBUG,"按键长按 key_timer=%d \r\n",key_timer);
+					LOG(LOG_DEBUG,"LONG_PRESS--key_timer=%d \r\n",key_timer);
 				#endif
 				
 			}
@@ -152,9 +174,9 @@ static void power_key_event(void)
 				key_event = RESET_PRESS; //复位
 				key_timer = 0;
 				Information_events	 &= 	(~POWER_KEY_EVENTS);
-				//#if defined( DeBug )
-					LOG(LOG_DEBUG,"开始复位...... ");
-				//#endif
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"START_RESET..... ");
+				#endif
 			}
 			
 			
@@ -164,7 +186,7 @@ static void power_key_event(void)
 			key_timer = 0;
 			Information_events	 &= 	(~POWER_KEY_EVENTS);
 			#if defined( DeBug )
-				LOG(LOG_DEBUG," 退出按键事件\r\n");
+				LOG(LOG_DEBUG," Exit_Key..\r\n");
 			#endif
 			
 		}else if(key_timer <100)
@@ -173,7 +195,7 @@ static void power_key_event(void)
 			key_timer = 0;
 			Information_events	 &= 	(~POWER_KEY_EVENTS);
 			#if defined( DeBug )
-				LOG(LOG_DEBUG," 按键短按\r\n");
+				LOG(LOG_DEBUG," SHORT_PRESS..\r\n");
 			#endif
 		}
 	}
@@ -192,7 +214,6 @@ static void power_key_event(void)
   * @Return : 
   *****************************************************************************
 **/
-
 static void power_OFF_ON(void)
 {
 	switch(key_event) {
@@ -200,50 +221,26 @@ static void power_OFF_ON(void)
 		case LONG_PRESS:		//长按事件
 			switch(kar_state) {
 				case KAR_STOP:
-					if(bat_value > BAT_VALUE_LOW|| GPIO_GetPinState(GPIOA,PIN13))
-					{
-						kar_on();
-						//kar_state = KAR_RUN;
-						POWER_ON;
-						kar_state_t = KAR_RUN;     		//记录开机事件
-						led_mode_get_t(0x04,0xff,20 ); //开机灯效
-						
-						#if defined( DeBug )
-							LOG(LOG_DEBUG,"开机中...... \r\n");
-						#endif
-						
-					}else 
-					{
-						led_mode_get_t(0x01,0x03,8 );		//关机灯效
-						#if defined( DeBug )
-							LOG(LOG_DEBUG,"电量低...... \r\n");
-						#endif
-					}
-						
+					
+					
+					kar_on();	
 					key_event = MAX_KEYS_EVENT;
 			
 				break;
 				case KAR_RUN:
-					//if(kar_state_t == MAX_KAR_STATE)
-					//{
 						led_mode_get_t(0x01,0xff,15 );		//关机灯效
-				
 						WriteUartBuf(KAR_POWER__OFF);
 						UART_Send_t(KAR_POWER_OFF_COMMAND); //发送关机指令
 						
-						
 						#if defined( DeBug )
-							LOG(LOG_DEBUG,"关机中...... \r\n");
+							LOG(LOG_DEBUG,"power off...... \r\n");
 						#endif
-					//}
-					key_event = MAX_KEYS_EVENT;
+						key_event = MAX_KEYS_EVENT;
 				break;
 				case KAR_DORMANCY:                   //触发唤醒事件  
-				
 					key_event = SHORT_PRESS;        //跳转到短按事件
-					
 					#if defined( DeBug )
-						LOG(LOG_DEBUG,"正在唤醒...... \r\n");
+						LOG(LOG_DEBUG," Wake up ...... \r\n");
 					#endif
 					
 				break;
@@ -253,31 +250,40 @@ static void power_OFF_ON(void)
 			
 			break;
 		case SHORT_PRESS:				//短按事件  1.唤醒事件
+		
 			if(kar_state == KAR_DORMANCY)
-			{
+			{	
+				kar_state_t = KAR_RUN; //退出KAR睡眠开始接收串口数据
 				KAR_DORMANCY_Enable;
 				set_soft_timer(TIMER_POWER, 500);	
 				key_event = KEYS_DORMANCY_STATE;  //跳转到执行唤醒事件
+				
+				#if defined( DeBug )
+						LOG(LOG_DEBUG,"wakes up start ...... \r\n");
+				#endif
 			}
-			
 			break;
 			
 		case KEYS_DORMANCY_STATE:		//执行唤醒事件
+		
 			if(check_soft_timeout(TIMER_POWER))
 			{
 				KAR_DORMANCY_Disable;
 				key_event = MAX_KEYS_EVENT;
-				kar_state_t = KAR_DORMANCY;
+				#if defined( DeBug )
+						LOG(LOG_DEBUG,"KAR wakes up system...... \r\n");
+				#endif
 			}
+			
+			
 			break;
 			
 			case RESET_PRESS:		
 				#if defined( DeBug )
-						LOG(LOG_DEBUG,"5秒后启动复位...... \r\n");
+						LOG(LOG_DEBUG,"MCU reset  ...... \r\n");
 				#endif
-				rest_WDT_flag = true;
-				key_event = MAX_KEYS_EVENT;
-				
+				SYS_ResetSystem();
+				//kar_off();
 			break;
 
 		default:break;
@@ -315,6 +321,7 @@ static void Handler_event(void)
 			all_event_flag.DRV = false;
 		}
 		Information_events	 &= 	(~DRV_EVENTS);
+		
 		#if defined( DeBug )
 				LOG(LOG_DEBUG,"DRV_EVENTS =%d \r\n",all_event_flag.DRV);
 		#endif
@@ -346,25 +353,19 @@ static void Handler_event(void)
 	//时钟中断事件处理
 	if(Information_events&RTC_INT_EVENTS)
 	{
-		
 		switch(kar_state) {
 		
 			case KAR_STOP:
-				
 				key_event = LONG_PRESS;
+				
 			break;
 			case KAR_RUN:
 				
-				
 			break;
 			case KAR_DORMANCY:
-			
 				key_event = SHORT_PRESS;
-				
 			break;
-
 			default:break;
-		
 		}
 		Information_events &= (~RTC_INT_EVENTS);
 		
@@ -372,7 +373,6 @@ static void Handler_event(void)
 			LOG(LOG_DEBUG,"RTC_INT_EVENTS =%d\r\n",key_event);
 		#endif
 	}
-	
 	if(Information_events&USB_DET_EVENTS)  //USB_DET事件
 	{
 		if(kar_state == KAR_RUN)
@@ -381,7 +381,6 @@ static void Handler_event(void)
 			WriteUartBuf(bat_value);
 			UART_Send_t(BAT_COMMAN);
 		}
-		
 		Information_events &= (~USB_DET_EVENTS);
 		
 		#if defined( DeBug )
@@ -391,12 +390,16 @@ static void Handler_event(void)
 	//按键处理
 	if(Information_events&POWER_KEY_EVENTS)
 	{
-
 		power_key_event();
 		//heartbeat_flag = 0;
-		
 	}
-
+	//电池电量检测
+	if(Information_events&ADC_BAT_EVENTS)
+	{
+		bat_value = get_adc_value();
+	
+		Information_events &= (~ADC_BAT_EVENTS);
+	}
 	
 }
 
@@ -418,27 +421,27 @@ static void get_kar_run_state(uint8_t *Com)
 {
 	
 	switch(Com[1]) {
-		case KAR_RUN:
+		case KAR_RUN:  //开机状态
 			kar_state = KAR_RUN;
-		break;
-		case KAR_STOP:
-			kar_state = KAR_STOP;
-			kar_off();
-			POWER_OFF;
-		break;
-		case KAR_DORMANCY:
-			kar_state = KAR_DORMANCY;	
-		break;
-		case KAR_RESET:
-			EXCEPTION(EXCEPTION_3);
 			kar_state_t = KAR_RUN;
 		break;
+		case KAR_STOP: //关机状态
+			kar_off();
+		break;
+		case KAR_DORMANCY://睡眠状态
+			kar_state = KAR_DORMANCY;	
+			kar_state_t = KAR_DORMANCY;
+			//aperture_all_off();
+			led_mode_get_t(LED_MODE_APERTURE_ALL_BREATHE,0xff,50);
+		break;
+		case KAR_RESET:  //kar睡眠状态
+			EXCEPTION(EXCEPTION_3);
+			//kar_state_t = KAR_RUN;
+		break;
 	}
-	
-	kar_state_t	 =  MAX_KAR_STATE;
 	#if defined( DeBug )
-	LOG(LOG_DEBUG,"exit  kar_state_t  ->  =%d \r\n",kar_state_t);
-	LOG(LOG_DEBUG," kar_state ->  =%d \r\n",kar_state);
+		LOG(LOG_DEBUG,"exit  kar_state_t  ->  =%d \r\n",kar_state_t);
+		LOG(LOG_DEBUG," kar_state ->  =%d \r\n",kar_state);
 	#endif
 }
 
@@ -459,40 +462,77 @@ static void get_kar_run_state(uint8_t *Com)
   *****************************************************************************
 **/
 
-static void bat_monitoring(void)
+static void state_run_monitoring(void)
 {
+	static bool 	report_energy_flag = true;
+	static uint8_t	bat_alarm_timer = 0;
+	static uint16_t run_timer_state = 0;
+	static uint8_t  get_sleep_timer = 0;
+	static uint8_t 	get_sleep_timer_t = 6;
 	
-	if(check_soft_timeout(TIMER_BAT)) 
+	if(check_soft_timeout(TIMER_BAT)) //状态运行检测时间50us
 	{
-		bat_value = get_adc_value(0);
+		SYS_EnablePhrClk(AHB_ADC); 
+		NVIC_EnableIRQ(ADC_IRQn);
+		ADC_IssueSoftTrigger; 
 		
-		if(bat_value	<	(BAT_VALUE_LOW-4) && kar_state == KAR_RUN)  //低于3.4V执行关机
+		if(!run_timer_state) //10秒一次
+		{
+			run_timer_state = (20000/ENERGY_SAMPLING_TIMER);
+			bat_alarm_timer ? bat_alarm_timer-- : 0;
+			get_sleep_timer ? get_sleep_timer-- : 0;
+			
+			if(kar_state_t != KAR_RUN && kar_state_t != KAR_DORMANCY)
+				get_sleep_timer_t ? get_sleep_timer_t-- : 0;
+			else  get_sleep_timer_t = 6;
+			
+			report_energy_flag = true;	
+			
+		}else run_timer_state--;
+	
+		if(bat_value < BAT_VALUE_LOW && kar_state == KAR_RUN)  //KAR运行下 低于5%执行正常关机
 		{ 
-			if(!GPIO_GetPinState(GPIOA,PIN13)){//读取是否在充电状态
-				key_event = LONG_PRESS;						 //发出按键信号
+			if(!GPIO_GetPinState(GPIOA,USB_DET)){//是否在充电状态
+				key_event = LONG_PRESS;			 //发出按键关机信号
 				#if defined( DeBug )
-					LOG(LOG_DEBUG,"电量低于%5开始关机\r\n");
+					LOG(LOG_DEBUG,"energy LOW 5 \r\n");
 				#endif
 			}
-				
+		}else if(bat_value < (BAT_VALUE_LOW) && kar_state_t == KAR_DORMANCY) //KAR休眠下电量低5% 执行强制关机
+		{
+			if(!GPIO_GetPinState(GPIOA,USB_DET)){//读取是否在充电状态
+			
+				kar_off();
+			}
 		}
-		else if(bat_value < (BAT_VALUE_LOW+5) && !bat_alarm_flag  &&  kar_state == KAR_RUN) //低于10%开始报警
+		else if(bat_value < (BAT_VALUE_LOW+10) && !bat_alarm_timer  &&  kar_state == KAR_RUN) //KAR f运行下电量低于10%开始报警
 		{
 			WriteUartBuf(0x01);
 			WriteUartBuf(bat_value);
 			UART_Send_t(BAT_COMMAN);  
-			bat_alarm_flag = 60/5;
+			bat_alarm_timer = 6; //1分钟上报警报电量低电
+			#if defined( DeBug )
+					LOG(LOG_DEBUG,"alarm energy LOW 10 \r\n");
+			#endif
 		}
-		
-		(bat_alarm_flag)? bat_alarm_flag--	:	0;
-		
-		set_soft_timer(TIMER_BAT,5000); //5秒读取一次电量值
-		#if defined( DeBug )
-			LOG(LOG_DEBUG,"BAT_value=%d \r\n",bat_value);
-		#endif
-		
-		
-		
+		else if(report_energy_flag && kar_state == KAR_RUN) //10秒上报电量 状态
+		{
+			WriteUartBuf(0x00);
+			WriteUartBuf(bat_value);
+			UART_Send_t(BAT_COMMAN); 
+			report_energy_flag = false;
+		}
+		else if(kar_state_t == KAR_DORMANCY && !get_sleep_timer ) //KAR_睡眠时间设置  30分 后关机
+		{
+			get_sleep_timer = (6*30);  //30分钟后关机
+			kar_off();	
+		}
+		else if(kar_state_t != KAR_RUN && kar_state_t != KAR_DORMANCY && !get_sleep_timer_t)
+		{
+			get_sleep_timer_t = 6; //60秒未开机进入睡眠
+			kar_off();
+			
+		}
 	}
 
 }
@@ -503,7 +543,7 @@ static void kar_connect(void)
 {
 	
 	uart0_get_cmd(get_Com);
-	if(kar_state_t == KAR_RUN)
+	if(kar_state_t == KAR_RUN )
 	{
 		switch(get_Com[0]) {
 
@@ -513,7 +553,7 @@ static void kar_connect(void)
 				UART_Send_t(HANDSHAKE_COMMAND);
 				
 				#if defined( DeBug )
-					LOG(LOG_DEBUG,"FIRMWARE_VERSION=%d.%d\r\n",FIRMWARE_VERSION/10,FIRMWARE_VERSION%10);
+					LOG(LOG_DEBUG,"FIRMWARE_VERSION= V %d . %d\r\n",FIRMWARE_VERSION/10,FIRMWARE_VERSION%10);
 				#endif
 
 			break;
@@ -525,12 +565,14 @@ static void kar_connect(void)
 			break;
 			case HEARTBEAT_COMMAND:
 
-			
+		
 			break;
 			case LIGHT_COMMAND:
 				led_mode_get(get_Com);
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"LED_state = %d\r\n",get_Com[GET_LED_NUM]);
+				#endif
 
-			
 			break;
 			
 			case ALARM_COMMAND:
@@ -559,24 +601,31 @@ static void kar_connect(void)
 	memset(get_Com,0,sizeof(get_Com));
 }
 
+//static void dly1us(int dlytime) {while(dlytime--);}
+
 int main(void)
 {
-
-	wdt_init_t(5);
 	sys_init();
-	bat_monitoring();
-	kar_on();
+	kar_off();//进入睡眠
+	//moto_D();
 	while(1)
 	{
-		
-		kar_connect();
-		bat_monitoring();
-		Handler_event();
-		power_OFF_ON();
-		led_run_task();
-		moto_run_task();	
-		exceotion_management();
-		if(!rest_WDT_flag)		WDT_Feed();	
+		//ADC_IssueSoftTrigger;
+		//dly1us(500000);
+		//LOG(LOG_DEBUG,"MTOT_ADC=%d\r\n",get_adc_moto());
+		if(1)
+		{
+			kar_connect();
+			Handler_event();
+			power_OFF_ON();
+			led_run_task();
+		//	if(bat_value > 20) 
+				moto_run_task();
+		//	else moto_P();
+			exceotion_management();
+			state_run_monitoring();
+		}
+			WDT_Feed();	
 	}
 }
 

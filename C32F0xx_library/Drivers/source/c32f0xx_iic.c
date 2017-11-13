@@ -12,7 +12,7 @@
 #include "c32f0xx.h"
 #include "c32f0xx_sys.h"
 #include "c32f0xx_iic.h"
-#include "stdio.h"
+//#include "stdio.h"
 //#include "fifo.h"
 
 /* Private variables ---------------------------------------------------------*/

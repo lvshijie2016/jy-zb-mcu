@@ -177,6 +177,19 @@ union CT16B2_CTCR_REG
     uint32_t				all;
     struct CT16B2_CTCR_BITS	bit;
 };
+
+struct CT16B2_PWMC_BITS {									// bit description
+				uint32_t PWM0EN:1; 	              // Match 0 set as pwm mode
+				uint32_t PWM1EN:1; 	              // Match 1 set as pwm mode
+				uint32_t PWM2EN:1; 	              // Match 2 set as pwm mode
+				uint32_t PWM3EN:1; 	              // Match 3 set as pwm mode	
+				uint32_t RSVD:28;                 // 31:4 reserved
+};
+
+union CT16B2_PWMC_REG {
+				uint32_t				all;
+				struct CT16B2_PWMC_BITS	bit;
+};
 /* ================================================================================ */
 /* ================                     CT16B0                     ================ */
 /* ================================================================================ */
@@ -225,6 +238,7 @@ typedef struct                                                   /*!< CT16B2 Str
     __IO union CT16B2_EMR_REG  EMR;                              /*!< External match register                                               */
     __I  uint32_t              RESERVED0[12];
     __IO union CT16B2_CTCR_REG CTCR;                             /*!< Counter control register                                              */
+	  __IO union CT16B2_PWMC_REG  PWMC;
 } CT16B2_TypeDef;
 
 #define CT16B0    ((CT16B0_TypeDef    *) CT16B0_BASE)
@@ -270,6 +284,11 @@ typedef struct                                                   /*!< CT16B2 Str
 #define TMR2                         CT16B2   
 #define TMR3                         CT16B3  
 
+#define TIMCH0_INT 0x0001
+#define TIMCH1_INT 0x0008
+#define TIMCH2_INT 0x0040
+#define TIMCH3_INT 0x0200
+
 
 void CT16B0_Init(CT16B0_TypeDef *ct, uint32_t tickpersecond);
 void CT16B0_ConfigMatch(CT16B0_TypeDef *ct, uint16_t ticks, uint8_t action);
@@ -301,8 +320,9 @@ void CT16B2_SetTimerCounter(CT16B2_TypeDef *ct, uint16_t ticks);
 void CT16B2_ResetTimerCounter(CT16B2_TypeDef *ct);
 uint16_t CT16B2_GetTimerCounter (CT16B2_TypeDef *ct);
 void CT16B2_ClearIntFlag(CT16B2_TypeDef *ct);
-void CT16B2_EnableInt(CT16B2_TypeDef *ct, uint8_t intbit);
-void CT16B2_DisableInt(CT16B2_TypeDef *ct, uint8_t intbit);
+void CT16B2_EnableInt(CT16B2_TypeDef *ct, uint16_t intbit);
+void CT16B2_DisableInt(CT16B2_TypeDef *ct, uint16_t intbit);
+void TIM_PWMConfig(CT16B2_TypeDef *ct, uint16_t cycle, uint16_t v_mr0, uint16_t v_mr1, uint16_t v_mr2);
 
 
  

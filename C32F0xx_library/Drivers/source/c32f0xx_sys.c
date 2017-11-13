@@ -23,7 +23,7 @@ void SYS_SystemInitial(void)
 	//Configure MainClock and SystemClock(defaul MainClock=48MHz and SystemClock=24MHz)	
 	if(C_CIB->RESERVED0 == 0x55aaaa55)
 	{
-		SYSCON->IRCCTRL.all = 0x24;//C_CIB->IRCTRIM;//晶振频偏纠下  500Hz 正常为 480Hz输出频率
+		SYSCON->IRCCTRL.all = 0x24;//C_CIB->IRCTRIM;
 	}
 	else 
 	{
@@ -424,12 +424,17 @@ Last Chang Date: 2015/09/12			By:YL
 *****************************************************************************/
 void SYS_EnterSleep (void)
 {
+	uint32_t tmp = 0;
 	//Sleep
 	(*PMU).PCON.bit.DPDEN = 0;			//sleep
 	SCB->SCR &= ~(1<<2);			    //sleep
 	
 	//issue sleep command
 	__WFI();	//enter sleep
+	
+	tmp = SYSCON->IRCCTRL.all;
+	SYSCON->IRCCTRL.all = 0;				
+	SYSCON->IRCCTRL.all = tmp;	
 	return;
 }
 /*****************************************************************************
@@ -452,10 +457,13 @@ void SYS_SetDeepSleepWakeupPin (uint16_t selio, uint16_t edge)
 	{
 		(*SYSCON).DSWAKECTL.all &=~ selio;
 	}
-	else
+	else 
 	{
 		(*SYSCON).DSWAKECTL.all	= selio;			//wake up signal
 	}
+
+	
+	(*SYSCON).DSWAKECTL.bit.SMPEN=0;
 	
 	NVIC_EnableIRQ(WAKEUP_IRQn); 				//enable Wakeup IRQ
 	
@@ -529,6 +537,10 @@ void SYS_EnterDeepSleep(uint32_t deepsleepconfig, uint32_t wakeupconfig)
 	(*SYSCON).MAINCLKUEN.bit.ENA = 1;
 	(*SYSCON).MAINCLKSEL.bit.SEL = 0;
 	(*SYSCON).MAINCLKUEN.bit.ENA = 0;
+	
+	i = SYSCON->IRCCTRL.all;
+	SYSCON->IRCCTRL.all = 0;				
+	SYSCON->IRCCTRL.all = i;	
 
 	return;
 }
@@ -694,7 +706,65 @@ Function called	-
 
 Last Chang Date: 2015/09/12			
 *****************************************************************************/
+#ifdef ENABLE_C32F030_LQFP48
+                        
+char GPIOAOFFSET[16] = {//GPIOA在IOCON_TypeDef对应偏移量 GPIOA0~15
+6 , 7 , 8 , 9 , 10, 11, 12, 13, 35, 36, 37, 38, 39, 40, 43, 44,
+};
+char GPIOBOFFSET[16] = {//GPIOB在IOCON_TypeDef对应偏移量 GPIOB0~15
+22, 23, 24, 49, 50, 51, 52, 53, 55, 56, 25, 26, 27, 28, 29, 30,
+};
+char GPIOCOFFSET[16] = {//GPIOC在IOCON_TypeDef对应偏移量 GPIOC7~15
+0 , 0 , 0 , 0 , 0 , 0 , 0 , 3 , 4 , 5 , 41, 42, 54, 0 , 1 , 2 
+};
 
+uint32_t * FindGpioCongigPin(uint32_t port,uint32_t pin)
+{
+    char * Config_addr    = NULL;
+    uint8_t offset_value  = 0;
+    uint32_t   mask       = 0;
+    uint32_t * addr       = (uint32_t *)IOCON_BASE;
+    uint8_t i;
+    switch (port)
+    {
+        case IOCON_GPIOA:
+            Config_addr = GPIOAOFFSET;
+            break;
+        case IOCON_GPIOB:
+            Config_addr = GPIOBOFFSET;
+            break;
+        case IOCON_GPIOC:
+            Config_addr = GPIOCOFFSET;
+            break;
+        default:
+            return NULL;
+            break;
+    }
+    for( i=0 ; i<16 ; i++)
+	{
+        if ((port == IOCON_GPIOC) && i<7)
+            i = 7;//這是因为GPIOC前7个IO没有，作为保护功能，即使外面参数传错也没影响
+		mask = ((uint32_t)0x00000001) << i;
+		if(0 != (pin & mask))
+		{
+            offset_value = Config_addr[i];//找到数据里面对应的引脚
+            addr += offset_value;
+            return addr;
+		}
+	}	
+    return NULL;
+}
+
+void  SYS_IOCONInit(uint32_t port,uint32_t pin,GPIO_InitTypeDef config)
+{
+    uint32_t * pinaddr = FindGpioCongigPin(port, pin);
+    if (pinaddr == NULL)
+        return ;
+    *pinaddr  = config.all;
+}
+
+
+#else
 void  SYS_IOCONInit(uint32_t port,uint32_t pin,GPIO_InitTypeDef config)
 {
 	uint8_t    i              = 0;
@@ -718,4 +788,4 @@ void  SYS_IOCONInit(uint32_t port,uint32_t pin,GPIO_InitTypeDef config)
     
 	return;	
 }
-
+#endif

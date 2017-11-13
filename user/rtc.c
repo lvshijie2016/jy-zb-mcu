@@ -380,10 +380,20 @@ void RTC_Clear_GetControlStatus_2(void)
 {
 	unsigned char Alarm_Interrupt = 0;  //控制/状态寄存器闹铃中断缓存
 	Alarm_Interrupt = RTC_Read_Byte(RTC_Address_Control_Status_2);
-	Alarm_Interrupt &= ~(3<<2);
-	Alarm_Interrupt |= (1<<1); //开报警中断
+	Alarm_Interrupt &= ~(3<<2);//1111 0011 重置中断标志
+	Alarm_Interrupt |= (1<<1); //开报警中断 0000 0010
 	RTC_Write_Byte(RTC_Address_Control_Status_2, Alarm_Interrupt);
 }
+	
+bool get_Alarm_Int_state(void)
+{
+	unsigned char Alarm_Interrupt = 0;  //控制/状态寄存器闹铃中断缓存
+	Alarm_Interrupt = RTC_Read_Byte(RTC_Address_Control_Status_2);
+	RTC_Close_Alarm();
+	if(Alarm_Interrupt&0x08) return true;
+	return false;
+}		
+	
 	
 void RTC_Close_Alarm(void)
 {
@@ -464,17 +474,13 @@ void Set_date_timer(uint8_t *command)
 		#endif
 	}
 	
-
-	
 }
-
 
 
 void Get_date_timer(void)
 {
 	_RTC_Register_Typedef  PCF_DataStruct;
 	RTC_GetTimeDate(&PCF_DataStruct);
-	
 	WriteUartBuf (PCF_DataStruct.Years);
 	WriteUartBuf (PCF_DataStruct.Months_Century);
 	WriteUartBuf (PCF_DataStruct.Days);
@@ -483,7 +489,6 @@ void Get_date_timer(void)
 	WriteUartBuf (PCF_DataStruct.Minutes);
 	WriteUartBuf (PCF_DataStruct.Seconds);
 	UART_Send_t(0x24);
-
 }
 
 

@@ -1,16 +1,17 @@
 #include "user_uart.h"
 
 _Uart0_Typedef  Uart0_Typedef;
-Buffer Buffer_t;
+static Buffer Buffer_t;
 void UART0_Init(void)
 {
-  GPIO_InitTypeDef uart0_gpio;
-  SYS_EnablePhrClk(AHB_IOCON);
-  SYS_EnablePhrClk(AHB_GPIOA);    
+	GPIO_InitTypeDef uart0_gpio;
+	SYS_EnablePhrClk(AHB_IOCON);
+	SYS_EnablePhrClk(AHB_GPIOA);    
 	SYS_EnablePhrClk(AHB_UART0);  
-	uart0_gpio.bit.FUNC   = PA2_FUNC_TXD0;
+
 	uart0_gpio.bit.PDE    = PULL_DOWN_DISABLE;
 	uart0_gpio.bit.PUE    = PULL_UP_ENABLE;
+	
 	uart0_gpio.bit.CSE    = SCHMITT_ENABLE;
 	uart0_gpio.bit.INV    = INPUT_INVERT_DISABLE;
 	uart0_gpio.bit.SRM    = FAST_SLEW_RATE_MODE;
@@ -18,8 +19,9 @@ void UART0_Init(void)
 	uart0_gpio.bit.DRV    = LOW_DRIVE;
 	uart0_gpio.bit.OD     = OPEN_DRAIN_DISABLE;
 	uart0_gpio.bit.S_MODE = INPUT_FILTER_DISABLE;
-	//uart0_gpio.bit.IEN    = INPUT_DISABLE;
+	uart0_gpio.bit.IEN    = INPUT_DISABLE;
 	
+	uart0_gpio.bit.FUNC   = PA2_FUNC_TXD0;
 	SYS_IOCONInit(IOCON_GPIOA, PIN2, uart0_gpio);
 	
 	uart0_gpio.bit.FUNC   = PA3_FUNC_RXD0;
@@ -27,7 +29,8 @@ void UART0_Init(void)
 	
 	UART_Open(UART0, 115200, UART_NO_PARITY, UART_RX_NOT_EMPTY);  
 	NVIC_SetPriority(UART0_IRQn,0);
-	NVIC_EnableIRQ(UART0_IRQn);
+	NVIC_EnableIRQ(UART0_IRQn); 
+
 }
 
 int fputc(int ch, FILE *f) 
@@ -36,10 +39,6 @@ int fputc(int ch, FILE *f)
     UART0->DAT.all = ch;
     return ch;
 }
-
-
-
-
 
 
 void WriteUartBuf(uint8_t data)
@@ -137,7 +136,7 @@ void uart0_get_cmd(uint8_t *g_com)
 			{
 				g_com[i] = get_buffer_data();
 				#if defined( DeBug )
-					LOG(LOG_DEBUG,"g_com[%d] = 0x%X\r\n",i,g_com[i]);
+					//LOG(LOG_DEBUG,"g_com[%d] = 0x%X\r\n",i,g_com[i]);
 				#endif
 
 				if((i+1) == valid_data)
@@ -146,23 +145,25 @@ void uart0_get_cmd(uint8_t *g_com)
 					{
 						
 						#if defined( DeBug )
-							LOG(LOG_DEBUG,"packet_num = %d\r\n",packet_num);
-							#else
+							LOG(LOG_DEBUG,"Xor_verifyte TRUE  packet_num = %d\r\n",packet_num);
+						#endif
 							WriteUartBuf(packet_num);
 							WriteUartBuf(0x00);
 							UART_Send_t(TX_PAG_ACK);
-						#endif
+							
+							
+						
 							
 					}else{
 						
 						#if defined(DeBug)
 							if(g_com[i] == Xor_verify) LOG(LOG_DEBUG,"-> tail失败\r\n");
-							else	LOG(LOG_DEBUG,"%d-> 校验失败\r\n",packet_num);
-							#else
+							else	LOG(LOG_DEBUG,"Xor_verifyte FALSE  packet_num = %d\r\n",packet_num);	
+						#endif
+						
 								WriteUartBuf(packet_num);
 								WriteUartBuf(0x01);
 								UART_Send_t(TX_PAG_ACK);
-						#endif
 						
 						memset(g_com,0,sizeof(&g_com));//清空数据	
 					}
@@ -180,7 +181,6 @@ void uart0_get_cmd(uint8_t *g_com)
 
 void UART0_IRQHandler(void)
 {
-	uint8_t valid_data;
 	
 	if( 1 == UART0->INTSTATUS.bit.TXEINT)
     {
@@ -190,21 +190,13 @@ void UART0_IRQHandler(void)
    
    if( 1 == UART0->INTSTATUS.bit.RXNEINT)
     {
-			//while (UART0->STAT.bit.RXNE)
-			//{
-			//	valid_data = ((Buffer_t.tail+BUFFER_LEN-Buffer_t.head)%BUFFER_LEN);//计算BUF空间
-			//	if(valid_data != BUFFER_LEN) 
-				//{
-					Buffer_t.buffer[Buffer_t.tail]	=  UART0->DAT.bit.DATA;
-					//LOG(LOG_DEBUG,"uart %d -> 0x%X\r\n",Buffer_t.tail,Buffer_t.buffer[Buffer_t.tail]);
-					Buffer_t.tail = get_len(Buffer_t.tail);					
-				//}
-					
-			//}
+			
+		Buffer_t.buffer[Buffer_t.tail]	=  UART0->DAT.bit.DATA;
+		Buffer_t.tail = get_len(Buffer_t.tail);					
+
 		/*clean interrupt */
         UART0->INTSTATUS.bit.RXNEINT = 1;
     }
-    
     
 	/*clean interrupt status */
 	//UART_ClearIntFlag(UART0);

@@ -170,8 +170,8 @@ typedef struct                                                 /*!< SPI Structur
 //#define RORIC		1
 //#define RTIC		2
 
-#define SPI_Set_SSEL_High        (SPI->CR1.bit.CSFL = 1)
-#define SPI_Reset_SSEL_Low       (SPI->CR1.bit.CSFL = 0)
+#define SPI_Set_SSEL_High        (SPI->CR1.bit.CSFL = 0)
+#define SPI_Reset_SSEL_Low       (SPI->CR1.bit.CSFL = 1)
 #define SPI_Write_FIFO(data)     (SPI->DR.bit.DATA=data)
 #define SPI_TX_FIFO_Not_Empty    ((SPI->SR.all&0x11)!=1)
 #define SPI_Read_FIFO(data)      (data=SPI->DR.bit.DATA)

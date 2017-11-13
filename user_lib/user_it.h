@@ -10,7 +10,7 @@
 #define POWER_KEY_EVENTS                  0x08
 #define RTC_INT_EVENTS                 	  0x10
 #define USB_DET_EVENTS                 	  0x20
-
+#define ADC_BAT_EVENTS                 	  0x40
 
 typedef struct
 {
@@ -28,7 +28,10 @@ extern uint16_t Information_events;
 extern _all_event_flag 												all_event_flag;
 
 void clear_all_event(void);
-uint8_t get_adc_value(uint8_t offset);
+uint8_t get_adc_value(void);
+
+
+uint32_t get_adc_moto(void);
 
 
 

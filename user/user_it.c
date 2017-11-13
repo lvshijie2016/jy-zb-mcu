@@ -3,8 +3,9 @@
 
 uint16_t 						Information_events = 0;
 _all_event_flag 						all_event_flag;
-static bool                             ad_falg = true;
 static uint32_t                         adValue = 0;
+static uint32_t                         adValue_1 = 0;
+static uint32_t                         adValue_6 = 0;
 
 
 void clear_all_event(void)
@@ -13,7 +14,22 @@ void clear_all_event(void)
 	Information_events	 &= 	(~MOTO_DET2_EVENTS);
 	Information_events	 &= 	(~MOTO_DET1_EVENTS);
 	Information_events	 &= 	(~RTC_INT_EVENTS);
+}
 
+
+
+
+
+/**********************清楚GPIO中断*****************************/
+void GPIO_Clear_INT(GPIO_TypeDef *port, uint16_t pin)
+{
+		port->IC.all |= pin;
+}
+
+/**********************读取GPIO中断状态*****************************/
+uint16_t GPIO_Read_INTState(GPIO_TypeDef *port)
+{
+	return 	(uint16_t)port->MIS.all;
 }
 
 
@@ -22,11 +38,11 @@ void GPIOC_IRQHandler(void)
 	
 	switch(GPIO_Read_INTState(GPIOC)) {
 		
-			case PIN0:
-				Information_events |=  MOTO_DET2_EVENTS;
+		case PIN0:
+				
 			break;
 		case PIN1:
-				Information_events |=  DRV_EVENTS;
+				
 			break;
 
 		default:break;
@@ -51,13 +67,24 @@ void GPIOA_IRQHandler(void)
 			Information_events |=  POWER_KEY_EVENTS;
 			
 			break;
-		case PIN13:
+		case PIN5:
+		
+			Information_events |=  RTC_INT_EVENTS;
+			
+			break;
+		case PIN11:
+		
+			Information_events |=  DRV_EVENTS;
+			
+			break;
+		case USB_DET:
+		
 			Information_events |=  USB_DET_EVENTS;
+			
 			break;
 		default:break;
 	}
 	
-
 	GPIO_Clear_INT(GPIOA,GPIO_Read_INTState(GPIOA));
 }
 
@@ -73,7 +100,7 @@ void GPIOB_IRQHandler(void)
 		
 			break;
 		case PIN5:
-			Information_events |=  RTC_INT_EVENTS;
+			
 			break;
 		default:break;
 	}
@@ -84,92 +111,116 @@ void GPIOB_IRQHandler(void)
 
 
 
-uint8_t get_adc_value(uint8_t offset)
+
+uint8_t get_adc_value(void)
 {
-	uint8_t adc_buf[20] = {0};
-	uint8_t i,j;
-	uint8_t dat = 0;
-	float adc_dat;
-	static uint8_t	bat_value;
-	
-		SYS_EnablePhrClk(AHB_ADC); 
-		NVIC_EnableIRQ(ADC_IRQn);
-		
-	for(i=0; i<sizeof(adc_buf);i++ )
+	static uint8_t i =0;
+	static float adc_dat;
+	static float j = 100;
+	float dat;
+	SYS_DisablePhrClk(AHB_ADC);
+	NVIC_DisableIRQ(ADC_IRQn);
+	if(adValue)
 	{
-		ADC_IssueSoftTrigger;
-		while(ad_falg);
-		
-		
-		adc_dat =(uint16_t)((adValue*1000000*3.3/4095.0/1000-offset)*2);
-		
-		if(adc_dat > 3200) adc_buf[i]  = ((adc_dat-3200)/1000*100);
-		else return 0;
-		
-		
-		
-		adc_buf[i] > BAT_VALUE_HIGH ? i-- : adc_buf[i]; //大于最大值为无效值
-		ad_falg = true;
-	}
-	
-		SYS_DisablePhrClk(AHB_ADC);
-		NVIC_DisableIRQ(ADC_IRQn);
-	
-	for(j=0 ; j<sizeof(adc_buf); j++)  //取均值
-	{
-		for(i=0; i<sizeof(adc_buf)-1;i++ )
+		dat =(adValue*1000000*3.3/4095.0/1000);
+		if(1750>dat) adc_dat = adc_dat + 0;
+		else adc_dat = adc_dat+(dat-1750)/350*100;
+		set_soft_timer(TIMER_BAT,ENERGY_SAMPLING_TIMER);  //采样10秒合成一次电量值   采样次数100*100
+		adValue = 0;
+		i++;
+		if(i == 6)
 		{
-			if(adc_buf[i] > adc_buf[i+1])
-			{
-				dat 			= adc_buf[i];
-				adc_buf[i]	 	= adc_buf[i+1];
-				adc_buf[i+1] 	= dat;
-			}
-		}
+			adc_dat = adc_dat/i;
+			j = adc_dat;
+			i=0;
+			if(j>100) j = 100;
+			LOG(LOG_DEBUG,"adc_dat_t->=%d\r\n",(uint8_t)j);
+			 
+		}	
 	}
-	dat = adc_buf[(sizeof(adc_buf)/2)]; //取均值返回	
+
 	
-	if(bat_value > dat) bat_value= bat_value-((bat_value-dat)/2);
-	else if(bat_value < dat ) bat_value = dat -((dat - bat_value)/2);
-	//bat_value = adc_buf[(sizeof(adc_buf)/2)]; //取均值返回	
-	return bat_value;
-	
+	return (uint8_t)j;
 }
 
-
+uint32_t get_adc_moto(void)
+{
+	uint32_t i = 0;
+	if(adValue_6)
+	{
+		i = ((adValue_6*1000000*3.3/4095.0/1000));
+		adValue_6 = 0;
+		
+	}
+	
+	return i;
+}
 void ADC_IRQHandler(void)
 {   
 	volatile uint8_t stat;
+	
 	stat = ADC->STAT.all;
-	switch(stat) {
-		
-		case 1<<ADC_DR0:
-			adValue = ADC_GetConversionData(ADC_DR0);
-			break;
-		case 1<<ADC_DR1:
-			adValue = ADC_GetConversionData(ADC_DR1);
-			break;
-		case 1<<ADC_DR2:
-			adValue = ADC_GetConversionData(ADC_DR2);
-			break;
-		case 1<<ADC_DR3:
-			adValue = ADC_GetConversionData(ADC_DR3);
-			break;
-		case 1<<ADC_DR4:
-			adValue = ADC_GetConversionData(ADC_DR4);
-			break;
-		case 1<<ADC_DR5:
-			adValue = ADC_GetConversionData(ADC_DR5);
-			break;
-		case 1<<ADC_DR6:
-			adValue = ADC_GetConversionData(ADC_DR6);
-			break;
-		case 1<<ADC_DR7:
-			adValue = ADC_GetConversionData(ADC_DR7);
-			break;
-		default:break;
+	
+	
+	if(stat == (1<<ADC_DR0)) adValue = ADC_GetConversionData(ADC_DR0);
+	
+	
+	if(stat == (1<<ADC_DR1)){
+		adValue_1 = ADC_GetConversionData(ADC_DR1);
 	}
 	
-	ad_falg = false;
+	
+	if(stat == (1<<ADC_DR2)) adValue = ADC_GetConversionData(ADC_DR2);
+	
+	
+	if(stat == (1<<ADC_DR3)) adValue = ADC_GetConversionData(ADC_DR3);
+	
+	
+	if(stat == (1<<ADC_DR4)){
+		adValue = ADC_GetConversionData(ADC_DR4);
+		Information_events |= ADC_BAT_EVENTS;
+	}
+	
+	
+	if(stat == (1<<ADC_DR5)) adValue = ADC_GetConversionData(ADC_DR5);
+	
+	
+	if(stat == (1<<ADC_DR6)) {
+		adValue_6 = ADC_GetConversionData(ADC_DR6);
+	}
+	
+	
+	if(stat == (1<<ADC_DR7)) adValue = ADC_GetConversionData(ADC_DR7);
+	
 }
+
+
+void WAKEUP_IRQHandler(void)
+{
+	NVIC_ClearPendingIRQ(WAKEUP_IRQn);
+	SYS_ResetDeepSleepWakeupPin();
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

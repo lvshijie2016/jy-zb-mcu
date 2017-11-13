@@ -17,8 +17,7 @@
 #define MOTO_Clear                                        0x00   //电机等待运行
 #define ACTIONNUM											20     //BUF动作序列包
 
-
-
+#define DUTY                          					  10
 
 
 typedef struct
@@ -32,8 +31,6 @@ typedef struct
 	unsigned char DancingPag[ACTIONNUM][4];
 	
 }_MOTO_Typedef_t;
-
-
 
 
 typedef enum
@@ -55,7 +52,7 @@ typedef enum
 void GetMotoCom(unsigned char *com);
 void moto_run_task(void);
 void moto_P(void);
-
+void moto_D(void);
 
 
 

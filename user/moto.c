@@ -5,80 +5,79 @@ static unsigned char moto_flag = 0;
 _MOTO_Typedef_t   MOTO_t;
 
 /*停止*/
-
 void moto_P(void)
 {
+	CT16B1_STOP;
 	MOTO1_LOW_PH;
-	MOTO2_HIGH_PH;
-	PWM_SetDuty(PWM4 | PWM5, MOTO_Clear);
+	MOTO2_LOW_PH;
+	PWM_2_LOW;
+	PWM_1_LOW;
 	moto_flag = MOTO_Clear;
 	set_soft_timer(TIMER_MOTO,MOTO_Clear);
 	memset(&MOTO_t,MOTO_Clear,sizeof(MOTO_t));	
 }
 
 /*前进*/
-static void moto_D(void)
+void moto_D(void)
 {
-	//MOTO1_LOW_PH;
-	MOTO1_HIGH_PH;
-	PWM_SetDuty(PWM5, MOTO_t.R_duty );
-	//MOTO2_HIGH_PH;
 	MOTO2_LOW_PH;
-	PWM_SetDuty(PWM4, MOTO_t.L_duty );
+	//MOTO2_HIGH_PH;
+	
+	
+	
+	MOTO1_HIGH_PH;
+	//MOTO1_LOW_PH;
+	//MOTO_t.L_duty  = 50;
+	
+	CT16B1_START;
 }
 
 /*右前转*/
 
 static void moto_R_D(void)
 {
-	//MOTO2_LOW_PH;
-	MOTO2_HIGH_PH;
-	PWM_SetDuty(PWM4, 0 );
-	MOTO1_HIGH_PH;
-	//MOTO1_LOW_PH;
-	PWM_SetDuty(PWM5, MOTO_t.R_duty );
-
-
-
+	MOTO2_LOW_PH;
+	//MOTO2_HIGH_PH;
+	//MOTO1_HIGH_PH;
+	MOTO1_LOW_PH;
+	MOTO_t.L_duty = 0; 
+	CT16B1_START;
 }
 
 /*左前转*/
 static void moto_L_D(void)
 {
-		MOTO2_LOW_PH;
-	//MOTO2_HIGH_PH;
-	PWM_SetDuty(PWM4, MOTO_t.L_duty );
-	//MOTO1_LOW_PH;
-	MOTO1_HIGH_PH;
-	PWM_SetDuty(PWM5, 0 );
+	//MOTO2_LOW_PH;
+	MOTO2_HIGH_PH;
+	MOTO1_LOW_PH;
+	//MOTO1_HIGH_PH;
+	MOTO_t.L_duty  = 0;
+	CT16B1_START;
 
 }
 
 
 /*右后转*/
-
 static void moto_R_H(void)
 {
-	//MOTO2_LOW_PH;
-	MOTO2_HIGH_PH;
-	PWM_SetDuty(PWM4, 0 );
-	//MOTO1_HIGH_PH;
-	MOTO1_LOW_PH;
-	PWM_SetDuty(PWM5, MOTO_t.R_duty );
-
+	MOTO2_LOW_PH;
+	//MOTO2_HIGH_PH;
+	MOTO1_HIGH_PH;
+	//MOTO1_LOW_PH;
+	MOTO_t.L_duty = 0;
+	CT16B1_START;
 
 }
 
 /*左后转*/
 static void moto_L_H(void)
 {
-	//MOTO2_LOW_PH;
-	MOTO2_HIGH_PH;
-	PWM_SetDuty(PWM4, MOTO_t.L_duty );
-
-	//MOTO1_LOW_PH;
-	MOTO1_HIGH_PH;
-	PWM_SetDuty(PWM5, 0);
+	MOTO2_LOW_PH;
+	//MOTO2_HIGH_PH;
+	MOTO1_LOW_PH;
+	//MOTO1_HIGH_PH;
+	MOTO_t.R_duty = 0;
+	CT16B1_START;
 
 }
 
@@ -89,11 +88,9 @@ static void moto_H(void)
 {
 	//MOTO2_LOW_PH;
 	MOTO2_HIGH_PH;
-	PWM_SetDuty(PWM4, MOTO_t.L_duty );
-
 	//MOTO1_HIGH_PH;
 	MOTO1_LOW_PH;
-	PWM_SetDuty(PWM5, MOTO_t.R_duty );
+	CT16B1_START;
 	
 }
 
@@ -102,28 +99,23 @@ static void moto_H(void)
 
 static void moto_R_T(void)
 {
-	//MOTO1_LOW_PH;
-	MOTO1_HIGH_PH;
-	PWM_SetDuty(PWM5, MOTO_t.R_duty );
+	MOTO1_LOW_PH;
+	//MOTO1_HIGH_PH;
+	//MOTO2_HIGH_PH;
+	MOTO2_LOW_PH;
+	CT16B1_START;
 
-	MOTO2_HIGH_PH;
-	//MOTO2_LOW_PH;
-	PWM_SetDuty(PWM4, MOTO_t.L_duty );
-
-	
 }
 
 
 /*左转圈*/
 static void moto_L_T(void)
 {
-	//MOTO1_HIGH_PH;
-	MOTO1_LOW_PH;
-	PWM_SetDuty(PWM5, MOTO_t.R_duty );
-	MOTO2_LOW_PH;
-	//MOTO2_HIGH_PH;
-	PWM_SetDuty(PWM4, MOTO_t.L_duty );
-		
+	MOTO1_HIGH_PH;
+	//MOTO1_LOW_PH;
+	//MOTO2_LOW_PH;
+	MOTO2_HIGH_PH;
+	CT16B1_START;
 }
 
 
@@ -168,10 +160,10 @@ void GetMotoCom(unsigned char *com)
 {
 	if(com[MOTO_SP] ==	0xff)
 	{
-		MOTO_t.timer = com[MOTO_RUN_TIMER];
-		MOTO_t.L_duty	 = com[MOTO_RUN_L_DUTY];
-		MOTO_t.R_duty	 = com[MOTO_RUN_R_DUTY];
-		MOTO_t.model = com[MOTO_ASP];         
+		MOTO_t.timer 	= com[MOTO_RUN_TIMER];
+		MOTO_t.L_duty	= com[MOTO_RUN_L_DUTY];
+		MOTO_t.R_duty	= com[MOTO_RUN_R_DUTY];
+		MOTO_t.model 	= com[MOTO_ASP];         
 		moto_flag = MOTO_RUN;
 		
 	}	else if(com[MOTO_ASP] == MOTO_START_TW)
@@ -189,7 +181,6 @@ void GetMotoCom(unsigned char *com)
 		MOTO_t.DancingPag[com[MOTO_SP]][3] = com[MOTO_RUN_R_DUTY];
 	}
 }
-
 
 void moto_run_task(void)
 {
@@ -217,7 +208,20 @@ void moto_run_task(void)
 }
 
 
+void TIMER16_1_IRQHandler(void)
+{
+	float  i;
+	static uint16_t pwm_flag=0;
+	pwm_flag = (pwm_flag+1) == DUTY ? 0 : pwm_flag+1;
+	i = pwm_flag;
+	i = (i/DUTY)*100;
+	if(i < MOTO_t.L_duty) PWM_1_HIGH;	
+	else PWM_1_LOW;
+	if(i < MOTO_t.R_duty) PWM_2_HIGH;	
+	else PWM_2_LOW;
 
+	CT16B0_ClearIntFlag(TMR1);
+}
 
 
 

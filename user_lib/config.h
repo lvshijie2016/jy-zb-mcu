@@ -94,15 +94,21 @@
 
 /* Public typedef -------------------------------------------------------*/
 
-#define IO_Output       												1
-#define IO_Input                                0
+#define IO_Output       											1
+#define IO_Input                               						0
 
-#define IO_HIGH       													1
-#define IO_LOW                              	  0
+#define IO_HIGH       												1
+#define IO_LOW                              	  					0
+#define IO_DEFAULT                             	  					2
+
+#define ORDINARY													0x00
+#define SPECIAL														0x10
+
+#define PULL_DOWN_EN												0x00
+#define PULL_UP_EN													0x01
+#define DISABLE_ALL_PULL											0x03
 
 
-#define ORDINARY																0x00
-#define SPECIAL																	0x10
 
 /*==========================================================================
 5V_DRV_EN
@@ -123,21 +129,61 @@ POWER_ON _OFF
 MOTO GPIO
 ==============================================================================================*/
 
+#define MOTO1_HIGH_PH 												GPIO_SetPin(GPIOA,PIN13)
+#define MOTO1_LOW_PH  												GPIO_ResetPin(GPIOA,PIN13)
 
-#define MOTO1_HIGH_PH 												GPIO_SetPin(GPIOB,PIN3)
-#define MOTO1_LOW_PH  												GPIO_ResetPin(GPIOB,PIN3)
+#define PWM_1_HIGH 													GPIO_SetPin(GPIOB,PIN3)
+#define PWM_1_LOW  													GPIO_ResetPin(GPIOB,PIN3)
 
-#define MOTO2_HIGH_PH 												GPIO_SetPin(GPIOB,PIN4)
-#define MOTO2_LOW_PH  				 								GPIO_ResetPin(GPIOB,PIN4)
+
+#define PWM_2_HIGH 													GPIO_SetPin(GPIOA,PIN10)
+#define PWM_2_LOW  													GPIO_ResetPin(GPIOA,PIN10)
+#define MOTO2_HIGH_PH 												GPIO_SetPin(GPIOB,PIN1)
+#define MOTO2_LOW_PH  				 								GPIO_ResetPin(GPIOB,PIN1)
+
+
+
+
+
 
 #define BAT_VALUE_LOW												(unsigned char)5
 #define BAT_VALUE_HIGH												(unsigned char)100
 
+
+/*===============================================================================================
+USB_DET GPIO
+==============================================================================================*/
+#define USB_DET														PIN12
+/*===============================================================================================
+LED GPIO
+==============================================================================================*/
+
+#define GPIO_1_HIGH  													GPIO_SetPin(GPIOB,PIN5)
+#define GPIO_1_LOW   				  									GPIO_ResetPin(GPIOB,PIN5)
+
+#define GPIO_2_HIGH  													GPIO_SetPin(GPIOC,PIN0)
+#define GPIO_2_LOW   				  									GPIO_ResetPin(GPIOC,PIN0)
+
+#define GPIO_3_HIGH  													GPIO_SetPin(GPIOC,PIN1)
+#define GPIO_3_LOW   				  									GPIO_ResetPin(GPIOC,PIN1)
+
+#define GPIO_4_HIGH  													GPIO_SetPin(GPIOB,PIN4)
+#define GPIO_4_LOW   				  									GPIO_ResetPin(GPIOB,PIN4)
+
+
+#define ENERGY_SAMPLING_TIMER 											50 //ms
+	
+
 /* version -------------------------------------------------------*/
 
-#define  FIRMWARE_VERSION 								(unsigned char)(10+4)
+#define  FIRMWARE_VERSION 								(unsigned char)(10+7)
 
 #define  POISON_VERSION									(unsigned char)(10+2)
+
+
+
+
+
 
 
 typedef enum
@@ -178,23 +224,12 @@ typedef struct
 
 extern _KEY_EVENT  KEY_EVENT;
 /* Public function declaration ------------------------------------------*/
-void get_gpio(uint8_t gpio, uint16_t pin, uint8_t function,uint8_t I_O, uint8_t HL);
+void get_gpio(uint8_t gpio, uint16_t pin, uint8_t function,uint8_t I_O, uint8_t HL ,uint8_t edge);
 void sys_init(void);
+void sys_init_t(void);
+void gpio_init_t(void);
 void wdt_init_t(uint8_t timer);
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
+void DisablePhrClk_t(void);	
 #endif
 
 

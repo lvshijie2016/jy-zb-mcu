@@ -96,7 +96,7 @@ static void led_set_x_pwm(unsigned char value)
 	init_gpio.bit.FUNC = PA7_FUNC_PWM_OUT1;
 	SYS_IOCONInit(IOCON_GPIOA, PIN7, init_gpio);
 		
-		//PWM2
+	//PWM2
 	init_gpio.bit.FUNC = PA9_FUNC_PWM_OUT2;
 	SYS_IOCONInit(IOCON_GPIOA, PIN9, init_gpio);
 		
@@ -118,44 +118,70 @@ static void led_set_x_pwm(unsigned char value)
 
 static void led_set_y(unsigned char num)
 {
+	
+
 	switch(num&0x0f) {
-		//µ¥µÆ
+
 	case 0x01:
-		GPIO_SetPin(GPIOA, PIN5);
-		GPIO_ResetPin(GPIOA, PIN6 | PIN11 | PIN12);
+		GPIO_1_HIGH;
+		GPIO_2_LOW;
+		GPIO_3_LOW;
+		GPIO_4_LOW;
 		break;
 	case 0x02:
-		GPIO_SetPin(GPIOA, PIN6);
-		GPIO_ResetPin(GPIOA, PIN5 | PIN11 | PIN12);
+		GPIO_2_HIGH;
+		GPIO_1_LOW;
+		GPIO_3_LOW;
+		GPIO_4_LOW;
+		
 		break;
 	case 0x04:
-		GPIO_SetPin(GPIOA, PIN11);
-		GPIO_ResetPin(GPIOA, PIN6 | PIN5 | PIN12);
+		GPIO_3_HIGH;
+		GPIO_1_LOW;
+		GPIO_2_LOW;
+		GPIO_4_LOW;
+	
 		break;
 	case 0x08:
-		GPIO_SetPin(GPIOA, PIN12);
-		GPIO_ResetPin(GPIOA, PIN6 | PIN11 | PIN5);
+	
+		GPIO_4_HIGH;
+		GPIO_1_LOW;
+		GPIO_2_LOW;
+		GPIO_3_LOW;
 		break;
 	//Ë«µÆ
 	case 0x03:
-		GPIO_SetPin(GPIOA, PIN5 | PIN6);
-		GPIO_ResetPin(GPIOA, PIN11 | PIN12);
+		GPIO_1_HIGH;
+		GPIO_2_HIGH;
+		GPIO_3_LOW;
+		GPIO_4_LOW;
+		
 		break;
 	case 0x06:
-		GPIO_SetPin(GPIOA, PIN11 | PIN6);
-		GPIO_ResetPin(GPIOA, PIN5 | PIN12);
+		GPIO_2_HIGH;
+		GPIO_3_HIGH;
+		GPIO_1_LOW;
+		GPIO_4_LOW;
 		break;
 	case 0x0C:
-		GPIO_SetPin(GPIOA, PIN11 | PIN12);
-		GPIO_ResetPin(GPIOA, PIN5 | PIN6);
+		GPIO_3_HIGH;
+		GPIO_4_HIGH;
+		GPIO_1_LOW;
+		GPIO_2_LOW;
 		break;
 	//È«ÁÁ
 	case 0x0f:
-		GPIO_SetPin(GPIOA, PIN12 | PIN11 | PIN6 | PIN5);
+		GPIO_1_HIGH;
+		GPIO_2_HIGH;
+		GPIO_3_HIGH;
+		GPIO_4_HIGH;
 		break;
 	//È«Ãð
 	case 0x00:
-		GPIO_ResetPin(GPIOA, PIN5 | PIN6 | PIN11 | PIN12);
+		GPIO_1_LOW;
+		GPIO_2_LOW;
+		GPIO_3_LOW;
+		GPIO_4_LOW;
 		break;	
 	default:
 		break;
@@ -196,7 +222,7 @@ static void aperture_all_on(void)
 
 
 
-static void aperture_all_off(void)
+void aperture_all_off(void)
 {
 	led_set_x(0x00);
 	led_set_y(0x00);

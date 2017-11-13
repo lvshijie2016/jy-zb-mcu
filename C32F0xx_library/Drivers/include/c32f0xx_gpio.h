@@ -255,7 +255,9 @@ typedef struct
 #define PA8_FUNC_PWM_OUT0       1   //PWM output channel 0
 #define PA8_FUNC_TIM3_CAP3      2   //Capture input, channel 3 for 16-bit timer 3
 #define PA8_FUNC_TIM3_MAT3      3   //Match output, channel 3 for 16-bit timer 3
+#ifndef ENABLE_C32F030_LQFP48
 #define PA8_FUNC_CKLOUT         5   //clock output pin
+#endif 
 
 #define PA9_FUNC_GPIO           0   //General purpose digital input/output pin
 #define PA9_FUNC_PWM_OUT2       1   //PWM output channel 2
@@ -294,6 +296,10 @@ typedef struct
 #define PB1_FUNC_TIM2_CAP3      2   //Capture input, channel 3 for 16-bit timer 2
 #define PB1_FUNC_TIM2_MAT3      3   //Match output, channel 3 for 16-bit timer 2
 
+#ifdef ENABLE_C32F030_LQFP48
+#define PB2_FUNC_GPIO           0   //General purpose digital input/output pin.
+#endif
+
 #define PB3_FUNC_GPIO           0   //General purpose digital input/output pin
 #define PB3_FUNC_SPI_SCK        1   //SPI serial clock
 
@@ -319,6 +325,44 @@ typedef struct
 #define PB7_FUNC_TIM3_CAP1      4   //Capture input, channel 1 for 16-bit timer 3
 #define PB7_FUNC_TIM3_MAT1      5   //Match output, channel 1 for 16-bit timer 3
 
+#ifdef ENABLE_C32F030_LQFP48
+
+#define PB8_FUNC_GPIO           0   //General purpose digital input/output pin
+#define PB8_FUNC_I2C_SCL        1   //
+#define PB8_FUNC_TIM3_CAP2      2   //Capture input, channel 3 for 16-bit timer 2
+#define PB8_FUNC_TIM3_MAT2      3   //Match output, channel 3 for 16-bit timer 2
+
+#define PB9_FUNC_GPIO           0   //General purpose digital input/output pin
+#define PB9_FUNC_I2C_SDA        1   //
+
+#define PB10_FUNC_GPIO          0   //General purpose digital input/output pin
+#define PB10_FUNC_I2C_SCL       1   //
+
+#define PB11_FUNC_GPIO          0   //General purpose digital input/output pin
+#define PB11_FUNC_I2C_SDA    	2   //
+
+#define PB12_FUNC_GPIO     		0   //General purpose digital input/output pin
+#define PB12_FUNC_SPI_SSEL      1   //
+#define PB12_FUNC_PWM_FAULT     2   //
+
+#define PB13_FUNC_GPIO  		0   //General purpose digital input/output pin
+#define PB13_FUNC_SPI_SCK 		1   //
+#define PB13_FUNC_PWM_OUT1 		2   //
+
+#define PB14_FUNC_GPIO     		0   //General purpose digital input/output pin
+#define PB14_FUNC_SPI_MISO      1   //
+#define PB14_FUNC_TIM2_CAP3     2   //
+#define PB14_FUNC_TIM2_MAT3     3   //
+#define PB14_FUNC_PWM_OUT3      4
+
+#define PB15_FUNC_GPIO          0   //General purpose digital input/output pin
+#define PB15_FUNC_SPI_MISO      1   //SPI chip select
+#define PB15_FUNC_TIM3_CAP3     2   //Receiver input for UART1
+#define PB15_FUNC_TIM3_MAT3     3
+#define PB14_FUNC_PWM_OUT5      4
+#endif
+
+#ifndef ENABLE_C32F030_LQFP48
 #define PC0_FUNC_GPIO           0   //General purpose digital input/output pin
 
 #define PC1_FUNC_GPIO           0   //General purpose digital input/output pin
@@ -329,6 +373,31 @@ typedef struct
 #define PC3_FUNC_BOOT           0   //Boot memory selection
 #define PC3_FUNC_GPIO           1   //General purpose digital input/output pin
 
+#else 
+#define PC7_FUNC_GPIO           0   //General purpose digital input/output pin
+
+#define PC8_FUNC_GPIO           0   //General purpose digital input/output pin
+#define PC8_FUNC_CKLOUT         1   //clock output pin
+
+#define PC9_FUNC_NRST           0   //General purpose digital input/output pin
+#define PC9_FUNC_GPIO           1   //General purpose digital input/output pin
+
+#define PC10_FUNC_GPIO          0   //General purpose digital input/output pin
+#define PC10_FUNC_I2C_SCL       1   //
+
+#define PC11_FUNC_GPIO          0   //General purpose digital input/output pin
+#define PC11_FUNC_I2C_SDA       1   //
+
+#define PC12_FUNC_RESERVED     	0   //General purpose digital input/output pin
+#define PC12_FUNC_GPIO     		1   //General purpose digital input/output pin
+
+#define PC13_FUNC_GPIO  	    0   //SWD debug port data
+
+#define PC14_FUNC_GPIO  		0   //SWD debug port clock
+
+#define PC15_FUNC_GPIO          0   //General purpose digital input/output pin
+
+#endif
 
 #define PULL_DOWN_DISABLE        0
 #define PULL_DOWN_ENABLE         1
@@ -373,8 +442,7 @@ void GPIO_ResetPortMask(GPIO_TypeDef*port, uint16_t pins);
 uint16_t GPIO_ReadPort(GPIO_TypeDef*port);
 void GPIO_WritePort(GPIO_TypeDef*port, uint16_t data);
 void GPIO_EnableInt(GPIO_TypeDef*port, uint16_t pin, uint8_t triggeredge);
-void GPIO_Clear_INT(GPIO_TypeDef *port, uint16_t pin);
-uint16_t GPIO_Read_INTState(GPIO_TypeDef *port);
+
 
 
 

@@ -48,21 +48,21 @@
 ******************************************************************************/
 
 #define RTC_Shield_Control_Status_1          (unsigned char)0xa8
-#define RTC_Shield_Control_Status_2          (unsigned char)0x11
+#define RTC_Shield_Control_Status_2          (unsigned char)0x1f
 
 #define RTC_Shield_Seconds                   (unsigned char)0x7f
-#define RTC_Shield_Minutes                   (unsigned char)0x71
+#define RTC_Shield_Minutes                   (unsigned char)0x7f
 #define RTC_Shield_Hours                     (unsigned char)0x3f
 
 #define RTC_Shield_Days                      (unsigned char)0x3f
-#define RTC_Shield_WeekDays                  (unsigned char)0x09
+#define RTC_Shield_WeekDays                  (unsigned char)0x07
 #define RTC_Shield_Months_Century            (unsigned char)0x1f
 #define RTC_Shield_Years                     (unsigned char)0xff
 
 #define RTC_Shield_Minute_Alarm              (unsigned char)0x7f
-#define RTC_Shield_Hour_Alarm                (unsigned char)0x31
+#define RTC_Shield_Hour_Alarm                (unsigned char)0x3f
 #define RTC_Shield_Day_Alarm                 (unsigned char)0x3f
-#define RTC_Shield_WeekDays_Alarm            (unsigned char)0x09
+#define RTC_Shield_WeekDays_Alarm            (unsigned char)0x07
 
 #define RTC_Shield_CLKOUT_Frequency          (unsigned char)0x03
 #define RTC_Shield_Timer_Control             (unsigned char)0x03
@@ -78,8 +78,8 @@
 //
 #define PCF_Control_Status_NormalMode            (unsigned char)(~(1<<7))  //普通模式
 #define PCF_Control_Status_EXT_CLKMode           (unsigned char)(1<<7)     //EXT_CLK测试模式
-#define PCF_Control_ChipRuns                     (unsigned char)(~(1<<7))  //芯片运行
-#define PCF_Control_ChipStop                     (unsigned char)(1<<7)     //芯片停止运行，所有芯片分频器异步置逻辑0
+#define PCF_Control_ChipRuns                     (unsigned char)(~(1<<5))  //芯片运行
+#define PCF_Control_ChipStop                     (unsigned char)(1<<5)     //芯片停止运行，所有芯片分频器异步置逻辑0
 #define PCF_Control_TestcClose                   (unsigned char)(~(1<<3))  //电源复位功能失效（普通模式时置逻辑0）
 #define PCF_Control_TestcOpen                    (unsigned char)(1<<3)     //电源复位功能有效
 
@@ -103,9 +103,9 @@
 
 //频率输出寄存器 --> 0x0d
 //
-#define PCF_CLKOUT_Close                         (unsigned char)(~(1<<6))  //CLKOUT输出被禁止并设成高阻抗
+#define PCF_CLKOUT_Close                         (unsigned char)(~(1<<7))  //CLKOUT输出被禁止并设成高阻抗
 //定时器控制寄存器 --> 0x0e
-#define PCF_Timer_Close                          (unsigned char)(~(1<<6))  //定时器无效
+#define PCF_Timer_Close                          (unsigned char)(~(1<<7))  //定时器无效
 
 //闹铃开关
 //定义闹铃类型
@@ -185,7 +185,7 @@ void 			RTC_Close_Alarm				(void);
 void 			Set_date_timer				(uint8_t *command);
 void 			Set_Alarm_Clock				(uint8_t *command);
 void 			Get_date_timer				(void);
-
+bool			get_Alarm_Int_state			(void);
 
 #endif
 

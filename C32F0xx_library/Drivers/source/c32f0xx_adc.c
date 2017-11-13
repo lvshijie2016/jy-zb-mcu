@@ -59,21 +59,22 @@ void ADC_Init(uint32_t conversionrate)
     //set up divider
     (*ADC).CR.bit.CLKDIV = div;
 
-		
-		//insert a delay
+    
+    
+    //insert a delay
     temp=0xff;
     while (temp--);
 		
-    //select external sample clk
-    (*ADC).CR.bit.SCMODE = 1;    
-    
-    
+		    //select external sample clk
+    (*ADC).CR.bit.SCMODE = 1;
 
 	//wait untile adc ready
 	//if((*ADC).CR.bit.BURST == TRIGGERMODE)
 	//{
 		//while((*ADC).STAT.bit.ADCRDY == 0);
 	//}
+		
+		while((*ADC).STAT.bit.ADCRDY ==0);
 
     return;
 }
@@ -141,6 +142,7 @@ void ADC_SelectTriggerSource(uint8_t triggermode,uint8_t triggersrc, uint8_t edg
     }
     
     //ADC_WaitAdcReady();
+		while(!ADC->STAT.bit.ADCRDY );
     
     return;
 }
@@ -287,6 +289,8 @@ void ADC_SetupChannels (uint8_t channel, uint8_t data_reg)
 {
     (*ADC).CHSEL.all &= (~(0x0000000f << (channel * 4)));
     (*ADC).CHSEL.all |= (data_reg << (channel * 4));
+	
+	while(!ADC->STAT.bit.ADCRDY );
 }
 
 

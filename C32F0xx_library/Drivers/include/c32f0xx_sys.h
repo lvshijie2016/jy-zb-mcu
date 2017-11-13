@@ -297,7 +297,9 @@ struct DSWAKECTL_BITS    // bit description
     uint32_t CTLPIOA_9:1;  //Edge select for wake up on pin PIOA_9 to trigger wakeup interrupt. 
     uint32_t CTLPIOA_10:1; //Edge select for wake up on pin PIOA_10 to trigger wakeup interrupt. 
     uint32_t CTLPIOA_11:1; //Edge select for wake up on pin PIOA_11 to trigger wakeup interrupt.
-    uint32_t RSVD:20;                      
+    uint32_t RSVD0:4;
+		uint32_t SMPEN:1;
+		uint32_t RSVD:15;                     
 };
 union DSWAKECTL_REG 
 {
@@ -465,6 +467,59 @@ typedef struct                                 /*!< PMU Structure               
 /* ================                      IOCON                     ================ */
 /* ================================================================================ */
 
+#ifdef ENABLE_C32F030_LQFP48
+/**
+  * @brief IO config (IOCON)
+  */
+
+typedef struct {                                    /*!< IOCON Structure                                                       */
+  __IO union  IOCON_REG  PIOC_13;                           /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOC_14;                           /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOC_15;                           /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOC_7;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOC_8;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOC_9;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOA_0;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOA_1;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOA_2;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOA_3;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOA_4;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOA_5;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOA_6;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOA_7;                            /*!< Pin config register                                                   */
+  __I  uint32_t    RESERVED0[8];
+  __IO union  IOCON_REG  PIOB_0;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOB_1;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOB_2;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOB_10;                           /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOB_11;                           /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOB_12;                           /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOB_13;                           /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOB_14;                           /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOB_15;                           /*!< Pin config register                                                   */
+  __I  uint32_t    RESERVED1[4];
+  __IO union  IOCON_REG  PIOA_8;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOA_9;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOA_10;                           /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOA_11;                           /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOA_12;                           /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOA_13;                           /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOC_10;                           /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOC_11;                           /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOA_14;                           /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOA_15;                           /*!< Pin config register                                                   */
+  __I  uint32_t  RESERVED2[4];
+  __IO union  IOCON_REG  PIOB_3;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOB_4;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOB_5;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOB_6;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOB_7;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOC_12;                           /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOB_8;                            /*!< Pin config register                                                   */
+  __IO union  IOCON_REG  PIOB_9;                            /*!< Pin config register                                                   */
+} IOCON_TypeDef;
+
+#else 
 
 /**
   * @brief IO config (IOCON)
@@ -520,7 +575,7 @@ typedef struct /*!< IOCON Structure                                             
 	__IO union  IOCON_REG  PIOC_14;                           /*!< Pin config register                                                   */
 	__IO union  IOCON_REG  PIOC_15;                           /*!< Pin config register                                                   */
 } IOCON_TypeDef;
-
+#endif
 
 /* ================================================================================ */
 /* ================                     SYSCON                     ================ */
@@ -665,6 +720,10 @@ typedef struct                                            /*!< SYSCON Structure 
 #define IOCON_GPIOA  0x01
 #define IOCON_GPIOB  0x02
 #define IOCON_GPIOC  0x04
+
+#ifndef NULL
+#define NULL        0
+#endif
 
 
 void SYS_SystemInitial(void);

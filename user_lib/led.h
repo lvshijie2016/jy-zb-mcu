@@ -43,7 +43,7 @@ typedef enum
 void led_run_task(void);
 void led_mode_get(uint8_t *Com);
 void led_mode_get_t(uint8_t com, uint8_t count, uint8_t frequency);
-
+void aperture_all_off(void);
 
 
 
