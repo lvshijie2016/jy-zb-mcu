@@ -165,7 +165,7 @@ void gpio_init_t(void)
 	get_gpio(IOCON_GPIOC, PIN3, (SPECIAL|PC3_FUNC_GPIO), IO_Output,	IO_LOW, PULL_UP_EN); //5V_DRV_EN
 	
 	/***************MCU_INT_KAR_PA14****************************/
-	get_gpio(IOCON_GPIOA,	PIN14, (SPECIAL|PA14_FUNC_GPIO), IO_Output, IO_LOW, PULL_UP_EN);
+	//get_gpio(IOCON_GPIOA,	PIN14, (SPECIAL|PA14_FUNC_GPIO), IO_Output, IO_LOW, PULL_UP_EN);
 	
 	/**************POWER_KEY_PA0****************************/
 	get_gpio(IOCON_GPIOA,	PIN0,	PA0_FUNC_GPIO,	IO_Input, IO_LOW, PULL_UP_EN);  
@@ -280,6 +280,23 @@ void wdt_init_t(uint8_t timer)
 	WDT_Feed();	
 }
 
+
+
+
+static void UART1_Init(void)
+{
+	SYS_EnablePhrClk(AHB_UART1);  
+	//get_adc_gpio(IOCON_GPIOA,PIN15,PA15_FUNC_RXD1,PULL_UP_EN);
+	get_adc_gpio(IOCON_GPIOA,PIN14,PA14_FUNC_TXD1,PULL_UP_EN);
+	UART_Open(UART1, 115200, UART_NO_PARITY, UART_RX_NOT_EMPTY);  
+	//NVIC_SetPriority(UART0_IRQn,0);
+	//NVIC_EnableIRQ(UART0_IRQn); 
+}
+
+
+
+
+
 void sys_init(void)
 {
 	SYS_SystemInitial();
@@ -287,6 +304,7 @@ void sys_init(void)
 	gpio_init_t();
 	get_gpio(IOCON_GPIOA,	PIN15,	PA15_FUNC_GPIO,	IO_Output, IO_LOW, PULL_UP_EN); //KAR_POWER_ON_OFF  
 	UART0_Init();
+	UART1_Init();
 	pwm_init_t();
 	adc_init_t();
 	timer0_init_t();
@@ -305,6 +323,7 @@ void sys_init_t(void)
 	gpio_init_t();
 	get_gpio(IOCON_GPIOA,	PIN15,	PA15_FUNC_GPIO,	IO_Output, IO_DEFAULT, PULL_UP_EN); //KAR_POWER_ON_OFF 
 	UART0_Init();
+	UART1_Init();
 	pwm_init_t();
 	adc_init_t();
 	timer0_init_t();

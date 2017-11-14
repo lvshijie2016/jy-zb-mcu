@@ -14,6 +14,8 @@ void clear_all_event(void)
 	Information_events	 &= 	(~MOTO_DET2_EVENTS);
 	Information_events	 &= 	(~MOTO_DET1_EVENTS);
 	Information_events	 &= 	(~RTC_INT_EVENTS);
+	
+	
 }
 
 
@@ -49,7 +51,6 @@ void GPIOC_IRQHandler(void)
 		
 	}
 	
-
 	GPIO_Clear_INT(GPIOC,GPIO_Read_INTState(GPIOC));
 	
 }
@@ -84,7 +85,6 @@ void GPIOA_IRQHandler(void)
 			break;
 		default:break;
 	}
-	
 	GPIO_Clear_INT(GPIOA,GPIO_Read_INTState(GPIOA));
 }
 
@@ -104,7 +104,6 @@ void GPIOB_IRQHandler(void)
 			break;
 		default:break;
 	}
-	
 
 	GPIO_Clear_INT(GPIOB,GPIO_Read_INTState(GPIOB));
 }
@@ -124,11 +123,11 @@ uint8_t get_adc_value(void)
 	{
 		dat =(adValue*1000000*3.3/4095.0/1000);
 		if(1750>dat) adc_dat = adc_dat + 0;
-		else adc_dat = adc_dat+(dat-1750)/350*100;
-		set_soft_timer(TIMER_BAT,ENERGY_SAMPLING_TIMER);  //采样10秒合成一次电量值   采样次数100*100
+		else adc_dat = adc_dat+((dat-1750)/350*100);
+		set_soft_timer(TIMER_BAT,ENERGY_SAMPLING_TIMER);  
 		adValue = 0;
 		i++;
-		if(i == 6)
+		if(i == 20)
 		{
 			adc_dat = adc_dat/i;
 			j = adc_dat;

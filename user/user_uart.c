@@ -35,8 +35,8 @@ void UART0_Init(void)
 
 int fputc(int ch, FILE *f) 
 {
-    while (UART0->STAT.bit.TXF);	
-    UART0->DAT.all = ch;
+    while (UART1->STAT.bit.TXF);	
+    UART1->DAT.all = ch;
     return ch;
 }
 

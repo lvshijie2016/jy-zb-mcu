@@ -488,6 +488,13 @@ void Get_date_timer(void)
 	WriteUartBuf (PCF_DataStruct.Hours);
 	WriteUartBuf (PCF_DataStruct.Minutes);
 	WriteUartBuf (PCF_DataStruct.Seconds);
+	
+	#if defined( DeBug )
+		LOG(LOG_DEBUG,"Years%d-Months%d-Days%d-WeekDays%d-Hours%d-Minutes%d-Seconds%d\r\n",PCF_DataStruct.Years,\
+		PCF_DataStruct.Months_Century,PCF_DataStruct.Days,PCF_DataStruct.WeekDays,\
+		PCF_DataStruct.Hours,PCF_DataStruct.Minutes,PCF_DataStruct.Seconds);
+	#endif
+	
 	UART_Send_t(0x24);
 }
 
