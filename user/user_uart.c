@@ -143,19 +143,13 @@ void uart0_get_cmd(uint8_t *g_com)
 				{
 					if(g_com[i] == Xor_verify && get_buffer_data() == 0xFE)
 					{
-						
 						#if defined( DeBug )
 							LOG(LOG_DEBUG,"Xor_verifyte TRUE  packet_num = %d\r\n",packet_num);
 						#endif
 							WriteUartBuf(packet_num);
 							WriteUartBuf(0x00);
 							UART_Send_t(TX_PAG_ACK);
-							
-							
-						
-							
 					}else{
-						
 						#if defined(DeBug)
 							if(g_com[i] == Xor_verify) LOG(LOG_DEBUG,"-> tail失败\r\n");
 							else	LOG(LOG_DEBUG,"Xor_verifyte FALSE  packet_num = %d\r\n",packet_num);	

@@ -176,7 +176,7 @@ LED GPIO
 
 /* version -------------------------------------------------------*/
 
-#define  FIRMWARE_VERSION 								(unsigned char)(10+9)
+#define  FIRMWARE_VERSION 								(unsigned char)(20)
 
 #define  POISON_VERSION									(unsigned char)(10+2)
 

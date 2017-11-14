@@ -165,7 +165,7 @@ void gpio_init_t(void)
 	get_gpio(IOCON_GPIOC, PIN3, (SPECIAL|PC3_FUNC_GPIO), IO_Output,	IO_LOW, PULL_UP_EN); //5V_DRV_EN
 	
 	/***************MCU_INT_KAR_PA14****************************/
-	//get_gpio(IOCON_GPIOA,	PIN14, (SPECIAL|PA14_FUNC_GPIO), IO_Output, IO_LOW, PULL_UP_EN);
+	get_gpio(IOCON_GPIOA,	PIN14, (SPECIAL|PA14_FUNC_GPIO), IO_Output, IO_LOW, PULL_UP_EN);
 	
 	/**************POWER_KEY_PA0****************************/
 	get_gpio(IOCON_GPIOA,	PIN0,	PA0_FUNC_GPIO,	IO_Input, IO_LOW, PULL_UP_EN);  
@@ -221,6 +221,7 @@ static void pwm_init_t(void)
 	PWM_Start();
 }
 
+
 static void adc_init_t(void)
 { 
 	SYS_EnablePhrClk(AHB_ADC);
@@ -235,7 +236,18 @@ static void adc_init_t(void)
 	ADC_WaitAdcReady();
 	NVIC_SetPriority(ADC_IRQn,4);
 	NVIC_EnableIRQ(ADC_IRQn);
-
+//	
+//	SYS_EnablePhrClk(AHB_ADC);
+//	ADC_DeInit();
+//	ADC_Init(100);
+//	ADC_EnableChannels( ADC_CHN4_ENABLE);
+//	ADC_SetupChannels(AD4, ADC_DR4);
+//	ADC_SelectTriggerSource(TRIGGERMODE,ADC_START_BY_SOFTWAER,ADC_TRIGGER_RISE_EDGE);
+//	ADC_EnableConversionInt(ADC_CHN4_ENABLE);
+//	ADC_WaitAdcReady();
+//	NVIC_SetPriority(ADC_IRQn,4);
+//	NVIC_EnableIRQ(ADC_IRQn);
+//	
 }
 
 
@@ -285,12 +297,11 @@ void wdt_init_t(uint8_t timer)
 
 static void UART1_Init(void)
 {
-	SYS_EnablePhrClk(AHB_UART1);  
-	//get_adc_gpio(IOCON_GPIOA,PIN15,PA15_FUNC_RXD1,PULL_UP_EN);
-	get_adc_gpio(IOCON_GPIOA,PIN14,PA14_FUNC_TXD1,PULL_UP_EN);
-	UART_Open(UART1, 115200, UART_NO_PARITY, UART_RX_NOT_EMPTY);  
-	//NVIC_SetPriority(UART0_IRQn,0);
-	//NVIC_EnableIRQ(UART0_IRQn); 
+	#if defined( DeBug )
+		SYS_EnablePhrClk(AHB_UART1);  
+		get_adc_gpio(IOCON_GPIOA,PIN14,PA14_FUNC_TXD1,PULL_UP_EN);
+		UART_Open(UART1, 115200, UART_NO_PARITY, UART_RX_NOT_EMPTY);
+	#endif
 }
 
 

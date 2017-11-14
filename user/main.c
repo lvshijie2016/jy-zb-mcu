@@ -234,7 +234,7 @@ static void power_OFF_ON(void)
 						led_mode_get_t(0x01,0xff,15 );		//关机灯效
 						WriteUartBuf(KAR_POWER__OFF);
 						UART_Send_t(KAR_POWER_OFF_COMMAND); //发送关机指令
-						
+						moto_P();
 						#if defined( DeBug )
 							LOG(LOG_DEBUG,"send kar power off...... \r\n");
 						#endif
@@ -704,9 +704,9 @@ int main(void)
 			state_run_monitoring();
 		}
 			WDT_Feed();	
+
 			
-			
-		//dly1us(50000);
+		
 		//Get_date_timer();
 			
 			

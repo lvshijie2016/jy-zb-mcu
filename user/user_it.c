@@ -34,81 +34,34 @@ uint16_t GPIO_Read_INTState(GPIO_TypeDef *port)
 	return 	(uint16_t)port->MIS.all;
 }
 
-
-void GPIOC_IRQHandler(void)
-{
-	
-	switch(GPIO_Read_INTState(GPIOC)) {
-		
-		case PIN0:
-				
-			break;
-		case PIN1:
-				
-			break;
-
-		default:break;
-		
-	}
-	
-	GPIO_Clear_INT(GPIOC,GPIO_Read_INTState(GPIOC));
-	
-}
-
-
-
-
 void GPIOA_IRQHandler(void)
 {
-	
-	switch(GPIO_Read_INTState(GPIOA)) {
+	switch(GPIOA->MIS.all) {
 		
 		case PIN0:
 		
 			Information_events |=  POWER_KEY_EVENTS;
+			GPIOA->IC.all |= PIN0;
 			
 			break;
 		case PIN5:
 		
 			Information_events |=  RTC_INT_EVENTS;
-			
+			GPIOA->IC.all |= PIN5;
 			break;
 		case PIN11:
 		
 			Information_events |=  DRV_EVENTS;
-			
+			GPIOA->IC.all |= PIN11;
 			break;
 		case USB_DET:
 		
 			Information_events |=  USB_DET_EVENTS;
-			
+			GPIOA->IC.all |= USB_DET;
 			break;
 		default:break;
 	}
-	GPIO_Clear_INT(GPIOA,GPIO_Read_INTState(GPIOA));
 }
-
-
-
-
-void GPIOB_IRQHandler(void)
-{
-	
-	switch(GPIO_Read_INTState(GPIOB)) {
-		
-		case PIN0:
-		
-			break;
-		case PIN5:
-			
-			break;
-		default:break;
-	}
-
-	GPIO_Clear_INT(GPIOB,GPIO_Read_INTState(GPIOB));
-}
-
-
 
 
 uint8_t get_adc_value(void)
@@ -133,7 +86,11 @@ uint8_t get_adc_value(void)
 			j = adc_dat;
 			i=0;
 			if(j>100) j = 100;
-			LOG(LOG_DEBUG,"adc_dat_t->=%d\r\n",(uint8_t)j);
+			
+			#if defined( DeBug )
+				LOG(LOG_DEBUG,"adc_dat_t->=%d\r\n",(uint8_t)j);
+			#endif
+			
 			 
 		}	
 	}
