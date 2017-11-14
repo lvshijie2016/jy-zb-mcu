@@ -541,6 +541,9 @@ static void state_run_monitoring(void)
 			}
 			else if(kar_state_t == KAR_DORMANCY ) //KAR_睡眠时间设置  30分 后关机
 			{
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"get_sleep_timer = %d\r\n",(get_sleep_timer*10));
+				#endif
 				
 				if(!get_sleep_timer)
 				{
@@ -550,6 +553,8 @@ static void state_run_monitoring(void)
 					get_sleep_timer = (6*30);  //30分钟后关机
 					kar_off();
 				}else get_sleep_timer--;
+				
+				
 				
 				if(bat_value < BAT_VALUE_LOW) //KAR休眠下电量低5% 执行强制关机
 				{
@@ -561,7 +566,13 @@ static void state_run_monitoring(void)
 						kar_off();
 					}
 				}
-			}else{
+			}else if(kar_state_t != KAR_RUN){
+				
+				
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"get_sleep_timer_t = %d\r\n",(get_sleep_timer_t*10));
+				#endif
+				
 				if(!get_sleep_timer_t){
 					#if defined( DeBug )
 						LOG(LOG_DEBUG,"kar_state_t = KAR_STOP  MCU 1 minutes get kar_off()\r\n");
