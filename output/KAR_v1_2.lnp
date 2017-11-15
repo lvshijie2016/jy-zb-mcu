@@ -1,0 +1,26 @@
+--cpu Cortex-M0
+"..\output\main.o"
+"..\output\config.o"
+"..\output\user_it.o"
+"..\output\user_timer.o"
+"..\output\user_uart.o"
+"..\output\led.o"
+"..\output\rtc.o"
+"..\output\moto.o"
+"..\output\power_management.o"
+"..\output\abnormal_monitoring.o"
+"..\output\startup_c32f0xx_s.o"
+"..\output\system_c32f0xx.o"
+"..\output\c32f0xx_sys.o"
+"..\output\c32f0xx_gpio.o"
+"..\output\c32f0xx_iap.o"
+"..\output\c32f0xx_iic.o"
+"..\output\c32f0xx_pwm.o"
+"..\output\c32f0xx_timer.o"
+"..\output\c32f0xx_uart.o"
+"..\output\c32f0xx_adc.o"
+"..\output\c32f0xx_wdt.o"
+--library_type=microlib --strict --scatter "..\output\KAR_v1_2.sct"
+--summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\Listings\KAR_v1_2.map" -o ..\output\KAR_v1_2.axf
