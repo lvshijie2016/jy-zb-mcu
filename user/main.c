@@ -15,7 +15,7 @@ static uint8_t  get_Com[10] = {0};
 
 void LowPowerConsumptionConfig(void);
 
-static void dly1us(int dlytime) {while(dlytime--);}
+static void dly1us(uint32_t dlytime) {while(dlytime--);}
 
 
 void configpad(uint32_t pinstat)
@@ -171,7 +171,7 @@ static void power_key_event(void)
 		if(!GPIO_GetPinState(GPIOA,PIN0))
 		{
 			key_timer++;
-			if(key_timer == 100) 	
+			if(key_timer == 60) 	
 			{
 				key_event = LONG_PRESS; //长按
 				#if defined( DeBug )
@@ -179,7 +179,7 @@ static void power_key_event(void)
 				#endif
 				
 			}
-			else if(key_timer > 2000) 
+			else if(key_timer > 1200) 
 			{
 				key_event = RESET_PRESS; //复位
 				key_timer = 0;
@@ -191,11 +191,11 @@ static void power_key_event(void)
 			
 			
 			set_soft_timer(TIMER_KEY, 1);
-		}else if(!key_timer || key_timer >= 100)
+		}else if(!key_timer || key_timer >= 60)
 		{
 			key_timer = 0;
 			Information_events	 &= 	(~POWER_KEY_EVENTS);
-		}else if(key_timer <100)
+		}else if(key_timer <60)
 		{
 			key_event = SHORT_PRESS;	//短按
 			key_timer = 0;
@@ -685,31 +685,20 @@ int main(void)
 {
 	sys_init();
 	kar_off();//进入睡眠
-	//moto_D();
 	while(1)
 	{
-		//ADC_IssueSoftTrigger;
-		//dly1us(500000);
-		//LOG(LOG_DEBUG,"MTOT_ADC=%d\r\n",get_adc_moto());
 		if(1)
 		{
 			kar_connect();
 			Handler_event();
 			power_OFF_ON();
 			led_run_task();
-		//	if(bat_value > 20) 
-				moto_run_task();
-		//	else moto_P();
+			moto_run_task();
 			exceotion_management();
 			state_run_monitoring();
 		}
 			WDT_Feed();	
-
-			
-		
-		//Get_date_timer();
-			
-			
+		dly1us(100000);
 	}
 }
 
