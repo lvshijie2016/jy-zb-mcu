@@ -88,7 +88,7 @@ uint8_t get_adc_value(void)
 			if(j>100) j = 100;
 			
 			#if defined( DeBug )
-				LOG(LOG_DEBUG,"adc_dat_t->=%d\r\n",(uint8_t)j);
+				//LOG(LOG_DEBUG,"adc_dat_t->=%d\r\n",(uint8_t)j);
 			#endif
 			
 			 

@@ -317,18 +317,26 @@ static void Handler_event(void)
 		#if defined( DeBug )
 				LOG(LOG_DEBUG,"DRV_EVENTS \r\n");
 		#endif
-		if(!all_event_flag.DRV)
+		if(all_event_flag.DRV)
 		{
-			DRV_Disable;
-			all_event_flag.DRV = true;
+			DRV_Disable;//USB截止输出
+			
+			all_event_flag.DRV = false;
+			WriteUartBuf(0x00);  
+			UART_Send_t(0x26);
+			
 		}
 		else
 		{
-			DRV_Enable;
-			all_event_flag.DRV = false;
+			DRV_Enable;//USB输出
+			
+			all_event_flag.DRV = true;
+			WriteUartBuf(0x01);
+			UART_Send_t(0x26);
+				
 		}
-		Information_events	 &= 	(~DRV_EVENTS);
 		
+		Information_events	 &= 	(~DRV_EVENTS);
 		
 	}
 	
@@ -337,24 +345,16 @@ static void Handler_event(void)
 	//电机1过流检测
 	if(Information_events&MOTO_DET1_EVENTS)
 	{
-		#if defined( DeBug )
-			LOG(LOG_DEBUG,"MOTO_DET1_EVENTS\r\n");
-		#endif
-		moto_P();
+		
 		Information_events	 &= 	(~MOTO_DET1_EVENTS);
-		#if defined( DeBug )
-			LOG(LOG_DEBUG,"MOTO_DET1_EVENTS moto_P();\r\n");
-		#endif
+	
 	}
 	//电机2过流检测
 	if(Information_events&MOTO_DET2_EVENTS)
 	{
-		#if defined( DeBug )
-			LOG(LOG_DEBUG,"MOTO_DET2_EVENTS\r\n");
-		#endif
-		Information_events	 &= 	(~MOTO_DET2_EVENTS);
-		moto_P();
 		
+		Information_events	 &= 	(~MOTO_DET2_EVENTS);
+
 		
 	}
 	
@@ -387,15 +387,14 @@ static void Handler_event(void)
 		#if defined( DeBug )
 			LOG(LOG_DEBUG,"USB_DET_EVENTS \r\n");
 		#endif
-		if(kar_state == KAR_RUN)
+		if(kar_state == KAR_RUN && GPIO_GetPinState(GPIOA,USB_DET))
 		{
 			WriteUartBuf(0x02);
 			WriteUartBuf(bat_value);
 			UART_Send_t(BAT_COMMAN);
 		}
 		Information_events &= (~USB_DET_EVENTS);
-		
-		
+	
 	}
 	//按键处理
 	if(Information_events&POWER_KEY_EVENTS)
@@ -485,7 +484,7 @@ static void get_kar_run_state(uint8_t *Com)
 static void state_run_monitoring(void)
 {
 	static uint8_t	bat_alarm_timer = 0;
-	static uint16_t run_timer_state = 0;
+	static uint8_t	bat_alarm_timer_t = 2;
 	static uint8_t  get_sleep_timer = (6*30);
 	static uint8_t 	get_sleep_timer_t = 6;
 	if(check_soft_timeout(TIMER_BAT)) //状态运行检测时间50us
@@ -493,114 +492,102 @@ static void state_run_monitoring(void)
 		SYS_EnablePhrClk(AHB_ADC); 
 		NVIC_EnableIRQ(ADC_IRQn);
 		ADC_IssueSoftTrigger;
-		
-		if(!run_timer_state) //10秒一次
-		{
-			Get_date_timer();
-			run_timer_state = (20000/ENERGY_SAMPLING_TIMER);
-			if(kar_state == KAR_RUN) //10秒上报电量 状态
-			{
-				
-				if(bat_value < (BAT_VALUE_LOW+10)) 
-				//KAR f运行下电量低于10%开始报警
-				{
-					if(!bat_alarm_timer)
-					{
-						WriteUartBuf(0x01);
-						WriteUartBuf(bat_value);
-						UART_Send_t(BAT_COMMAN);  
-						bat_alarm_timer = 6; //1分钟上报警报电量低电
-						#if defined( DeBug )
-							LOG(LOG_DEBUG,"alarm energy LOW 10 bat_value = %d\r\n",bat_value);
-						#endif
-					}else bat_alarm_timer--;
-				}
-				
-				
-				if(bat_value < BAT_VALUE_LOW && !GPIO_GetPinState(GPIOA,USB_DET))  //KAR运行下 低于5%执行正常关机
-				{ 
-					key_event = LONG_PRESS;			 //发出按键关机信号
-					#if defined( DeBug )
-						LOG(LOG_DEBUG,"energy LOW 5 get -> POWER_OFF bat_value = %d\r\n",bat_value);
-					#endif
-					
-				}else{
-					
-					#if defined( DeBug )
-						LOG(LOG_DEBUG,"report_energy  10s 1 time bat_value = %d\r\n",bat_value);
-					#endif
-					WriteUartBuf(0x00);
-					WriteUartBuf(bat_value);
-					UART_Send_t(BAT_COMMAN); 
-					
-				}
-				
-				get_sleep_timer_t = 6; //60秒未开机进入睡眠
-				get_sleep_timer = (6*30);  //30分钟后关机
-				
-			}
-			else if(kar_state_t == KAR_DORMANCY ) //KAR_睡眠时间设置  30分 后关机
-			{
-				#if defined( DeBug )
-					LOG(LOG_DEBUG,"get_sleep_timer = %d\r\n",(get_sleep_timer*10));
-				#endif
-				
-				if(!get_sleep_timer)
-				{
-					#if defined( DeBug )
-						LOG(LOG_DEBUG,"kar_state_t = KAR_DORMANCY  MCU 30 minutes get kar_off()\r\n");
-					#endif
-					get_sleep_timer = (6*30);  //30分钟后关机
-					kar_off();
-				}else get_sleep_timer--;
-				
-				
-				
-				if(bat_value < BAT_VALUE_LOW) //KAR休眠下电量低5% 执行强制关机
-				{
-					if(!GPIO_GetPinState(GPIOA,USB_DET)){
-						//读取是否在充电状态
-						#if defined( DeBug )
-							LOG(LOG_DEBUG,"KAR_DORMANCY energy LOW 5 get kar_off() %d\r\n" , bat_value);
-						#endif
-						kar_off();
-					}
-				}
-			}else if(kar_state_t != KAR_RUN){
-				
-				
-				#if defined( DeBug )
-					LOG(LOG_DEBUG,"get_sleep_timer_t = %d\r\n",(get_sleep_timer_t*10));
-				#endif
-				
-				if(!get_sleep_timer_t){
-					#if defined( DeBug )
-						LOG(LOG_DEBUG,"kar_state_t = KAR_STOP  MCU 1 minutes get kar_off()\r\n");
-					#endif
-					get_sleep_timer_t = 6; //60秒未开机进入睡眠
-					kar_off();
-				}else get_sleep_timer_t--;
-				
-			}
-				
-//			
-//			#if defined( DeBug )
-//				LOG(LOG_DEBUG,"run_timer_state = %d\r\n bat_alarm_timer = %d \r\n\
-//				get_sleep_timer = %d\r\n get_sleep_timer_t = %d\r\n",run_timer_state,\
-//				bat_alarm_timer,get_sleep_timer,get_sleep_timer_t);	
-//			#endif
-			
-		}else run_timer_state--;
-		
 	}
+	
+	if(check_soft_timeout(TIMER_STATE_RUN))
+	{
+		set_soft_timer(TIMER_STATE_RUN,10000);
+		if(kar_state == KAR_RUN) //10秒上报电量 状态
+		{
+			if(bat_value < (BAT_VALUE_LOW+10)) //KAR f运行下电量低于15%开始报警
+			{
+				if(!bat_alarm_timer)
+				{
+					WriteUartBuf(0x01);
+					WriteUartBuf(bat_value);
+					UART_Send_t(BAT_COMMAN);  
+					bat_alarm_timer = 6; //1分钟上报警报电量低电
+					#if defined( DeBug )
+						LOG(LOG_DEBUG,"alarm energy LOW 10 bat_value = %d\r\n",bat_value);
+					#endif
+				}else bat_alarm_timer--;
+			}else {
+				bat_alarm_timer = 6;
+				bat_alarm_timer_t = 2;
+			}
+			
+			if(bat_value < BAT_VALUE_LOW && !GPIO_GetPinState(GPIOA,USB_DET) )  //KAR运行下 低于5%执行正常关机
+			{ 
+			
+				if(!bat_alarm_timer_t)
+				{
+					key_event = LONG_PRESS;			 //发出按键关机信号
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"energy LOW 5 get -> POWER_OFF bat_value = %d\r\n",bat_value);
+				#endif
+					bat_alarm_timer_t = 3;
+				}else bat_alarm_timer_t--;
+				
+			}else{
+				
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"report_energy  10s 1 time bat_value = %d\r\n",bat_value);
+				#endif
+				WriteUartBuf(0x00);
+				WriteUartBuf(bat_value);
+				UART_Send_t(BAT_COMMAN); 
+			}
+			
+			get_sleep_timer_t = 6; //60秒未开机进入睡眠
+			get_sleep_timer = (6*30);  //30分钟后关机
+		}
+		else if(kar_state_t == KAR_DORMANCY ) //KAR_睡眠时间设置  30分 后关机
+		{
+			#if defined( DeBug )
+				LOG(LOG_DEBUG,"get_sleep_timer = %d\r\n",(get_sleep_timer*10));
+			#endif
+			
+			if(!get_sleep_timer)
+			{
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"kar_state_t = KAR_DORMANCY  MCU 30 minutes get kar_off()\r\n");
+				#endif
+				get_sleep_timer = (6*30);  //30分钟后关机
+				kar_off();
+			}else get_sleep_timer--;
+			
+			if(bat_value < BAT_VALUE_LOW) //KAR休眠下电量低5% 执行强制关机
+			{
+				if(!GPIO_GetPinState(GPIOA,USB_DET)){
+					//读取是否在充电状态
+					#if defined( DeBug )
+						LOG(LOG_DEBUG,"KAR_DORMANCY energy LOW 5 get kar_off() %d\r\n" , bat_value);
+					#endif
+					kar_off();
+				}
+			}
+		}else if(kar_state_t != KAR_RUN){
+			
+			
+			#if defined( DeBug )
+				LOG(LOG_DEBUG,"get_sleep_timer_t = %d\r\n",(get_sleep_timer_t*10));
+			#endif
+			
+			if(!get_sleep_timer_t){
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"kar_state_t = KAR_STOP  MCU 1 minutes get kar_off()\r\n");
+				#endif
+				get_sleep_timer_t = 6; //60秒未开机进入睡眠
+				kar_off();
+			}else get_sleep_timer_t--;
+		}
+	}	
 
 }
 
 
-
 static void kar_connect(void)
 {
-	
 	uart0_get_cmd(get_Com);
 	if(kar_state_t == KAR_RUN  || get_Com[0] ==  KAR_RUN_STATE)
 	{
@@ -697,7 +684,7 @@ int main(void)
 			exceotion_management();
 			state_run_monitoring();
 		}
-			WDT_Feed();	
+		WDT_Feed();	
 		dly1us(100000);
 	}
 }

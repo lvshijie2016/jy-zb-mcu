@@ -70,10 +70,10 @@ void PWM_Init(uint32_t freq,uint8_t prescaler,uint8_t pair, uint8_t align, uint8
 	//PWM compare output is driven to high when the CNTR register is great thanVAL
 	//0:PWM compare output 0 is driven to high when the CNTR register is great thanVAL0
 	//1:PWM compare output 0 is driven to high when the CNTR register is less thanVAL0
-	(*PWM).PSCR.bit.CINV0 = 1;
-	(*PWM).PSCR.bit.CINV1 = 1;
-	(*PWM).PSCR.bit.CINV2 = 1;
-	(*PWM).PSCR.bit.CINV3 = 1;
+	(*PWM).PSCR.bit.CINV0 = 0;
+	(*PWM).PSCR.bit.CINV1 = 0;
+	(*PWM).PSCR.bit.CINV2 = 0;
+	(*PWM).PSCR.bit.CINV3 = 0;
 	(*PWM).PSCR.bit.CINV4 = 0;
 	(*PWM).PSCR.bit.CINV5 = 0;
 	

@@ -348,7 +348,8 @@ void sys_init_t(void)
 
 void DisablePhrClk_t(void)
 {
-	
+	get_gpio(IOCON_GPIOA, PIN12, PA12_FUNC_GPIO,	IO_Output,	IO_LOW, PULL_UP_EN);
+	NVIC_DisableIRQ(GPIOA_IRQn);
 	SYS_DisablePhrClk(AHB_GPIOA);
 	SYS_DisablePhrClk(AHB_GPIOC);
 	SYS_DisablePhrClk(AHB_GPIOB);
