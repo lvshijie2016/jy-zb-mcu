@@ -34,6 +34,10 @@ uint16_t GPIO_Read_INTState(GPIO_TypeDef *port)
 	return 	(uint16_t)port->MIS.all;
 }
 
+
+
+
+
 void GPIOA_IRQHandler(void)
 {
 	switch(GPIOA->MIS.all) {

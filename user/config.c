@@ -310,6 +310,7 @@ static void UART1_Init(void)
 
 void sys_init(void)
 {
+	
 	SYS_SystemInitial();
 	wdt_init_t(5);
 	gpio_init_t();
@@ -318,9 +319,16 @@ void sys_init(void)
 	UART1_Init();
 	pwm_init_t();
 	adc_init_t();
+	#if defined( DeBug )
+		LOG(LOG_DEBUG,"ADC Open  Successful.. \r\n");
+	#endif
 	timer0_init_t();
 	timer1_init_t_PWM();
 	IIC_Init(1,400,0xA0);
+	
+	#if defined( DeBug )
+		LOG(LOG_DEBUG,"IIC Open  Successful.. \r\n");
+	#endif
 	RTC_Start();
 	clear_all_event();
 	led_mode_get_t(0x06,0xff,30 );
@@ -341,6 +349,7 @@ void sys_init_t(void)
 	timer1_init_t_PWM();
 	IIC_Init(1,400,0xA0);
 	//RTC_Start();
+	//while(Rtc_Check());
 	clear_all_event();
 	led_mode_get_t(0x06,0xff,30 );
 	moto_P();

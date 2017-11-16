@@ -176,10 +176,11 @@ LED GPIO
 
 /* version -------------------------------------------------------*/
 
-#define  FIRMWARE_VERSION 								(unsigned char)(20+2)
+#define  FIRMWARE_VERSION 								(unsigned char)(20+3)
 
 #define  POISON_VERSION									(unsigned char)(10+2)
 
+#define  SLEEP_DEFAULT_OFF_TIMER						(unsigned char)60 //分
 
 
 

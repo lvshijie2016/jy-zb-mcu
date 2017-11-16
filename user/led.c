@@ -318,6 +318,22 @@ static void aperture_all_blink(void)
 	}
 }
 
+void led_mode_get_tt(uint8_t com, uint8_t count, uint8_t frequency)
+{
+	if (com < LED_MODE_MAX && com !=  GetLedComData_t.com ) {
+		PWM_flag = 0;
+		led_x = 0;
+		led_y = 0;
+		led_flag = 0;
+		pwm_duty = 0;
+		GetLedComData_t.com 				= 	com;
+		GetLedComData_t.count			 	= 	count;
+		GetLedComData_t.frequency 	= 	(frequency*10);
+
+	}
+	led_run_task();
+	
+}
 
 void led_run_task(void)
 {

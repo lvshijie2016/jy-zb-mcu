@@ -4,6 +4,7 @@
 
 
 
+#define Rtc_Check_Data                   	 (unsigned char)0x55 
 
 #define RTC_Write                            (unsigned char)0xa2  //写命令
 #define RTC_Read                             (unsigned char)0xa3  //读命令，或者用（RTC_Write + 1）
@@ -186,7 +187,7 @@ void 			Set_date_timer				(uint8_t *command);
 void 			Set_Alarm_Clock				(uint8_t *command);
 void 			Get_date_timer				(void);
 bool			get_Alarm_Int_state			(void);
-
+bool			Rtc_Check					(void);
 #endif
 
 

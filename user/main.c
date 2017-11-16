@@ -11,11 +11,11 @@ static _KEY_EVENT  		key_event 	= MAX_KEYS_EVENT;
 static uint16_t key_timer = 0;
 static uint8_t 	bat_value = 100;
 static uint8_t  get_Com[10] = {0};
+static uint16_t sleep_off_timer = SLEEP_DEFAULT_OFF_TIMER; //睡眠关机时间
 
-
-void LowPowerConsumptionConfig(void);
-
+static void LowPowerConsumptionConfig(void);
 static void dly1us(uint32_t dlytime) {while(dlytime--);}
+
 
 
 void configpad(uint32_t pinstat)
@@ -94,12 +94,13 @@ static void kar_off(void)
 {
 	kar_state_t =  KAR_STOP;
 	kar_state   =  KAR_STOP;
+	dly1us(50000);
 	
 	#if defined( DeBug )
 		LOG(LOG_DEBUG,"kar_state&kar_state_t =  KAR_STOP");
 	#endif
-	
-	
+	dly1us(50000);
+	DRV_Disable;//USB截止输出
 	#if defined( DeBug )
 		LOG(LOG_DEBUG,"power OFF...... \r\n");
 	#endif
@@ -124,6 +125,7 @@ static void kar_off(void)
 
 static void kar_on(void)
 {
+	uint8_t i;
 	//sys_init();
 	if(bat_value > (BAT_VALUE_LOW+5)|| GPIO_GetPinState(GPIOA,USB_DET))//电池电量大于10%开机
 	{
@@ -139,6 +141,16 @@ static void kar_on(void)
 		#if defined( DeBug )
 			LOG(LOG_DEBUG,"Low energy,state exit power ON ...... \r\n");
 		#endif
+		i = 0xff;
+		while(i--){
+			
+			dly1us(100000);
+			led_mode_get_tt(LED_MODE_APERTURE_ALL_BLINK,0xff,10);
+		}
+		
+		
+		
+		
 		kar_off();//进入睡眠
 	}
 	
@@ -323,7 +335,7 @@ static void Handler_event(void)
 			
 			all_event_flag.DRV = false;
 			WriteUartBuf(0x00);  
-			UART_Send_t(0x26);
+			UART_Send_t(USB_OUT_COMMAN);
 			
 		}
 		else
@@ -332,7 +344,7 @@ static void Handler_event(void)
 			
 			all_event_flag.DRV = true;
 			WriteUartBuf(0x01);
-			UART_Send_t(0x26);
+			UART_Send_t(USB_OUT_COMMAN);
 				
 		}
 		
@@ -443,9 +455,8 @@ static void get_kar_run_state(uint8_t *Com)
 		case KAR_DORMANCY://睡眠状态
 			kar_state = KAR_DORMANCY;	
 			kar_state_t = KAR_DORMANCY;
-			//aperture_all_off();
-			
-			led_mode_get_t(LED_MODE_APERTURE_ALL_BREATHE,0xff,50);
+			aperture_all_off(); //关闭灯光
+			//led_mode_get_t(LED_MODE_APERTURE_ALL_BREATHE,0xff,50);
 			
 			#if defined( DeBug )
 				LOG(LOG_DEBUG,"kar_state&kar_state_t =  KAR_DORMANCY");
@@ -460,6 +471,7 @@ static void get_kar_run_state(uint8_t *Com)
 			EXCEPTION(EXCEPTION_3);
 			//kar_state_t = KAR_RUN;
 		break;
+		
 	}
 
 }
@@ -485,7 +497,8 @@ static void state_run_monitoring(void)
 {
 	static uint8_t	bat_alarm_timer = 0;
 	static uint8_t	bat_alarm_timer_t = 2;
-	static uint8_t  get_sleep_timer = (6*30);
+	
+	static uint16_t  get_sleep_timer = 6*SLEEP_DEFAULT_OFF_TIMER;
 	static uint8_t 	get_sleep_timer_t = 6;
 	if(check_soft_timeout(TIMER_BAT)) //状态运行检测时间50us
 	{
@@ -539,9 +552,9 @@ static void state_run_monitoring(void)
 			}
 			
 			get_sleep_timer_t = 6; //60秒未开机进入睡眠
-			get_sleep_timer = (6*30);  //30分钟后关机
+			get_sleep_timer = (6*sleep_off_timer);  //默认60分钟后关机
 		}
-		else if(kar_state_t == KAR_DORMANCY ) //KAR_睡眠时间设置  30分 后关机
+		else if(kar_state_t == KAR_DORMANCY ) //KAR_睡眠时间设置  60分 后关机
 		{
 			#if defined( DeBug )
 				LOG(LOG_DEBUG,"get_sleep_timer = %d\r\n",(get_sleep_timer*10));
@@ -552,7 +565,7 @@ static void state_run_monitoring(void)
 				#if defined( DeBug )
 					LOG(LOG_DEBUG,"kar_state_t = KAR_DORMANCY  MCU 30 minutes get kar_off()\r\n");
 				#endif
-				get_sleep_timer = (6*30);  //30分钟后关机
+				get_sleep_timer = (6*sleep_off_timer);  //默认60分钟后关机
 				kar_off();
 			}else get_sleep_timer--;
 			
@@ -660,6 +673,16 @@ static void kar_connect(void)
 				WriteUartBuf(bat_value);
 				UART_Send_t(BAT_COMMAN);
 			break;
+			case SLEEP_OFF_TIMER_SEY_COMMAN:  //kar睡眠关机时间设置
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"Set Sleep off timer ......");
+				#endif
+				sleep_off_timer  = get_Com[1];
+				WriteUartBuf(0x01);
+				UART_Send_t(SLEEP_OFF_TIMER_SEY_COMMAN);
+			break;
+			
+			
 			default:break;
 		}
 	}
@@ -670,7 +693,23 @@ static void kar_connect(void)
 
 int main(void)
 {
+	uint8_t i =0xff;
 	sys_init();
+	while(Rtc_Check())
+	{
+		i--;
+		dly1us(100000);
+		led_mode_get_tt(LED_MODE_APERTURE_ALL_BLINK,0xff,10);
+		if(!i){
+			kar_off();//进入睡眠
+			i = 0xff;
+		}
+	}//检测RTC
+	
+	#if defined( DeBug )
+		LOG(LOG_DEBUG,"RTC Check Successful.. \r\n");
+	#endif
+	
 	kar_off();//进入睡眠
 	while(1)
 	{

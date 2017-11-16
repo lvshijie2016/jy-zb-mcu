@@ -462,7 +462,7 @@ void Set_date_timer(uint8_t *command)
 		WriteUartBuf(0x01);
 		UART_Send_t(0x22);
 		#if defined( DeBug )
-			LOG(LOG_DEBUG,"RTC_SET_TRUE.. \r\n");
+			LOG(LOG_DEBUG,"RTC Set Successful.. \r\n");
 		#endif
 		
 	}else 
@@ -470,7 +470,7 @@ void Set_date_timer(uint8_t *command)
 		WriteUartBuf(0x00);
 		UART_Send_t(0x22);
 		#if defined( DeBug )
-			LOG(LOG_DEBUG,"RTC_SET_FALSE.. \r\n");
+			LOG(LOG_DEBUG,"RTC Set Failure.. \r\n");
 		#endif
 	}
 	
@@ -497,6 +497,23 @@ void Get_date_timer(void)
 	
 	UART_Send_t(0x24);
 }
+
+
+bool Rtc_Check(void)
+{
+	uint8_t test_value;
+	
+	RTC_Write_Byte(RTC_Address_Timer_VAL, Rtc_Check_Data); 	//写入检测值
+	for(test_value = 0;test_value < 50;test_value++){};  	//延时一定时间再读取
+	test_value = RTC_Read_Byte(RTC_Address_Timer_VAL);  //再读取回来
+	if(test_value != Rtc_Check_Data)  return true;  //器件错误或者损坏
+	return false;  //正常
+	
+}
+
+
+
+
 
 
 
