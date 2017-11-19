@@ -12,16 +12,12 @@ void set_soft_timer(SOFT_TIMER index, uint16_t nms)
 }
 
 //获取中断时间触发中断
-
 uint16_t check_soft_timeout(SOFT_TIMER index )
 {
 	if(soft_timer[index] > soft_timer_t[index])
 			soft_timer[index] = soft_timer_t[index];
-	
-	return !soft_timer[index];
-		
+	return !soft_timer[index];	
 }
-
 
 
 uint16_t check_soft_timeout_PWM(SOFT_TIMER index )
@@ -30,7 +26,6 @@ uint16_t check_soft_timeout_PWM(SOFT_TIMER index )
 			soft_timer[index] = soft_timer_t[index];
 	
 	return soft_timer[index];
-		
 }
 
 
@@ -40,8 +35,6 @@ void timer_delay_ms(uint16_t delay)
 	set_soft_timer(TIMER_DELAY, delay);
 	while(!check_soft_timeout(TIMER_DELAY));
 }
-
-
 
 
 //中断计时 

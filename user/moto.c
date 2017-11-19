@@ -2,6 +2,11 @@
 
 
 static unsigned char moto_flag = 0;
+static bool 		 moto_R_current_state;
+static bool 		 moto_L_current_state;
+
+
+
 _MOTO_Typedef_t   MOTO_t;
 
 /*停止*/
@@ -27,8 +32,8 @@ void moto_D(void)
 	
 	MOTO1_HIGH_PH;
 	//MOTO1_LOW_PH;
-	//MOTO_t.L_duty  = 50;
-	
+//	MOTO_t.L_duty  = 60;
+//	MOTO_t.R_duty  = 60;
 	CT16B1_START;
 }
 
@@ -182,6 +187,22 @@ void GetMotoCom(unsigned char *com)
 	}
 }
 
+
+void get_moto_current_state(uint16_t R_state, uint16_t L_state)
+{
+	uint16_t R_vref;
+	uint16_t L_vref;
+	
+	L_vref = (MOTO_t.L_duty*(6.5+((MOTO_t.L_duty-50)*0.08)));
+	R_vref = (MOTO_t.R_duty*(23+((MOTO_t.R_duty-50)*0.08)));
+
+	
+	moto_R_current_state = R_state > R_vref  ?  false : true ;
+	moto_L_current_state = L_state > L_vref  ?  false : true ;
+	
+}
+
+
 void moto_run_task(void)
 {
 	if(moto_flag)
@@ -215,9 +236,9 @@ void TIMER16_1_IRQHandler(void)
 	pwm_flag = (pwm_flag+1) == DUTY ? 0 : pwm_flag+1;
 	i = pwm_flag;
 	i = (i/DUTY)*100;
-	if(i < MOTO_t.L_duty) PWM_1_HIGH;	
+	if(i < MOTO_t.L_duty && moto_R_current_state) PWM_1_HIGH;	
 	else PWM_1_LOW;
-	if(i < MOTO_t.R_duty) PWM_2_HIGH;	
+	if(i < MOTO_t.R_duty && moto_L_current_state) PWM_2_HIGH;	
 	else PWM_2_LOW;
 
 	CT16B0_ClearIntFlag(TMR1);

@@ -26,12 +26,8 @@ typedef struct
 
 extern uint16_t Information_events; 
 extern _all_event_flag 												all_event_flag;
-
 void clear_all_event(void);
-uint8_t get_adc_value(void);
 
-
-uint32_t get_adc_moto(void);
 
 
 

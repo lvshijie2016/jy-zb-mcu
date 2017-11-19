@@ -226,34 +226,25 @@ static void adc_init_t(void)
 { 
 	SYS_EnablePhrClk(AHB_ADC);
 	ADC_DeInit();
-	ADC_Init(100);
-	ADC_EnableChannels( ADC_CHN1_ENABLE|ADC_CHN4_ENABLE|ADC_CHN6_ENABLE);
-	ADC_SetupChannels(AD1, ADC_DR1);
-	ADC_SetupChannels(AD4, ADC_DR4);
-	ADC_SetupChannels(AD6, ADC_DR6);
+	ADC_Init(1000000UL);
+	ADC_EnableChannels( ADC_CHN1_ENABLE);
+	ADC_EnableChannels( ADC_CHN4_ENABLE);
+	ADC_EnableChannels( ADC_CHN6_ENABLE);
 	ADC_SelectTriggerSource(TRIGGERMODE,ADC_START_BY_SOFTWAER,ADC_TRIGGER_RISE_EDGE);
-	ADC_EnableConversionInt(ADC_CHN1_ENABLE|ADC_CHN4_ENABLE|ADC_CHN6_ENABLE);
-	ADC_WaitAdcReady();
-	NVIC_SetPriority(ADC_IRQn,4);
-	NVIC_EnableIRQ(ADC_IRQn);
-//	
-//	SYS_EnablePhrClk(AHB_ADC);
-//	ADC_DeInit();
-//	ADC_Init(100);
-//	ADC_EnableChannels( ADC_CHN4_ENABLE);
-//	ADC_SetupChannels(AD4, ADC_DR4);
-//	ADC_SelectTriggerSource(TRIGGERMODE,ADC_START_BY_SOFTWAER,ADC_TRIGGER_RISE_EDGE);
+	ADC_SetupChannels(AD1, ADC_DR1);
+	ADC_SetupChannels(AD6, ADC_DR6);
+	ADC_SetupChannels(AD4, ADC_DR4);
+//	ADC_EnableConversionInt(ADC_CHN1_ENABLE);
 //	ADC_EnableConversionInt(ADC_CHN4_ENABLE);
-//	ADC_WaitAdcReady();
-//	NVIC_SetPriority(ADC_IRQn,4);
-//	NVIC_EnableIRQ(ADC_IRQn);
-//	
+//	ADC_EnableConversionInt(ADC_CHN6_ENABLE);
+	ADC_WaitAdcReady();
+	ADC_IssueSoftTrigger;
+
 }
 
 
 static void timer0_init_t(void)
 {
-	SYS_EnablePhrClk(AHB_WDT);
 	CT16B0_Init(TMR0, 100000UL);
 	CT16B0_ResetTimerCounter(TMR0);
 	/* ---------- Set Timer return to zero when it matches MR value ----------*/
@@ -267,7 +258,7 @@ static void timer0_init_t(void)
 
 static void timer1_init_t_PWM(void)
 {
-	SYS_EnablePhrClk(AHB_WDT);
+	
 	CT16B0_Init(TMR1, 1000000UL);
 	CT16B0_ResetTimerCounter(TMR1);
 	/* ---------- Set Timer return to zero when it matches MR value ----------*/
@@ -282,6 +273,7 @@ static void timer1_init_t_PWM(void)
 
 void wdt_init_t(uint8_t timer)
 {
+	SYS_EnablePhrClk(AHB_WDT);
 	SYS_SelectWDTClkSrc(WDT_CLK);//select watch dog clock 32k
 	/* ------------------- Set WachDog Window size ---------------------------*/
    WDT_SetWindowValue(0,0xffffff);
@@ -289,6 +281,7 @@ void wdt_init_t(uint8_t timer)
 	WDT_Enable_RESET;
 	WDT->MOD.bit.WDLOCKEN = 0;
 	WDT_Enable;
+	WDT->MOD.bit.WDEN  = 1;
 	WDT_Feed();	
 }
 
@@ -359,6 +352,7 @@ void DisablePhrClk_t(void)
 {
 	get_gpio(IOCON_GPIOA, PIN12, PA12_FUNC_GPIO,	IO_Output,	IO_LOW, PULL_UP_EN);
 	NVIC_DisableIRQ(GPIOA_IRQn);
+	
 	SYS_DisablePhrClk(AHB_GPIOA);
 	SYS_DisablePhrClk(AHB_GPIOC);
 	SYS_DisablePhrClk(AHB_GPIOB);

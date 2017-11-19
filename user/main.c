@@ -1,13 +1,11 @@
 #include "config.h"
 
  
- 
-
-
 
 static _KAR_STATE	 	kar_state 	= KAR_STOP;
 static _KAR_STATE	 	kar_state_t = MAX_KAR_STATE;
 static _KEY_EVENT  		key_event 	= MAX_KEYS_EVENT;
+
 static uint16_t key_timer = 0;
 static uint8_t 	bat_value = 100;
 static uint8_t  get_Com[10] = {0};
@@ -17,7 +15,71 @@ static void LowPowerConsumptionConfig(void);
 static void dly1us(uint32_t dlytime) {while(dlytime--);}
 
 
+static void get_adc_value(void)
+{	
+	static	 _ADC_typedef		adc_typedef;
+	double  		 			adValue;
+	uint32_t         			adValue_t;
+	static  bool				bat_flag = true;
+	static uint16_t				moto_R_state_flag;				
+	static uint16_t				moto_L_state_flag;
+	
+	if(check_soft_timeout(TIMER_BAT)) //状态运行检测时间50us
+	{	
+		SYS_EnablePhrClk(AHB_ADC); 
+		
+		adValue_t = 0;
+		adValue_t = (*ADC).DR[4].all;
+		if(0x80000000 == (adValue_t & 0x80000000))
+		{
+			adValue = adValue_t*1000000*3.3/4095.0/1000;
+			adValue = 1730 > adValue ? 0 : ((adValue-1730)/370*100);
 
+			adc_typedef.bat_buffer[adc_typedef.head] = (uint8_t)adValue;
+	
+			adc_typedef.data = adc_typedef.data + adc_typedef.bat_buffer[adc_typedef.head];
+			adc_typedef.head = (adc_typedef.head+1) == BAT_VALUE_BUFFER ? 0: adc_typedef.head+1;
+			adc_typedef.data = adc_typedef.data - adc_typedef.bat_buffer[adc_typedef.head];
+			
+			if(bat_flag) {
+				bat_value = (adc_typedef.data-adc_typedef.bat_buffer[adc_typedef.head])/adc_typedef.head;
+				bat_flag  = (adc_typedef.head+1) == BAT_VALUE_BUFFER ? false : true;
+			}else bat_value = (adc_typedef.data-adc_typedef.bat_buffer[adc_typedef.head])/BAT_VALUE_BUFFER;
+		}
+		
+		set_soft_timer(TIMER_BAT,ENERGY_SAMPLING_TIMER); 
+		//MOTO 右电机电流检测 1s超过1200ma电流为堵转状态
+		adValue_t = 0;
+		adValue_t = (*ADC).DR[1].all;
+		if(0x80000000 == (adValue_t & 0x80000000))
+		{
+			adValue = adValue_t*1000000*3.3/4095.0/1000;
+			
+			moto_R_state_flag = (uint16_t)adValue;
+		
+			#if defined( DeBug )
+				//LOG(LOG_DEBUG," moto_R_state_flag = %d -> %d\r\n", (uint32_t)adValue,moto_R_state_flag);
+			#endif
+		}
+		adValue_t = 0;
+		adValue_t = (*ADC).DR[6].all;
+		if(0x80000000 == (adValue_t & 0x80000000))
+		{
+			//MOTO 左电机电流检测 1s超过1200ma电流为堵转状态
+			
+			adValue = adValue_t*1000000*3.3/4095.0/1000;
+			moto_L_state_flag = (uint16_t)adValue;
+			
+			#if defined( DeBug )
+				//LOG(LOG_DEBUG," moto_L_state_flag = %d -> %d\r\n", (uint32_t)adValue,moto_L_state_flag);
+			#endif
+		}
+		//传入电机驱动
+		ADC_IssueSoftTrigger;
+		get_moto_current_state(moto_R_state_flag,moto_L_state_flag);
+		
+	}
+}
 void configpad(uint32_t pinstat)
 {
 //	IOCON->PIOA_0.all  = pinstat;  //POWERR_KEY
@@ -55,6 +117,7 @@ void configpad(uint32_t pinstat)
 
 void LowPowerConsumptionConfig(void)
 {
+	
 	WDT_Disable;
 	aperture_all_off();
 	moto_P();
@@ -69,7 +132,6 @@ void LowPowerConsumptionConfig(void)
 	dly1us(50000);
 	SYS_EnterDeepSleep(PD_RTCOSC | PD_BOD, 0);	
 	sys_init_t();//重新初始化所有配置
-	
 	Information_events = get_Alarm_Int_state() ? RTC_INT_EVENTS : POWER_KEY_EVENTS;
 	# if defined(DeBug)
 		LOG(LOG_DEBUG," exit sleep mode...  ->%d \r\n",Information_events);
@@ -126,13 +188,19 @@ static void kar_off(void)
 static void kar_on(void)
 {
 	uint8_t i;
-	//sys_init();
-	if(bat_value > (BAT_VALUE_LOW+5)|| GPIO_GetPinState(GPIOA,USB_DET))//电池电量大于10%开机
+
+	
+	#if defined( DeBug )
+		LOG(LOG_DEBUG,"Energy state (BAT = %d)\r\n",bat_value);	
+	#endif
+	
+	if(bat_value >= (BAT_VALUE_LOW+5)|| GPIO_GetPinState(GPIOA,USB_DET))//电池电量大于10%开机
 	{
 		POWER_ON; //C6板电源开启
 		led_mode_get_t(0x04,0xff,20 ); //开机灯效
 		#if defined( DeBug )
 			LOG(LOG_DEBUG,"state start power ON...... \r\n");
+			
 		#endif
 		kar_state_t = KAR_RUN;  //开始接收串口数据
 	}else 
@@ -141,15 +209,12 @@ static void kar_on(void)
 		#if defined( DeBug )
 			LOG(LOG_DEBUG,"Low energy,state exit power ON ...... \r\n");
 		#endif
-		i = 0xff;
+		i = 0x1F;
 		while(i--){
 			
 			dly1us(100000);
 			led_mode_get_tt(LED_MODE_APERTURE_ALL_BLINK,0xff,10);
 		}
-		
-		
-		
 		
 		kar_off();//进入睡眠
 	}
@@ -349,27 +414,7 @@ static void Handler_event(void)
 		}
 		
 		Information_events	 &= 	(~DRV_EVENTS);
-		
 	}
-	
-	
-	
-	//电机1过流检测
-	if(Information_events&MOTO_DET1_EVENTS)
-	{
-		
-		Information_events	 &= 	(~MOTO_DET1_EVENTS);
-	
-	}
-	//电机2过流检测
-	if(Information_events&MOTO_DET2_EVENTS)
-	{
-		
-		Information_events	 &= 	(~MOTO_DET2_EVENTS);
-
-		
-	}
-	
 	//时钟中断事件处理
 	if(Information_events&RTC_INT_EVENTS)
 	{
@@ -413,12 +458,6 @@ static void Handler_event(void)
 	{
 		power_key_event();
 		//heartbeat_flag = 0;
-	}
-	//电池电量检测
-	if(Information_events&ADC_BAT_EVENTS)
-	{
-		bat_value = get_adc_value();
-		Information_events &= (~ADC_BAT_EVENTS);
 	}
 	
 }
@@ -479,6 +518,8 @@ static void get_kar_run_state(uint8_t *Com)
 
 
 
+
+
 /**
   *****************************************************************************
   * @Name   : BAT状态监听
@@ -495,23 +536,21 @@ static void get_kar_run_state(uint8_t *Com)
 
 static void state_run_monitoring(void)
 {
-	static uint8_t	bat_alarm_timer = 0;
-	static uint8_t	bat_alarm_timer_t = 2;
 	
-	static uint16_t  get_sleep_timer = 6*SLEEP_DEFAULT_OFF_TIMER;
-	static uint8_t 	get_sleep_timer_t = 6;
-	if(check_soft_timeout(TIMER_BAT)) //状态运行检测时间50us
-	{
-		SYS_EnablePhrClk(AHB_ADC); 
-		NVIC_EnableIRQ(ADC_IRQn);
-		ADC_IssueSoftTrigger;
-	}
+	static  uint8_t		bat_alarm_timer = 0;
+	static  uint8_t		bat_alarm_timer_t = 3;
+	static  uint16_t  	get_sleep_timer = 6*SLEEP_DEFAULT_OFF_TIMER;
+	static  uint8_t 	get_sleep_timer_t = 6;
+	
 	
 	if(check_soft_timeout(TIMER_STATE_RUN))
 	{
 		set_soft_timer(TIMER_STATE_RUN,10000);
 		if(kar_state == KAR_RUN) //10秒上报电量 状态
 		{
+			#if defined( DeBug )
+				LOG(LOG_DEBUG,"report_energy  10s 1 time bat_value = %d\r\n",bat_value);
+			#endif
 			if(bat_value < (BAT_VALUE_LOW+10)) //KAR f运行下电量低于15%开始报警
 			{
 				if(!bat_alarm_timer)
@@ -526,7 +565,7 @@ static void state_run_monitoring(void)
 				}else bat_alarm_timer--;
 			}else {
 				bat_alarm_timer = 6;
-				bat_alarm_timer_t = 2;
+				bat_alarm_timer_t = 3;
 			}
 			
 			if(bat_value < BAT_VALUE_LOW && !GPIO_GetPinState(GPIOA,USB_DET) )  //KAR运行下 低于5%执行正常关机
@@ -542,10 +581,6 @@ static void state_run_monitoring(void)
 				}else bat_alarm_timer_t--;
 				
 			}else{
-				
-				#if defined( DeBug )
-					LOG(LOG_DEBUG,"report_energy  10s 1 time bat_value = %d\r\n",bat_value);
-				#endif
 				WriteUartBuf(0x00);
 				WriteUartBuf(bat_value);
 				UART_Send_t(BAT_COMMAN); 
@@ -597,6 +632,9 @@ static void state_run_monitoring(void)
 	}	
 
 }
+
+
+
 
 
 static void kar_connect(void)
@@ -681,8 +719,6 @@ static void kar_connect(void)
 				WriteUartBuf(0x01);
 				UART_Send_t(SLEEP_OFF_TIMER_SEY_COMMAN);
 			break;
-			
-			
 			default:break;
 		}
 	}
@@ -693,7 +729,7 @@ static void kar_connect(void)
 
 int main(void)
 {
-	uint8_t i =0xff;
+	uint8_t i =0x1f;
 	sys_init();
 	while(Rtc_Check())
 	{
@@ -709,22 +745,25 @@ int main(void)
 	#if defined( DeBug )
 		LOG(LOG_DEBUG,"RTC Check Successful.. \r\n");
 	#endif
-	
 	kar_off();//进入睡眠
+//	POWER_ON; 
+	//moto_D();
 	while(1)
 	{
 		if(1)
 		{
+			get_adc_value();
 			kar_connect();
 			Handler_event();
 			power_OFF_ON();
 			led_run_task();
 			moto_run_task();
-			exceotion_management();
+		//exceotion_management();
 			state_run_monitoring();
 		}
+		//get_adc_value();
 		WDT_Feed();	
-		dly1us(100000);
+		dly1us(1000);
 	}
 }
 

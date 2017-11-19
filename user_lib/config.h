@@ -176,16 +176,21 @@ LED GPIO
 
 /* version -------------------------------------------------------*/
 
-#define  FIRMWARE_VERSION 								(unsigned char)(20+3)
+#define  FIRMWARE_VERSION 								(unsigned char)(20+4)
 
 #define  POISON_VERSION									(unsigned char)(10+2)
 
 #define  SLEEP_DEFAULT_OFF_TIMER						(unsigned char)60 //分
 
+#define  BAT_VALUE_BUFFER								(unsigned char) 50
 
 
-
-
+typedef struct
+{
+	unsigned char bat_buffer[BAT_VALUE_BUFFER];
+	unsigned char head;
+	uint16_t  data;
+} _ADC_typedef;
 
 typedef enum
 {

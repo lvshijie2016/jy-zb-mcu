@@ -7,7 +7,6 @@
 /* Public typedef -------------------------------------------------------*/
 typedef enum
 {
-	
 	TIMER_LED,
 	TIMER_SYSTEM,
 	TIMER_MOTO,
