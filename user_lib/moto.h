@@ -53,7 +53,7 @@ void GetMotoCom(unsigned char *com);
 void moto_run_task(void);
 void moto_P(void);
 void moto_D(void);
-void get_moto_current_state(uint16_t R_state, uint16_t L_state,uint8_t bat_state);
+void get_moto_current_state(uint16_t R_state, uint16_t L_state);
 
 
 
