@@ -76,7 +76,7 @@ static void get_adc_value(void)
 		}
 		//传入电机驱动
 		ADC_IssueSoftTrigger;
-		get_moto_current_state(moto_R_state_flag,moto_L_state_flag);
+		get_moto_current_state(moto_R_state_flag,moto_L_state_flag,bat_value);
 		
 	}
 }
@@ -630,10 +630,7 @@ static void state_run_monitoring(void)
 			}else get_sleep_timer_t--;
 		}
 	}	
-
 }
-
-
 
 
 
@@ -763,7 +760,7 @@ int main(void)
 		}
 		//get_adc_value();
 		WDT_Feed();	
-		dly1us(1000);
+		dly1us(100000);
 	}
 }
 
