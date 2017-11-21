@@ -13,12 +13,10 @@ _MOTO_Typedef_t   MOTO_t;
 void moto_P(void)
 {
 	CT16B1_STOP;
-	PWM_2_LOW;
-	PWM_1_LOW;
-	MOTO1_HIGH_PH;
-	MOTO2_HIGH_PH;
 	MOTO1_LOW_PH;
 	MOTO2_LOW_PH;
+	PWM_2_LOW;
+	PWM_1_LOW;
 	moto_flag = MOTO_Clear;
 	set_soft_timer(TIMER_MOTO,MOTO_Clear);
 	memset(&MOTO_t,MOTO_Clear,sizeof(MOTO_t));	
@@ -34,8 +32,8 @@ void moto_D(void)
 	
 	MOTO1_HIGH_PH;
 	//MOTO1_LOW_PH;
-	//MOTO_t.L_duty  = 100;
-	//MOTO_t.R_duty  = 100;
+//	MOTO_t.L_duty  = 60;
+//	MOTO_t.R_duty  = 60;
 	CT16B1_START;
 }
 
@@ -190,32 +188,17 @@ void GetMotoCom(unsigned char *com)
 }
 
 
-void get_moto_current_state(uint16_t R_state, uint16_t L_state,uint8_t bat_state)
+void get_moto_current_state(uint16_t R_state, uint16_t L_state)
 {
-	double R_vref;
-	double L_vref;
+	uint16_t R_vref;
+	uint16_t L_vref;
 	
-	L_vref = (MOTO_t.L_duty*(6.4+(MOTO_t.L_duty-50)*0.08) + bat_state);
-	R_vref = (MOTO_t.R_duty*(23+(MOTO_t.R_duty-50)*0.08) + bat_state);
+	L_vref = (MOTO_t.L_duty*(6.5+((MOTO_t.L_duty-50)*0.08)));
+	R_vref = (MOTO_t.R_duty*(23+((MOTO_t.R_duty-50)*0.08)));
 
 	
-	if(R_state > R_vref )
-	{
-		moto_R_current_state = false;
-		set_soft_timer(TIMER_MOTO_R,1000);
-		
-	}else if(check_soft_timeout(TIMER_MOTO_R)) moto_R_current_state = true;
-	
-	if(L_state > L_vref )
-	{
-		moto_L_current_state = false;
-		set_soft_timer(TIMER_MOTO_L,1000);
-		
-	}else if(check_soft_timeout(TIMER_MOTO_L))moto_L_current_state = true;
-	
-	
-	//moto_R_current_state = R_state > R_vref  ?  false : true ;
-	//moto_L_current_state = L_state > L_vref  ?  false : true ;
+	moto_R_current_state = R_state > R_vref  ?  false : true ;
+	moto_L_current_state = L_state > L_vref  ?  false : true ;
 	
 }
 

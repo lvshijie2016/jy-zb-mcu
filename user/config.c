@@ -305,9 +305,9 @@ void sys_init(void)
 {
 	
 	SYS_SystemInitial();
-	wdt_init_t(2);
+	wdt_init_t(5);
 	gpio_init_t();
-	get_gpio(IOCON_GPIOA,	PIN15,	PA15_FUNC_GPIO,	IO_Output, IO_DEFAULT, PULL_UP_EN); //KAR_POWER_ON_OFF  
+	get_gpio(IOCON_GPIOA,	PIN15,	PA15_FUNC_GPIO,	IO_Output, IO_LOW, PULL_UP_EN); //KAR_POWER_ON_OFF  
 	UART0_Init();
 	UART1_Init();
 	pwm_init_t();
@@ -331,7 +331,7 @@ void sys_init(void)
 void sys_init_t(void)
 {
 	SYS_SystemInitial();
-	wdt_init_t(2);
+	wdt_init_t(5);
 	gpio_init_t();
 	get_gpio(IOCON_GPIOA,	PIN15,	PA15_FUNC_GPIO,	IO_Output, IO_DEFAULT, PULL_UP_EN); //KAR_POWER_ON_OFF 
 	UART0_Init();
@@ -352,6 +352,7 @@ void DisablePhrClk_t(void)
 {
 	get_gpio(IOCON_GPIOA, PIN12, PA12_FUNC_GPIO,	IO_Output,	IO_LOW, PULL_UP_EN);
 	NVIC_DisableIRQ(GPIOA_IRQn);
+	
 	SYS_DisablePhrClk(AHB_GPIOA);
 	SYS_DisablePhrClk(AHB_GPIOC);
 	SYS_DisablePhrClk(AHB_GPIOB);

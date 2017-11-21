@@ -214,12 +214,10 @@ static void aperture_all_breathe(void)
 }
 
 
-void aperture_all_on(void)
+static void aperture_all_on(void)
 {
 	led_set_y(0x0f);
 	led_set_x(0x0f);
-	
-	
 }
 
 
@@ -228,9 +226,7 @@ void aperture_all_off(void)
 {
 	led_set_x(0x00);
 	led_set_y(0x00);
-	led_mode_get_t(LED_MODE_APERTURE_ALL_OFF,0xFF,0xFF);
 }
-
 
 static void aperture_clockwise_run(void)
 {
