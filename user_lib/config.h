@@ -144,6 +144,8 @@ MOTO GPIO
 
 
 
+
+
 #define BAT_VALUE_LOW												(unsigned char)5
 #define BAT_VALUE_HIGH												(unsigned char)100
 
@@ -174,7 +176,7 @@ LED GPIO
 
 /* version -------------------------------------------------------*/
 
-#define  FIRMWARE_VERSION 								(unsigned char)(20+5)
+#define  FIRMWARE_VERSION 								(unsigned char)(20+4)
 
 #define  POISON_VERSION									(unsigned char)(10+2)
 
@@ -210,6 +212,8 @@ typedef enum
 	KAR_RESET,
 	MAX_KAR_STATE
 }_KAR_STATE;
+
+
 
 
 
