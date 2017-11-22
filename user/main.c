@@ -82,7 +82,7 @@ static void get_adc_value(void)
 }
 void configpad(uint32_t pinstat)
 {
-	//IOCON->PIOA_0.all  = pinstat;  //POWERR_KEY
+//	IOCON->PIOA_0.all  = pinstat;  //POWERR_KEY
 	IOCON->PIOA_1.all  = pinstat;
 	IOCON->PIOA_2.all  = pinstat;
 	IOCON->PIOA_3.all  = pinstat;
@@ -94,14 +94,11 @@ void configpad(uint32_t pinstat)
 	IOCON->PIOA_9.all  = pinstat;
 	IOCON->PIOA_10.all = pinstat;
 	IOCON->PIOA_11.all = pinstat;
-	//IOCON->PIOA_12.all = pinstat;
+	IOCON->PIOA_12.all = pinstat;
 	IOCON->PIOA_13.all = pinstat;
 	IOCON->PIOA_14.all = pinstat;
 	
-	if(GPIO_GetPinState(GPIOA,PIN15))
-		IOCON->PIOA_15.all = 1; //MCU_INT
-	else 
-		IOCON->PIOA_15.all = 0; //MCU_INT
+	//IOCON->PIOA_15.all = pinstat; //MCU_INT
 	
 	IOCON->PIOB_0.all  = pinstat;
 	IOCON->PIOB_1.all  = pinstat;
@@ -109,8 +106,8 @@ void configpad(uint32_t pinstat)
 	IOCON->PIOB_3.all  = pinstat;
 	IOCON->PIOB_4.all  = pinstat;
 	IOCON->PIOB_5.all  = pinstat;
-	IOCON->PIOB_6.all  = 1;
-	IOCON->PIOB_7.all  = 1;
+	IOCON->PIOB_6.all  = pinstat;
+	IOCON->PIOB_7.all  = pinstat;
 
 	IOCON->PIOC_0.all  = pinstat;
 	IOCON->PIOC_1.all  = pinstat;
@@ -124,14 +121,14 @@ void LowPowerConsumptionConfig(void)
 	WDT_Disable;
 	aperture_all_off();
 	moto_P();
-	configpad(0);
 	DisablePhrClk_t();
+	configpad(0);
 	SYS_SetDeepSleepWakeupPin(PIN0|PIN5,FALL_EDGE);//设置唤醒引脚	
 	#if defined( DeBug )
 		LOG(LOG_DEBUG," get sleep mode \r\n");
 	#endif
 	SYS_DisablePhrClk(0xfffffff0 & (~(1<<29)));//关闭GPIOA时钟
-	IOCON->PIOA_0.all  = PIN0|PIN5;//|PIN5;//设置唤醒引脚上拉
+	IOCON->PIOA_0.all  = PIN0|PIN5;//设置唤醒引脚上拉
 	dly1us(50000);
 	SYS_EnterDeepSleep(PD_RTCOSC | PD_BOD, 0);	
 	sys_init_t();//重新初始化所有配置
@@ -139,9 +136,6 @@ void LowPowerConsumptionConfig(void)
 	# if defined(DeBug)
 		LOG(LOG_DEBUG," exit sleep mode...  ->%d \r\n",Information_events);
 	#endif
-	
-	
-	
 }
 
 
@@ -734,7 +728,6 @@ int main(void)
 {
 	uint8_t i =0x1f;
 	sys_init();
-	
 	while(Rtc_Check())
 	{
 		i--;
