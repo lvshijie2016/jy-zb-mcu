@@ -250,11 +250,11 @@ static void power_key_event(void)
 {
 	if(check_soft_timeout(TIMER_KEY))
 	{	
-		timer_delay_ms(4);
+		timer_delay_ms(1);
 		if(!GPIO_GetPinState(GPIOA,PIN0))
 		{
 			key_timer++;
-			if(key_timer == 60) 	
+			if(key_timer == 30) 	
 			{
 				key_event = LONG_PRESS; //³¤°´
 				#if defined( DeBug )
@@ -274,11 +274,11 @@ static void power_key_event(void)
 			
 			
 			set_soft_timer(TIMER_KEY, 1);
-		}else if(!key_timer || key_timer >= 60)
+		}else if(!key_timer || key_timer >= 30)
 		{
 			key_timer = 0;
 			Information_events	 &= 	(~POWER_KEY_EVENTS);
-		}else if(key_timer <60)
+		}else if(key_timer <30)
 		{
 			key_event = SHORT_PRESS;	//¶Ì°´
 			key_timer = 0;
