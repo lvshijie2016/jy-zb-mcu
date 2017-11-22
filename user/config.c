@@ -171,7 +171,7 @@ void gpio_init_t(void)
 	get_gpio(IOCON_GPIOA,	PIN0,	PA0_FUNC_GPIO,	IO_Input, IO_LOW, PULL_UP_EN);  
 	
 	/**************MCU_POWER_PA15****************************/
-//	get_gpio(IOCON_GPIOA,	PIN15,	PA15_FUNC_GPIO,	IO_Output, IO_DEFAULT, PULL_UP_EN); //KAR_POWER_ON_OFF  
+	get_gpio(IOCON_GPIOA,	PIN15,	PA15_FUNC_GPIO,	IO_Output, IO_DEFAULT, PULL_UP_EN); //KAR_POWER_ON_OFF  
 	
 	/***************RTC_INT_PA5****************************/
 	get_gpio(IOCON_GPIOA,	PIN5,	PA5_FUNC_GPIO,	IO_Input, IO_LOW, PULL_UP_EN);  //RTC_INT_PB5
@@ -307,7 +307,7 @@ void sys_init(void)
 	SYS_SystemInitial();
 	wdt_init_t(2);
 	gpio_init_t();
-	get_gpio(IOCON_GPIOA,	PIN15,	PA15_FUNC_GPIO,	IO_Output, IO_DEFAULT, PULL_UP_EN); //KAR_POWER_ON_OFF  
+	//get_gpio(IOCON_GPIOA,	PIN15,	PA15_FUNC_GPIO,	IO_Output, IO_DEFAULT, PULL_UP_EN); //KAR_POWER_ON_OFF  
 	UART0_Init();
 	UART1_Init();
 	pwm_init_t();
@@ -333,7 +333,7 @@ void sys_init_t(void)
 	SYS_SystemInitial();
 	wdt_init_t(2);
 	gpio_init_t();
-	get_gpio(IOCON_GPIOA,	PIN15,	PA15_FUNC_GPIO,	IO_Output, IO_DEFAULT, PULL_UP_EN); //KAR_POWER_ON_OFF 
+	//get_gpio(IOCON_GPIOA,	PIN15,	PA15_FUNC_GPIO,	IO_Output, IO_DEFAULT, PULL_UP_EN); //KAR_POWER_ON_OFF 
 	UART0_Init();
 	UART1_Init();
 	pwm_init_t();
@@ -350,7 +350,26 @@ void sys_init_t(void)
 
 void DisablePhrClk_t(void)
 {
-	get_gpio(IOCON_GPIOA, PIN12, PA12_FUNC_GPIO,	IO_Output,	IO_LOW, PULL_UP_EN);
+	//IIC
+	get_gpio(IOCON_GPIOB,PIN6,PB6_FUNC_GPIO,IO_Output,IO_HIGH,PULL_UP_EN);
+	get_gpio(IOCON_GPIOB,PIN7,PB7_FUNC_GPIO,IO_Output,IO_HIGH,PULL_UP_EN);
+	//LED
+	get_gpio(IOCON_GPIOB,PIN0,PB0_FUNC_GPIO,IO_Output,IO_LOW,PULL_DOWN_EN);
+	get_gpio(IOCON_GPIOA,PIN7,PA7_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
+	get_gpio(IOCON_GPIOA,PIN9,PA9_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
+	get_gpio(IOCON_GPIOA,PIN10,PA10_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
+	//ADC
+	get_gpio(IOCON_GPIOA,PIN1,PA1_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
+	get_gpio(IOCON_GPIOA,PIN6,PA6_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
+	get_gpio(IOCON_GPIOA,PIN4,PA4_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
+	
+	//USB_DET
+	get_gpio(IOCON_GPIOA,PIN12,PA12_FUNC_GPIO,IO_Output,IO_LOW,PULL_DOWN_EN);
+	
+	//uart0
+	get_gpio(IOCON_GPIOA,PIN2,PA2_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
+	get_gpio(IOCON_GPIOA,PIN3,PA3_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
+	
 	NVIC_DisableIRQ(GPIOA_IRQn);
 	SYS_DisablePhrClk(AHB_GPIOA);
 	SYS_DisablePhrClk(AHB_GPIOC);
