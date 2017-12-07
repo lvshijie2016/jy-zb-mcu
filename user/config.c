@@ -346,6 +346,9 @@ void sys_init_t(void)
 	clear_all_event();
 	led_mode_get_t(0x06,0xff,30 );
 	moto_P();
+	#if defined( DeBug )
+		LOG(LOG_DEBUG,"mcu wakeup sysinit! .......... \r\n");
+	#endif
 }
 
 void DisablePhrClk_t(void)

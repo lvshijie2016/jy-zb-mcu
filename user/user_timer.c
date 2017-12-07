@@ -5,7 +5,7 @@ uint16_t soft_timer_t[TIMER_MAX] = {0};
 
 
 //设置中断时间
-void set_soft_timer(SOFT_TIMER index, uint16_t nms)
+void set_soft_timer(SOFT_TIMER index, uint32_t nms)
 {		
 		soft_timer[index] = nms;
 		soft_timer_t[index]  = nms;	 //防内在泄漏纠正

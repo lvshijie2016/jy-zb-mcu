@@ -146,6 +146,8 @@ MOTO GPIO
 
 #define BAT_VALUE_LOW												(unsigned char)5
 #define BAT_VALUE_HIGH												(unsigned char)100
+	
+#define  BAT_MIN_STEP                       (unsigned char)5
 
 
 /*===============================================================================================
@@ -174,7 +176,7 @@ LED GPIO
 
 /* version -------------------------------------------------------*/
 
-#define  FIRMWARE_VERSION 								(unsigned char)(20+6)
+//#define  FIRMWARE_VERSION 								(unsigned char)(20+6)
 
 #define  POISON_VERSION									(unsigned char)(10+2)
 

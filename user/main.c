@@ -8,13 +8,15 @@ static _KEY_EVENT  		key_event 	= MAX_KEYS_EVENT;
 
 static uint16_t key_timer = 0;
 static uint8_t 	bat_value = 100;
+static uint8_t  bat_last_value = 50;
 static uint8_t  get_Com[10] = {0};
 static uint16_t sleep_off_timer = SLEEP_DEFAULT_OFF_TIMER; //睡眠关机时间
+static uint8_t FIRMWARE_VERSION[3]= {2,6,9};
 
 static void LowPowerConsumptionConfig(void);
 static void dly1us(uint32_t dlytime) {while(dlytime--);}
 
-
+uint8_t first_get_value = 1;
 static void get_adc_value(void)
 {	
 	static	 _ADC_typedef		adc_typedef;
@@ -45,6 +47,33 @@ static void get_adc_value(void)
 				bat_value = (adc_typedef.data-adc_typedef.bat_buffer[adc_typedef.head])/adc_typedef.head;
 				bat_flag  = (adc_typedef.head+1) == BAT_VALUE_BUFFER ? false : true;
 			}else bat_value = (adc_typedef.data-adc_typedef.bat_buffer[adc_typedef.head])/BAT_VALUE_BUFFER;
+			
+				if (bat_value >100)
+					bat_value = 100;
+			
+//			if (first_get_value) {
+//				first_get_value = 0;
+//				bat_last_value = bat_value;
+//			}
+//			else {
+//				if (GPIO_GetPinState(GPIOA,USB_DET)) {                                 //充电情况下电量值限制
+//					if (bat_last_value > bat_value) {
+//						bat_value = bat_last_value;
+//					} else if ((bat_value - bat_last_value) > BAT_MIN_STEP) {
+//							bat_value = bat_last_value;
+//					} else {
+//							bat_last_value = bat_value;
+//					}
+//				} else {
+//						if (bat_last_value < bat_value) {
+//							bat_value = bat_last_value;
+//						} else if ((bat_last_value - bat_value) > BAT_MIN_STEP) {
+//								bat_value = bat_last_value;
+//						} else {
+//								bat_last_value = bat_value;
+//						}
+//				}
+//			}
 		}
 		
 		set_soft_timer(TIMER_BAT,ENERGY_SAMPLING_TIMER); 
@@ -175,7 +204,9 @@ static void kar_off(void)
 	dly1us(50000);
 	
 	POWER_OFF;
-	LowPowerConsumptionConfig();//进入睡眠
+	aperture_all_off();
+	moto_P();
+//	LowPowerConsumptionConfig();//进入睡眠
 }
 /**
   *****************************************************************************
@@ -642,6 +673,7 @@ static void state_run_monitoring(void)
 
 static void kar_connect(void)
 {
+	uint8_t i;
 	uart0_get_cmd(get_Com);
 	if(kar_state_t == KAR_RUN  || get_Com[0] ==  KAR_RUN_STATE)
 	{
@@ -649,7 +681,10 @@ static void kar_connect(void)
 
 			case HANDSHAKE_COMMAND:
 				WriteUartBuf(POISON_VERSION);
-				WriteUartBuf(FIRMWARE_VERSION);
+				for (i=0;i<3;i++)
+					{
+						WriteUartBuf(FIRMWARE_VERSION[i]);
+					}
 				UART_Send_t(HANDSHAKE_COMMAND);
 				
 				#if defined( DeBug )
@@ -752,6 +787,7 @@ int main(void)
 	kar_off();//进入睡眠
 //	POWER_ON; 
 	//moto_D();
+	
 	while(1)
 	{
 		if(1)

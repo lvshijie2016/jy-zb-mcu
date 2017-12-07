@@ -315,14 +315,12 @@ ARM Macro Assembler    Page 5
   207 00000010         
   208 00000010                 END
               00000000 
-Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M0 --apcs=interw
-ork --depend=..\output\startup_c32f0xx_s.d -o..\output\startup_c32f0xx_s.o -IC:
-\Users\XieBin\Desktop\FangCloudV2\个人文件\KAR\KAR_SDK_V33_20171108\project\RTE
- -ID:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include -ID:\Keil_v5\ARM\PACK\ARM\
-CMSIS\4.5.0\Device\ARM\ARMCM0\Include --predefine="__MICROLIB SETA 1" --predefi
-ne="__UVISION_VERSION SETA 515" --predefine="_RTE_ SETA 1" --predefine="ARMCM0 
-SETA 1" --list=.\listings\startup_c32f0xx_s.lst ..\C32F0xx_library\Core\CM0\Dev
-iceSupport\C32F0xx\startup\arm\startup_c32f0xx_s.s
+Command Line: --debug --xref --cpu=Cortex-M0 --apcs=interwork --depend=..\outpu
+t\startup_c32f0xx_s.d -o..\output\startup_c32f0xx_s.o -IC:\Users\miaojl\Documen
+ts\GitHub\jy-zb-mcu\project\RTE -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.0\CMSIS\Inc
+lude -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.0\Device\ARM\ARMCM0\Include --predefin
+e="__MICROLIB SETA 1" --list=.\listings\startup_c32f0xx_s.lst ..\C32F0xx_librar
+y\Core\CM0\DeviceSupport\C32F0xx\startup\arm\startup_c32f0xx_s.s
 
 
 
@@ -844,4 +842,4 @@ rtup\arm\startup_c32f0xx_s.s
 rtup\arm\startup_c32f0xx_s.s
 Comment: __main used once
 1 symbol
-376 symbols in table
+373 symbols in table

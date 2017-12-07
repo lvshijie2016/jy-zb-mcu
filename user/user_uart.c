@@ -1,7 +1,10 @@
 #include "user_uart.h"
 
+
 _Uart0_Typedef  Uart0_Typedef;
 static Buffer Buffer_t;
+void udly1us(uint32_t dlytime) {while(dlytime--);}
+
 void UART0_Init(void)
 {
 	GPIO_InitTypeDef uart0_gpio;
@@ -30,7 +33,8 @@ void UART0_Init(void)
 	UART_Open(UART0, 115200, UART_NO_PARITY, UART_RX_NOT_EMPTY);  
 	NVIC_SetPriority(UART0_IRQn,0);
 	NVIC_EnableIRQ(UART0_IRQn); 
-
+	
+	memset(&Buffer_t,0,sizeof(Buffer));
 }
 
 int fputc(int ch, FILE *f) 
@@ -91,8 +95,19 @@ static uint8_t get_head(uint8_t len)
 	uint8_t data_len;
 	if(Buffer_t.buffer[Buffer_t.head] == 0xFF)//前导码
 	{
-		data_len = Buffer_t.buffer[Buffer_t.head+2]+3;//取出数据长度 bit->3为数据长度
-		if(len>data_len) return data_len; //buffer数据不够则返false 等待下一轮数据读取
+		udly1us(2000);
+		data_len = Buffer_t.buffer[(Buffer_t.head+2)%BUFFER_LEN];
+	
+		if(Buffer_t.buffer[((Buffer_t.head+2+data_len +1)%BUFFER_LEN)] == 0xfe) //多判断一个包尾
+		{
+				data_len = Buffer_t.buffer[(Buffer_t.head+2)%BUFFER_LEN]+3;//取出数据长度 bit->3为数据长度
+				if(len>data_len) return data_len; //buffer数据不够则返false 等待下一轮数据读取
+
+		}	
+		else{
+		//Buffer_t.buffer[Buffer_t.head] = 0;//如果不是前导码错误则丢弃执行轮寻buffer数据
+			Buffer_t.head = get_len(Buffer_t.head);//如果不是前导码错误则丢弃执行轮寻buffer数据
+		}
 	}else{
 		//Buffer_t.buffer[Buffer_t.head] = 0;//如果不是前导码错误则丢弃执行轮寻buffer数据
 		Buffer_t.head = get_len(Buffer_t.head);//如果不是前导码错误则丢弃执行轮寻buffer数据
@@ -136,7 +151,7 @@ void uart0_get_cmd(uint8_t *g_com)
 			{
 				g_com[i] = get_buffer_data();
 				#if defined( DeBug )
-					//LOG(LOG_DEBUG,"g_com[%d] = 0x%X\r\n",i,g_com[i]);
+					LOG(LOG_DEBUG,"g_com[%d] = 0x%X\r\n",i,g_com[i]);
 				#endif
 
 				if((i+1) == valid_data)

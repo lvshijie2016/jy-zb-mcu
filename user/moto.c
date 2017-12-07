@@ -22,6 +22,22 @@ void moto_P(void)
 	moto_flag = MOTO_Clear;
 	set_soft_timer(TIMER_MOTO,MOTO_Clear);
 	memset(&MOTO_t,MOTO_Clear,sizeof(MOTO_t));	
+	
+	#if defined( DeBug )
+		LOG(LOG_DEBUG,"motor stop action ......\r\n");
+	#endif
+}
+
+/*停止*/
+void moto_dealy_P(void)
+{
+	CT16B1_STOP;
+	PWM_2_LOW;
+	PWM_1_LOW;
+	MOTO1_HIGH_PH;
+	MOTO2_HIGH_PH;
+	MOTO1_LOW_PH;
+	MOTO2_LOW_PH;
 }
 
 /*前进*/
@@ -37,6 +53,10 @@ void moto_D(void)
 	//MOTO_t.L_duty  = 100;
 	//MOTO_t.R_duty  = 100;
 	CT16B1_START;
+	
+	#if defined( DeBug )
+		LOG(LOG_DEBUG,"motor qian-jin action ......\r\n");
+	#endif
 }
 
 /*右前转*/
@@ -49,6 +69,10 @@ static void moto_R_D(void)
 	MOTO1_LOW_PH;
 	MOTO_t.L_duty = 0; 
 	CT16B1_START;
+	
+	#if defined( DeBug )
+		LOG(LOG_DEBUG,"motor you-zhuan action ......\r\n");
+	#endif
 }
 
 /*左前转*/
@@ -60,6 +84,10 @@ static void moto_L_D(void)
 	//MOTO1_HIGH_PH;
 	MOTO_t.L_duty  = 0;
 	CT16B1_START;
+	
+	#if defined( DeBug )
+		LOG(LOG_DEBUG,"motor zuo-qian-zhuan action ......\r\n");
+	#endif
 
 }
 
@@ -73,6 +101,10 @@ static void moto_R_H(void)
 	//MOTO1_LOW_PH;
 	MOTO_t.L_duty = 0;
 	CT16B1_START;
+	
+	#if defined( DeBug )
+		LOG(LOG_DEBUG,"motor you-hou-zhuan action ......\r\n");
+	#endif
 
 }
 
@@ -85,6 +117,10 @@ static void moto_L_H(void)
 	//MOTO1_HIGH_PH;
 	MOTO_t.R_duty = 0;
 	CT16B1_START;
+	
+	#if defined( DeBug )
+		LOG(LOG_DEBUG,"motor zuo-hou-zhuan action ......\r\n");
+	#endif
 
 }
 
@@ -99,6 +135,10 @@ static void moto_H(void)
 	MOTO1_LOW_PH;
 	CT16B1_START;
 	
+	#if defined( DeBug )
+		LOG(LOG_DEBUG,"motor hou-tui action ......\r\n");
+	#endif
+	
 }
 
 
@@ -111,6 +151,10 @@ static void moto_R_T(void)
 	//MOTO2_HIGH_PH;
 	MOTO2_LOW_PH;
 	CT16B1_START;
+	
+	#if defined( DeBug )
+		LOG(LOG_DEBUG,"motor you-zhuan-quan ......\r\n");
+	#endif
 
 }
 
@@ -123,6 +167,10 @@ static void moto_L_T(void)
 	//MOTO2_LOW_PH;
 	MOTO2_HIGH_PH;
 	CT16B1_START;
+	
+	#if defined( DeBug )
+		LOG(LOG_DEBUG,"motor zuo-zhuan-quan ......\r\n");
+	#endif
 }
 
 
@@ -167,14 +215,24 @@ void GetMotoCom(unsigned char *com)
 {
 	if(com[MOTO_SP] ==	0xff)
 	{
+		#if defined( DeBug )
+			LOG(LOG_DEBUG,"receive MOTO_SINGLE_STEP command ... \r\n");
+		#endif
 		MOTO_t.timer 	= com[MOTO_RUN_TIMER];
 		MOTO_t.L_duty	= com[MOTO_RUN_L_DUTY];
 		MOTO_t.R_duty	= com[MOTO_RUN_R_DUTY];
 		MOTO_t.model 	= com[MOTO_ASP];         
 		moto_flag = MOTO_RUN;
 		
+		#if defined( DeBug )
+			LOG(LOG_DEBUG,"motor action is %d \r\n",com[MOTO_ASP]);
+		#endif
+		
 	}	else if(com[MOTO_ASP] == MOTO_START_TW)
 	{
+		#if defined( DeBug )
+			LOG(LOG_DEBUG,"receive MOTO_START_TW command --------- \r\n");
+		#endif
 		MOTO_t.ADFlag = com[MOTO_SP];
 		moto_flag = MOTO_TW;
 	}
@@ -182,6 +240,9 @@ void GetMotoCom(unsigned char *com)
 	
 	else if(com[MOTO_SP] < 0xfe)
 	{
+		#if defined( DeBug )
+			LOG(LOG_DEBUG,"receive MOTO_MULTI_STEP command ... \r\n");
+		#endif
 		MOTO_t.DancingPag[com[MOTO_SP]][0] = com[MOTO_ASP];
 		MOTO_t.DancingPag[com[MOTO_SP]][1] = com[MOTO_RUN_TIMER];
 		MOTO_t.DancingPag[com[MOTO_SP]][2] = com[MOTO_RUN_L_DUTY];
@@ -233,14 +294,38 @@ void moto_run_task(void)
 				MOTO_t.R_duty				= MOTO_t.DancingPag[MOTO_t.num][3];	
 				MOTO_t.model 				= MOTO_t.DancingPag[MOTO_t.num][0]; 
 				MOTO_t.num 	= (MOTO_t.num+1 == MOTO_t.ADFlag) ? 0 : MOTO_t.num+1;  
+				
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"MOTOR.model = %d\r\n",MOTO_t.model);
+				#endif
+				
 			}
 			else if(moto_flag == MOTO_TC) 
 				MOTO_t.model = MOTO_P;
 			else 
 				moto_flag = MOTO_TC;
 			
-			moto_set_model();	
-			set_soft_timer(TIMER_MOTO,(MOTO_t.timer*25));
+			#if 0                                          //展示版本电机延时
+				moto_dealy_P();
+				if(check_soft_timeout(TIMER_MOTO_DELAY))
+					{
+						
+						moto_set_model();	
+						set_soft_timer(TIMER_MOTO_DELAY,300);
+						
+						#if defined( DeBug )
+							LOG(LOG_DEBUG,"MOTOR delay end......\r\n");
+						#endif
+					}
+				#endif
+			if (MOTO_t.timer != 0xFF)
+				set_soft_timer(TIMER_MOTO,(MOTO_t.timer*25));
+			else
+				set_soft_timer(TIMER_MOTO,(MOTO_t.timer*100*25));
+			
+			#if defined( DeBug )
+				LOG(LOG_DEBUG,"moto_flag = %d\r\n",moto_flag);
+			#endif
 		}
 	}
 }

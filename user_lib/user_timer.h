@@ -22,13 +22,14 @@ typedef enum
 	TIMER_STATE_RUN,
 	TIMER_MOTO_R,
 	TIMER_MOTO_L,
+	TIMER_MOTO_DELAY,
 	TIMER_MAX
-	
+
 } SOFT_TIMER;
 
 
 
-void set_soft_timer(SOFT_TIMER index, uint16_t nms);
+void set_soft_timer(SOFT_TIMER index, uint32_t nms);
 uint16_t check_soft_timeout(SOFT_TIMER index );
 void timer_delay_ms(uint16_t delay);
 uint16_t check_soft_timeout_PWM(SOFT_TIMER index );
