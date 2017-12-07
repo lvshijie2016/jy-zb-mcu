@@ -1,0 +1,9 @@
+..\output\c32f0xx_adc.o: ..\C32F0xx_library\Drivers\source\c32f0xx_adc.c
+..\output\c32f0xx_adc.o: ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\c32f0xx.h
+..\output\c32f0xx_adc.o: ..\C32F0xx_library\Core\CM0\CoreSupport\core_cm0.h
+..\output\c32f0xx_adc.o: C:\Keil_v5\ARM\ARMCC\bin\..\include\stdint.h
+..\output\c32f0xx_adc.o: ..\C32F0xx_library\Core\CM0\CoreSupport\core_cmInstr.h
+..\output\c32f0xx_adc.o: ..\C32F0xx_library\Core\CM0\CoreSupport\core_cmFunc.h
+..\output\c32f0xx_adc.o: ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\system_C32F0xx.h
+..\output\c32f0xx_adc.o: ..\C32F0xx_library\Drivers\include\c32f0xx_sys.h
+..\output\c32f0xx_adc.o: ..\C32F0xx_library\Drivers\include\c32f0xx_adc.h
