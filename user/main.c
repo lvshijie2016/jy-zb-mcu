@@ -154,11 +154,12 @@ void LowPowerConsumptionConfig(void)
 	aperture_all_off();
 	moto_P();
 	configpad(0);
-	DisablePhrClk_t();
-	SYS_SetDeepSleepWakeupPin(PIN0|PIN5,FALL_EDGE);//设置唤醒引脚	
 	#if defined( DeBug )
 		LOG(LOG_DEBUG," get sleep mode \r\n");
 	#endif
+	DisablePhrClk_t();
+	SYS_SetDeepSleepWakeupPin(PIN0|PIN5,FALL_EDGE);//设置唤醒引脚	
+
 	SYS_DisablePhrClk(0xfffffff0 & (~(1<<29)));//关闭GPIOA时钟
 	IOCON->PIOA_0.all  = PIN0|PIN5;//|PIN5;//设置唤醒引脚上拉
 	dly1us(50000);
