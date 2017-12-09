@@ -12,14 +12,18 @@ uint8_t com_rx_data(uint8_t* data)
 	
 }
 
-void 	com_tx_data(uint8_t* data)
+void com_tx_data(uint8_t* data)
 {
 	
 	
 }
 
 
-
+void iap_check_sum()
+{
+	
+	
+}
 
 void iap_erash_flash(void)
 {
@@ -60,6 +64,8 @@ uint8_t iap_download(void)
 			// receive P0's starting pkt
             if (rx_buf[0]==PACKET_HEADER || rx_buf[0]==0xF1)
             {
+				
+		
 				start_flag == 1;
 				
 				all_packet_num = rx_buf[4];
