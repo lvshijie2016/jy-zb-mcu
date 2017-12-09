@@ -188,7 +188,7 @@ I (..\user_lib\user_uart.h)(0x5A267574)
 I (..\user_lib\led.h)(0x5A1C4ADE)
 I (..\user_lib\moto.h)(0x5A2769DE)
 I (..\user_lib\Abnormal_Monitoring.h)(0x5A1C4ADE)
-F (..\user\moto.c)(0x5A28E2D6)(-c --cpu Cortex-M0 -D__MICROLIB --li -g -O0 --apcs=interwork -I..\C32F0xx_library\Drivers\source -I..\C32F0xx_library\Drivers\include -I..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\startup\arm -I..\C32F0xx_library\Core\CM0\CoreSupport -I..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx -I..\user_lib-I C:\Users\miaojl\Documents\GitHub\jy-zb-mcu\project\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.0\Device\ARM\ARMCM0\Include-D_RTE_-o ..\output\moto.o --omf_browse ..\output\moto.crf --depend ..\output\moto.d)
+F (..\user\moto.c)(0x5A28F871)(-c --cpu Cortex-M0 -D__MICROLIB --li -g -O0 --apcs=interwork -I..\C32F0xx_library\Drivers\source -I..\C32F0xx_library\Drivers\include -I..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\startup\arm -I..\C32F0xx_library\Core\CM0\CoreSupport -I..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx -I..\user_lib-I C:\Users\miaojl\Documents\GitHub\jy-zb-mcu\project\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.0\Device\ARM\ARMCM0\Include-D_RTE_-o ..\output\moto.o --omf_browse ..\output\moto.crf --depend ..\output\moto.d)
 I (..\user_lib\moto.h)(0x5A2769DE)
 I (..\user_lib\config.h)(0x5A28DF9C)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x53463A44)

@@ -317,7 +317,7 @@ void moto_run_task(void)
 							LOG(LOG_DEBUG,"MOTOR delay end......\r\n");
 						#endif
 					}
-				#endif
+			#endif
 			if (MOTO_t.timer != 0xFF)
 				set_soft_timer(TIMER_MOTO,(MOTO_t.timer*25));
 			else
