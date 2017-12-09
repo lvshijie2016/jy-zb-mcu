@@ -16,11 +16,11 @@
 #define SEND_ALL_AGAIN 	(0x08)  
 #define EOT            	(0x04)  
 
-#define BYTE_TIME_OVER     5000   
-#define DOWNLOAD_TIME_OVER 100    
+#define BYTE_TIME_OVER     (5000)
+#define DOWNLOAD_TIME_OVER (100) 
 
 
-#define PACKET_HEADER           0xFF
+#define PACKET_HEADER           (0xFF)
 #define PACKET_NUM              (1)
 #define PACKET_TOTAL_NUM        (1)
 #define PACKET_DATA_TOTAL_SIZE  (2)
@@ -28,7 +28,7 @@
 #define PACKET_OVERHEAD         (PACKET_HEADER + PACKET_NUM + PACKET_TOTAL_NUM + PACKET_DATA_TOTAL_SIZE + PACKET_DATA_SIZE)
 #define PACKET_DATA             (128)
 #define PACKET_CHECK_SUM        (1)  
-#define PACKET_TAIL             (1)  
+#define PACKET_TAIL             (0xFE)  
 #define PACKET_SIZE             (PACKET_OVERHEAD + PACKET_DATA + PACKET_CHECK_SUM + PACKET_TAIL)
 
 typedef  void (*pFunction)(void);
@@ -38,11 +38,11 @@ static uint32_t JumpAddress;
 uint8_t com_rx_data();
 void 	com_tx_data();
 
-void iap_send_pkt(uint8_t* data);
-void iap_receive_pkt(uint8_t* data);
+void 	iap_send_pkt(uint8_t* data);
+void 	iap_receive_pkt(uint8_t* data);
 
-void 	erash_flash(void);
-uint8_t Download(void);
+void 	iap_erash_flash(void);
+uint8_t iap_ownload(void);
 
 	
 #endif
