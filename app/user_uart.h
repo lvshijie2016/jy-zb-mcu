@@ -14,7 +14,7 @@
 														format "\n",  level, __func__, __FILE__, __LINE__, \
 														##__VA_ARGS__ );} \
 														while (0)
-#if true
+#if false
 	#define  DeBug 
 #endif 
 
@@ -27,18 +27,26 @@
 #define TX_CLOCK_STATE															(unsigned char)	0x24
 #define TX_MOTO_STATE															(unsigned char)	0x4F
 #define BUFF_VALID_SIZE  														(unsigned char)	6
-#define BUFFER_LEN  															(unsigned int)	1088
+#define BUFFER_LEN  															(unsigned char)	255
 #define BUFF_SIZE   															(unsigned char)	20
-
-#define TX_OTA_ACK 																(unsigned char)	0xF1
-
-#define TX_OTA_DATA_ACK 													(unsigned char)	0xF2
 
 
 #define HANDSHAKE_COMMAND														(unsigned char)	0x01				
-							
+#define KAR_RUN_STATE															(unsigned char)	0x02
+#define HEARTBEAT_COMMAND														(unsigned char)	0x0F
+#define LIGHT_COMMAND															(unsigned char)	0x03
+#define TIMER_DATA_COMMAND														(unsigned char)	0x04
+#define ALARM_COMMAND															(unsigned char)	0x05
+#define MOTO_COMMAND															(unsigned char)	0x06
+#define GET_TIMER_COMMAND														(unsigned char)	0x07
+#define BAT_COMMAN																(unsigned char)	0x25
+#define USB_OUT_COMMAN															(unsigned char)	0x26
+#define SLEEP_OFF_TIMER_SEY_COMMAN												(unsigned char)	0x27
 
-void get_data(void);
+#define KAR_POWER_OFF_COMMAND													(unsigned char)	0x20
+#define KAR_POWER__OFF															(unsigned char)	0x00
+
+
 
 
 
@@ -55,45 +63,27 @@ typedef struct
 }_Uart0_Typedef;
 
 
-//队列环形BUF
-typedef struct Buffer_t{ 
-	
-	uint16_t 	head;
-	uint16_t 	tail;
-	uint8_t 	buffer[BUFFER_LEN];
 
+typedef struct Buffer_t{
+	
+	uint16_t head;
+	uint16_t tail;
+	uint8_t len;
+	uint8_t buffer[BUFFER_LEN];
+	
 }Buffer;
 
 
 
-typedef struct{
-	
-	uint8_t 	packet_num;
-	uint8_t 	command;
-	uint8_t 	head;
-	uint16_t 	len;
-	uint8_t 	low_len;
-	uint8_t		xor_verify;
-	
-}_uart_data_typedef;
-
-typedef struct{
-	
-	uint8_t 	data_buffer[BUFFER_LEN];
-	bool		flag;
-	
-}_get_command_data;
-
-
 extern _Uart0_Typedef  Uart0_Typedef;
-extern uint8_t 	data_buffer[BUFFER_LEN];
+
 
 
 void UART0_Init(void);
 void UART_Send_t(unsigned char Com);
 void WriteUartBuf(unsigned char data);
 void uart0_get_cmd(uint8_t *g_com);
-void get_packet(void);
+
 
 
 

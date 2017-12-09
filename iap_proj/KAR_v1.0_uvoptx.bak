@@ -203,7 +203,7 @@
 
   <Group>
     <GroupName>USER</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -215,7 +215,7 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\user\main.c</PathWithFileName>
+      <PathWithFileName>..\iap\main.c</PathWithFileName>
       <FilenameWithoutPath>main.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -228,8 +228,8 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\user\config.c</PathWithFileName>
-      <FilenameWithoutPath>config.c</FilenameWithoutPath>
+      <PathWithFileName>..\iap\user_timer.c</PathWithFileName>
+      <FilenameWithoutPath>user_timer.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -241,8 +241,8 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\user\user_timer.c</PathWithFileName>
-      <FilenameWithoutPath>user_timer.c</FilenameWithoutPath>
+      <PathWithFileName>..\iap\user_uart.c</PathWithFileName>
+      <FilenameWithoutPath>user_uart.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -254,8 +254,8 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\user\user_uart.c</PathWithFileName>
-      <FilenameWithoutPath>user_uart.c</FilenameWithoutPath>
+      <PathWithFileName>..\iap\config.c</PathWithFileName>
+      <FilenameWithoutPath>config.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -271,7 +271,7 @@
 
   <Group>
     <GroupName>CORE</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -305,7 +305,7 @@
 
   <Group>
     <GroupName>FWLIB</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

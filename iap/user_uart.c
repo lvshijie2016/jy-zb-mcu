@@ -37,6 +37,8 @@ void UART0_Init(void)
 	UART_Open(UART0, 115200, UART_NO_PARITY, UART_RX_NOT_EMPTY);  
 	NVIC_SetPriority(UART0_IRQn,0);
 	NVIC_EnableIRQ(UART0_IRQn); 
+	
+	memset(&Buffer_t,0,sizeof(Buffer));
 
 }
 
@@ -233,7 +235,8 @@ void get_packet(void)  //确认是否 有效包
 		uart_data_typedef.low_len	    = get_buffer_data();//取出数据低8位长度 
 	
 	uart_data_typedef.xor_verify	= uart_data_typedef.len^uart_data_typedef.low_len; //加入校验
-	uart_data_typedef.len 			= (uart_data_typedef.len <<8)|uart_data_typedef.low_len; //合成到16位数据
+	if (uart_data_typedef.command == 0xF2)
+		uart_data_typedef.len 			= (uart_data_typedef.len <<8)|uart_data_typedef.low_len; //合成到16位数据
 	
 	if(uart_data_typedef.len > BUFFER_LEN)  //长度大于BUF有效数据错误
 	{
@@ -247,7 +250,7 @@ void get_packet(void)  //确认是否 有效包
 
 }
 
-uint8_t packet_num;
+uint8_t packet_num =1;
 
 void get_data(void)
 {
@@ -258,7 +261,7 @@ void get_data(void)
 	//计算有效数据
 	//uart_data_typedef.len 长度为 指令+数据+校验  另须加+帧尾
 	if(((Buffer_t.tail+BUFFER_LEN-Buffer_t.head)%BUFFER_LEN) < uart_data_typedef.len+1)return;  //COM-FE长度
-	if( Buffer_t.buffer[uart_data_typedef.len+1] != 0xFE) //指令+数据+校验+1=FE位 读取帧尾 判断是否完整包
+	if( Buffer_t.buffer[uart_data_typedef.len+Buffer_t.head] != 0xFE) //指令+数据+校验+1=FE位 读取帧尾 判断是否完整包
 	{
 		//帧尾错误
 		WriteUartBuf(packet_num);
@@ -267,21 +270,27 @@ void get_data(void)
 		memset(&uart_data_typedef,0,sizeof(uart_data_typedef));
 		return;
 	}
-	for(i=0; i<uart_data_typedef.len; i++)//取数据校验数据 长度为 = 指令+数据+校验 
+	get_command_data.data_buffer[0] = uart_data_typedef.command;
+	uart_data_typedef.xor_verify ^=get_command_data.data_buffer[0];
+	for(i=1; i<uart_data_typedef.len; i++)//取数据校验数据 长度为 = 指令+数据+校验 
 	{
 		get_command_data.data_buffer[i] = get_buffer_data();//取出数据
 		uart_data_typedef.xor_verify ^= get_command_data.data_buffer[i];//校验数据
 		if((i+1) == uart_data_typedef.len)//减去 指令+低位长度+帧尾 =校验位
 		{
-			memset(&uart_data_typedef,0,sizeof(uart_data_typedef));
+//			memset(&uart_data_typedef,0,sizeof(uart_data_typedef));
 			if(uart_data_typedef.xor_verify == get_buffer_data())
 			{
 				//校验成功
-				WriteUartBuf(packet_num);
-				WriteUartBuf(0x00);
-				UART_Send_t(TX_PAG_ACK);
+				if (uart_data_typedef.command == 0xF1)
+					UART_Send_t(TX_OTA_ACK);
+				else {
+							 WriteUartBuf(packet_num);
+							 WriteUartBuf(0x00);
+							 UART_Send_t(TX_OTA_DATA_ACK);
+						 }
 				memset(&uart_data_typedef,0,sizeof(uart_data_typedef)); //清除状态
-				get_command_data.flag = true; //BUF 满标
+//				get_command_data.flag = true; //BUF 满标
 
 			}else{
 				//校验失败
@@ -467,7 +476,7 @@ void UART0_IRQHandler(void)
 			
 				recv_data =  UART0->DAT.bit.DATA;			
 
-		
+				data_handle(recv_data);
 		/*clean interrupt */
         UART0->INTSTATUS.bit.RXNEINT = 1;
     }

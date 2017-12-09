@@ -6,10 +6,11 @@
 
 extern uint8_t recv_update_hand_flag;
 
+
 int main(void)
 {	
-   
-	sys_init();
+
+	sys_init();    
 
 	ENABLE_FLASH_CLOCK;
 	while(1)
@@ -22,7 +23,9 @@ int main(void)
 //				WriteUartBuf(0);
 //				WriteUartBuf(0x00);
 //				UART_Send_t(TX_PAG_ACK);
+//				recv_update_hand_flag = 0;
 //			}
+		
 	}
 	
     //进入app，两秒没有进入下载模式则进入到app中

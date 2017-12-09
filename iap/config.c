@@ -186,7 +186,7 @@ static void UART1_Init(void)
 {
 	#if defined( DeBug )
 		SYS_EnablePhrClk(AHB_UART1);  
-		get_adc_gpio(IOCON_GPIOA,PIN14,PA14_FUNC_TXD1,PULL_UP_EN);
+		//get_adc_gpio(IOCON_GPIOA,PIN14,PA14_FUNC_TXD1,PULL_UP_EN);
 		UART_Open(UART1, 115200, UART_NO_PARITY, UART_RX_NOT_EMPTY);
 	#endif
 }
@@ -199,13 +199,15 @@ void sys_init(void)
 {
 	
 	SYS_SystemInitial();
-	wdt_init_t(1);
+//	wdt_init_t(1);
 	gpio_init_t();
 	UART1_Init();
 	UART0_Init();
-
 	
-
+	
+	get_gpio(IOCON_GPIOA,	PIN15,	PA15_FUNC_GPIO,	IO_Output, IO_DEFAULT, PULL_UP_EN); //KAR_POWER_ON_OF
+	
+	GPIO_SetPin(GPIOA,PIN15);
 }
 
 
