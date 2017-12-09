@@ -358,6 +358,7 @@ typedef struct recv_data_config {
 
 uint8_t recv_data = 0;
 uint8_t recv_update_flag = 0;
+uint8_t recv_update_hand_flag = 0;
 uint8_t recv_ptr = 0;
 uint8_t recv_state = recv_start;
 _recv_data_config packet_data;
@@ -428,11 +429,16 @@ void data_handle(uint8_t data)
 				if (packet_data.recv_xor_verify == XorVerify())
 					recv_state = recv_end;
 			}
+			else
+			{
+				recv_state = recv_end;
+			}
 		case recv_end:
 			packet_data.recv_stop = data;
 			if (packet_data.recv_stop == 0xFE)
 			{
-				//if (recv_update_flag)
+				if (recv_update_flag)
+					recv_update_hand_flag = 1;
 					
 			}
 			break;
