@@ -317,10 +317,10 @@ ARM Macro Assembler    Page 5
               00000000 
 Command Line: --debug --xref --cpu=Cortex-M0 --apcs=interwork --depend=..\outpu
 t\startup_c32f0xx_s.d -o..\output\startup_c32f0xx_s.o -IC:\Users\miaojl\Documen
-ts\GitHub\jy-zb-mcu\project\RTE -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.0\CMSIS\Inc
-lude -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.0\Device\ARM\ARMCM0\Include --predefin
-e="__MICROLIB SETA 1" --list=.\listings\startup_c32f0xx_s.lst ..\C32F0xx_librar
-y\Core\CM0\DeviceSupport\C32F0xx\startup\arm\startup_c32f0xx_s.s
+ts\GitHub\jy-zb-mcu\app_proj\RTE -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.0\CMSIS\In
+clude -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\4.1.0\Device\ARM\ARMCM0\Include --predefi
+ne="__MICROLIB SETA 1" --list=.\listings\startup_c32f0xx_s.lst ..\C32F0xx_libra
+ry\Core\CM0\DeviceSupport\C32F0xx\startup\arm\startup_c32f0xx_s.s
 
 
 
