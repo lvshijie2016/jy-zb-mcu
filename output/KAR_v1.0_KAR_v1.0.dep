@@ -1,140 +1,0 @@
-Dependencies for Project 'KAR_v1.0', Target 'KAR_v1.0': (DO NOT MODIFY !)
-F (..\iap\main.c)(0x5A2BA314)(-c --cpu Cortex-M0 -D__EVAL -D__MICROLIB --li -g -O0 --apcs=interwork -I ..\C32F0xx_library\Drivers\source -I ..\C32F0xx_library\Drivers\include -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\startup\arm -I ..\C32F0xx_library\Core\CM0\CoreSupport -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx -I ..\iap-I Y:\iap_proj\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\Device\ARM\ARMCM0\Include-D__UVISION_VERSION="520" -D_RTE_ -DARMCM0-o ..\output\main.o --omf_browse ..\output\main.crf --depend ..\output\main.d)
-I (..\iap\config.h)(0x5A2BA314)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x56FE42DC)
-I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_gpio.h)(0x5A111F8F)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\c32f0xx.h)(0x59EEE84D)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cm0.h)(0x58082824)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmInstr.h)(0x5837E63E)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmFunc.h)(0x5837E674)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\system_C32F0xx.h)(0x58082824)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_sys.h)(0x5A111F8F)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_uart.h)(0x59FA8CA9)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_iap.h)(0x58082824)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_timer.h)(0x5A111F8F)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_wdt.h)(0x59F01A70)
-I (..\iap\user_timer.h)(0x5A2BA314)
-I (..\iap\user_uart.h)(0x5A2BA314)
-F (..\iap\user_timer.c)(0x5A2BA314)(-c --cpu Cortex-M0 -D__EVAL -D__MICROLIB --li -g -O0 --apcs=interwork -I ..\C32F0xx_library\Drivers\source -I ..\C32F0xx_library\Drivers\include -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\startup\arm -I ..\C32F0xx_library\Core\CM0\CoreSupport -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx -I ..\iap-I Y:\iap_proj\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\Device\ARM\ARMCM0\Include-D__UVISION_VERSION="520" -D_RTE_ -DARMCM0-o ..\output\user_timer.o --omf_browse ..\output\user_timer.crf --depend ..\output\user_timer.d)
-I (..\iap\user_timer.h)(0x5A2BA314)
-I (..\iap\config.h)(0x5A2BA314)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x56FE42DC)
-I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_gpio.h)(0x5A111F8F)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\c32f0xx.h)(0x59EEE84D)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cm0.h)(0x58082824)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmInstr.h)(0x5837E63E)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmFunc.h)(0x5837E674)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\system_C32F0xx.h)(0x58082824)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_sys.h)(0x5A111F8F)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_uart.h)(0x59FA8CA9)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_iap.h)(0x58082824)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_timer.h)(0x5A111F8F)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_wdt.h)(0x59F01A70)
-I (..\iap\user_uart.h)(0x5A2BA314)
-F (..\iap\user_uart.c)(0x5A2BA314)(-c --cpu Cortex-M0 -D__EVAL -D__MICROLIB --li -g -O0 --apcs=interwork -I ..\C32F0xx_library\Drivers\source -I ..\C32F0xx_library\Drivers\include -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\startup\arm -I ..\C32F0xx_library\Core\CM0\CoreSupport -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx -I ..\iap-I Y:\iap_proj\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\Device\ARM\ARMCM0\Include-D__UVISION_VERSION="520" -D_RTE_ -DARMCM0-o ..\output\user_uart.o --omf_browse ..\output\user_uart.crf --depend ..\output\user_uart.d)
-I (..\iap\user_uart.h)(0x5A2BA314)
-I (..\iap\config.h)(0x5A2BA314)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x56FE42DC)
-I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_gpio.h)(0x5A111F8F)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\c32f0xx.h)(0x59EEE84D)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cm0.h)(0x58082824)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmInstr.h)(0x5837E63E)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmFunc.h)(0x5837E674)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\system_C32F0xx.h)(0x58082824)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_sys.h)(0x5A111F8F)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_uart.h)(0x59FA8CA9)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_iap.h)(0x58082824)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_timer.h)(0x5A111F8F)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_wdt.h)(0x59F01A70)
-I (..\iap\user_timer.h)(0x5A2BA314)
-F (..\iap\config.c)(0x5A2BA314)(-c --cpu Cortex-M0 -D__EVAL -D__MICROLIB --li -g -O0 --apcs=interwork -I ..\C32F0xx_library\Drivers\source -I ..\C32F0xx_library\Drivers\include -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\startup\arm -I ..\C32F0xx_library\Core\CM0\CoreSupport -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx -I ..\iap-I Y:\iap_proj\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\Device\ARM\ARMCM0\Include-D__UVISION_VERSION="520" -D_RTE_ -DARMCM0-o ..\output\config.o --omf_browse ..\output\config.crf --depend ..\output\config.d)
-I (..\iap\config.h)(0x5A2BA314)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x56FE42DC)
-I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_gpio.h)(0x5A111F8F)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\c32f0xx.h)(0x59EEE84D)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cm0.h)(0x58082824)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmInstr.h)(0x5837E63E)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmFunc.h)(0x5837E674)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\system_C32F0xx.h)(0x58082824)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_sys.h)(0x5A111F8F)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_uart.h)(0x59FA8CA9)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_iap.h)(0x58082824)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_timer.h)(0x5A111F8F)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_wdt.h)(0x59F01A70)
-I (..\iap\user_timer.h)(0x5A2BA314)
-I (..\iap\user_uart.h)(0x5A2BA314)
-F (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\startup\arm\startup_c32f0xx_s.s)(0x58082824)(--cpu Cortex-M0 --li --pd "__EVAL SETA 1" -g --apcs=interwork --pd "__MICROLIB SETA 1"-I Y:\iap_proj\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\Device\ARM\ARMCM0\Include--pd "__UVISION_VERSION SETA 520" --pd "_RTE_ SETA 1" --pd "ARMCM0 SETA 1"--list .\listings\startup_c32f0xx_s.lst --xref -o ..\output\startup_c32f0xx_s.o --depend ..\output\startup_c32f0xx_s.d)
-F (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\system_c32f0xx.c)(0x596C3186)(-c --cpu Cortex-M0 -D__EVAL -D__MICROLIB --li -g -O0 --apcs=interwork -I ..\C32F0xx_library\Drivers\source -I ..\C32F0xx_library\Drivers\include -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\startup\arm -I ..\C32F0xx_library\Core\CM0\CoreSupport -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx -I ..\iap-I Y:\iap_proj\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\Device\ARM\ARMCM0\Include-D__UVISION_VERSION="520" -D_RTE_ -DARMCM0-o ..\output\system_c32f0xx.o --omf_browse ..\output\system_c32f0xx.crf --depend ..\output\system_c32f0xx.d)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\c32f0xx.h)(0x59EEE84D)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cm0.h)(0x58082824)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmInstr.h)(0x5837E63E)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmFunc.h)(0x5837E674)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\system_C32F0xx.h)(0x58082824)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_sys.h)(0x5A111F8F)
-F (..\C32F0xx_library\Drivers\source\c32f0xx_sys.c)(0x5A111F8F)(-c --cpu Cortex-M0 -D__EVAL -D__MICROLIB --li -g -O0 --apcs=interwork -I ..\C32F0xx_library\Drivers\source -I ..\C32F0xx_library\Drivers\include -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\startup\arm -I ..\C32F0xx_library\Core\CM0\CoreSupport -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx -I ..\iap-I Y:\iap_proj\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\Device\ARM\ARMCM0\Include-D__UVISION_VERSION="520" -D_RTE_ -DARMCM0-o ..\output\c32f0xx_sys.o --omf_browse ..\output\c32f0xx_sys.crf --depend ..\output\c32f0xx_sys.d)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\c32f0xx.h)(0x59EEE84D)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cm0.h)(0x58082824)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmInstr.h)(0x5837E63E)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmFunc.h)(0x5837E674)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\system_C32F0xx.h)(0x58082824)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_timer.h)(0x5A111F8F)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_sys.h)(0x5A111F8F)
-F (..\C32F0xx_library\Drivers\source\c32f0xx_gpio.c)(0x5A111F8F)(-c --cpu Cortex-M0 -D__EVAL -D__MICROLIB --li -g -O0 --apcs=interwork -I ..\C32F0xx_library\Drivers\source -I ..\C32F0xx_library\Drivers\include -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\startup\arm -I ..\C32F0xx_library\Core\CM0\CoreSupport -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx -I ..\iap-I Y:\iap_proj\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\Device\ARM\ARMCM0\Include-D__UVISION_VERSION="520" -D_RTE_ -DARMCM0-o ..\output\c32f0xx_gpio.o --omf_browse ..\output\c32f0xx_gpio.crf --depend ..\output\c32f0xx_gpio.d)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_gpio.h)(0x5A111F8F)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\c32f0xx.h)(0x59EEE84D)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cm0.h)(0x58082824)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmInstr.h)(0x5837E63E)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmFunc.h)(0x5837E674)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\system_C32F0xx.h)(0x58082824)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_sys.h)(0x5A111F8F)
-F (..\C32F0xx_library\Drivers\source\c32f0xx_iap.c)(0x587DCFCE)(-c --cpu Cortex-M0 -D__EVAL -D__MICROLIB --li -g -O0 --apcs=interwork -I ..\C32F0xx_library\Drivers\source -I ..\C32F0xx_library\Drivers\include -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\startup\arm -I ..\C32F0xx_library\Core\CM0\CoreSupport -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx -I ..\iap-I Y:\iap_proj\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\Device\ARM\ARMCM0\Include-D__UVISION_VERSION="520" -D_RTE_ -DARMCM0-o ..\output\c32f0xx_iap.o --omf_browse ..\output\c32f0xx_iap.crf --depend ..\output\c32f0xx_iap.d)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\c32f0xx.h)(0x59EEE84D)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cm0.h)(0x58082824)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmInstr.h)(0x5837E63E)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmFunc.h)(0x5837E674)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\system_C32F0xx.h)(0x58082824)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_iap.h)(0x58082824)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_sys.h)(0x5A111F8F)
-F (..\C32F0xx_library\Drivers\source\c32f0xx_timer.c)(0x5A111F8F)(-c --cpu Cortex-M0 -D__EVAL -D__MICROLIB --li -g -O0 --apcs=interwork -I ..\C32F0xx_library\Drivers\source -I ..\C32F0xx_library\Drivers\include -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\startup\arm -I ..\C32F0xx_library\Core\CM0\CoreSupport -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx -I ..\iap-I Y:\iap_proj\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\Device\ARM\ARMCM0\Include-D__UVISION_VERSION="520" -D_RTE_ -DARMCM0-o ..\output\c32f0xx_timer.o --omf_browse ..\output\c32f0xx_timer.crf --depend ..\output\c32f0xx_timer.d)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\c32f0xx.h)(0x59EEE84D)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cm0.h)(0x58082824)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmInstr.h)(0x5837E63E)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmFunc.h)(0x5837E674)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\system_C32F0xx.h)(0x58082824)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_timer.h)(0x5A111F8F)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_sys.h)(0x5A111F8F)
-F (..\C32F0xx_library\Drivers\source\c32f0xx_uart.c)(0x581469A6)(-c --cpu Cortex-M0 -D__EVAL -D__MICROLIB --li -g -O0 --apcs=interwork -I ..\C32F0xx_library\Drivers\source -I ..\C32F0xx_library\Drivers\include -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\startup\arm -I ..\C32F0xx_library\Core\CM0\CoreSupport -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx -I ..\iap-I Y:\iap_proj\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\Device\ARM\ARMCM0\Include-D__UVISION_VERSION="520" -D_RTE_ -DARMCM0-o ..\output\c32f0xx_uart.o --omf_browse ..\output\c32f0xx_uart.crf --depend ..\output\c32f0xx_uart.d)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\c32f0xx.h)(0x59EEE84D)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cm0.h)(0x58082824)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmInstr.h)(0x5837E63E)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmFunc.h)(0x5837E674)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\system_C32F0xx.h)(0x58082824)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_uart.h)(0x59FA8CA9)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_sys.h)(0x5A111F8F)
-F (..\C32F0xx_library\Drivers\source\c32f0xx_wdt.c)(0x58F1C13C)(-c --cpu Cortex-M0 -D__EVAL -D__MICROLIB --li -g -O0 --apcs=interwork -I ..\C32F0xx_library\Drivers\source -I ..\C32F0xx_library\Drivers\include -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\startup\arm -I ..\C32F0xx_library\Core\CM0\CoreSupport -I ..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx -I ..\iap-I Y:\iap_proj\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\Device\ARM\ARMCM0\Include-D__UVISION_VERSION="520" -D_RTE_ -DARMCM0-o ..\output\c32f0xx_wdt.o --omf_browse ..\output\c32f0xx_wdt.crf --depend ..\output\c32f0xx_wdt.d)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\c32f0xx.h)(0x59EEE84D)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cm0.h)(0x58082824)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmInstr.h)(0x5837E63E)
-I (..\C32F0xx_library\Core\CM0\CoreSupport\core_cmFunc.h)(0x5837E674)
-I (..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\system_C32F0xx.h)(0x58082824)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_sys.h)(0x5A111F8F)
-I (..\C32F0xx_library\Drivers\include\c32f0xx_wdt.h)(0x59F01A70)

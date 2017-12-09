@@ -45,7 +45,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>..\output\</OutputDirectory>
-          <OutputName>KAR_v1_0</OutputName>
+          <OutputName>iap</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
@@ -72,18 +72,14 @@
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
-            <nStopB1X>0</nStopB1X>
-            <nStopB2X>0</nStopB2X>
           </BeforeMake>
           <AfterMake>
             <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>1</RunUserProg2>
             <UserProg1Name></UserProg1Name>
-            <UserProg2Name>D:\Keil_v5\ARM\ARMCC\bin\fromelf.exe   ..\output\KAR_v1_0.axf --bin -o ..\Bin\KAR_v1_0.bin</UserProg2Name>
+            <UserProg2Name>C:\Keil_v5\ARM\ARMCC\bin\fromelf.exe   ..\output\iap.axf --bin -o ..\Bin\iap.bin</UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
-            <nStopA1X>0</nStopA1X>
-            <nStopA2X>0</nStopA2X>
           </AfterMake>
           <SelectedForBatchBuild>0</SelectedForBatchBuild>
           <SVCSIdString></SVCSIdString>
@@ -145,6 +141,7 @@
             <RestoreToolbox>1</RestoreToolbox>
             <RestoreTracepoints>1</RestoreTracepoints>
             <RestoreSysVw>1</RestoreSysVw>
+            <UsePdscDebugDescription>0</UsePdscDebugDescription>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
           <TargetSelection>6</TargetSelection>
@@ -171,7 +168,7 @@
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>4099</DriverSelection>
+            <DriverSelection>4098</DriverSelection>
           </Flash1>
           <bUseTDR>0</bUseTDR>
           <Flash2>Segger\JL2CM3.dll</Flash2>
@@ -361,13 +358,11 @@
             <uSurpInc>0</uSurpInc>
             <uC99>0</uC99>
             <useXO>0</useXO>
-            <v6Lang>0</v6Lang>
-            <v6LangP>0</v6LangP>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\C32F0xx_library\Drivers\source;..\C32F0xx_library\Drivers\include;..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\startup\arm;..\C32F0xx_library\Core\CM0\CoreSupport;..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx;..\user_lib</IncludePath>
+              <IncludePath>..\C32F0xx_library\Drivers\source;..\C32F0xx_library\Drivers\include;..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\startup\arm;..\C32F0xx_library\Core\CM0\CoreSupport;..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx;..\iap</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -408,32 +403,29 @@
       </TargetOption>
       <Groups>
         <Group>
-          <GroupName>USER</GroupName>
+          <GroupName>IAP</GroupName>
           <Files>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\user\main.c</FilePath>
-            </File>
             <File>
               <FileName>config.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\user\config.c</FilePath>
+              <FilePath>Y:\iap\config.c</FilePath>
             </File>
             <File>
-              <FileName>user_it.c</FileName>
+              <FileName>main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\user\user_it.c</FilePath>
+              <FilePath>Y:\iap\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>user_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>Y:\iap\user_uart.c</FilePath>
             </File>
             <File>
               <FileName>user_timer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\user\user_timer.c</FilePath>
+              <FilePath>Y:\iap\user_timer.c</FilePath>
             </File>
           </Files>
-        </Group>
-        <Group>
-          <GroupName>USER_LIB</GroupName>
         </Group>
         <Group>
           <GroupName>CORE</GroupName>
@@ -492,6 +484,11 @@
               <FileName>c32f0xx_adc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\C32F0xx_library\Drivers\source\c32f0xx_adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>c32f0xx_wdt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>Y:\C32F0xx_library\Drivers\source\c32f0xx_wdt.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -13,6 +13,7 @@ int main(void)
 	get_packet();
 	get_data();
 	ENABLE_FLASH_CLOCK;
+	
 	while(1)
 	{
 		get_packet();
@@ -25,6 +26,3 @@ int main(void)
     __set_MSP(*(__IO uint32_t*) ApplicationAddress);
     Jump_To_Application();
 }
-
-
-

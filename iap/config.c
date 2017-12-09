@@ -186,7 +186,7 @@ static void UART1_Init(void)
 {
 	#if defined( DeBug )
 		SYS_EnablePhrClk(AHB_UART1);  
-		get_adc_gpio(IOCON_GPIOA,PIN14,PA14_FUNC_TXD1,PULL_UP_EN);
+		//get_adc_gpio(IOCON_GPIOA,PIN14,PA14_FUNC_TXD1,PULL_UP_EN);
 		UART_Open(UART1, 115200, UART_NO_PARITY, UART_RX_NOT_EMPTY);
 	#endif
 }
