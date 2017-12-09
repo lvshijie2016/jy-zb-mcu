@@ -1,0 +1,26 @@
+--cpu Cortex-M0
+"y:\output\main.o"
+"y:\output\config.o"
+"y:\output\user_it.o"
+"y:\output\user_timer.o"
+"y:\output\user_uart.o"
+"y:\output\led.o"
+"y:\output\rtc.o"
+"y:\output\moto.o"
+"y:\output\power_management.o"
+"y:\output\abnormal_monitoring.o"
+"y:\output\startup_c32f0xx_s.o"
+"y:\output\system_c32f0xx.o"
+"y:\output\c32f0xx_sys.o"
+"y:\output\c32f0xx_gpio.o"
+"y:\output\c32f0xx_iap.o"
+"y:\output\c32f0xx_iic.o"
+"y:\output\c32f0xx_pwm.o"
+"y:\output\c32f0xx_timer.o"
+"y:\output\c32f0xx_uart.o"
+"y:\output\c32f0xx_adc.o"
+"y:\output\c32f0xx_wdt.o"
+--library_type=microlib --strict --scatter "Y:\output\app.sct"
+--summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\Listings\app.map" -o Y:\output\app.axf
