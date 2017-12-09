@@ -47,8 +47,8 @@
             <NotGenerated>0</NotGenerated>
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
-          <OutputDirectory>..\output\</OutputDirectory>
-          <OutputName>KAR_v1_0</OutputName>
+          <OutputDirectory>Y:\output\</OutputDirectory>
+          <OutputName>app</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
@@ -82,7 +82,7 @@
             <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>1</RunUserProg2>
             <UserProg1Name></UserProg1Name>
-            <UserProg2Name>C:\Keil_v5\ARM\ARMCC\bin\fromelf.exe   ..\output\KAR_v1_0.axf --bin -o ..\Bin\KAR_v1_0.bin</UserProg2Name>
+            <UserProg2Name>C:\Keil_v5\ARM\ARMCC\bin\fromelf.exe   ..\output\app.axf --bin -o ..\Bin\app.bin</UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
             <nStopA1X>0</nStopA1X>
