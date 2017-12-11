@@ -19,3 +19,5 @@
 ..\output\user_timer.o: ..\iap\user_timer.h
 ..\output\user_timer.o: ..\iap\user_uart.h
 ..\output\user_timer.o: ..\iap\config.h
+..\output\user_timer.o: ..\iap\download.h
+..\output\user_timer.o: ..\C32F0xx_library\Drivers\include\c32f0xx_iap.h

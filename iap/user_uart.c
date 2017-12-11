@@ -5,7 +5,7 @@ static 				Buffer Buffer_t;
 static 				_uart_data_typedef uart_data_typedef;
 _get_command_data 	get_command_data;
 
-
+void udly1us(uint32_t dlytime) {while(dlytime--);}
 
 void get_packet(void);
 
@@ -98,7 +98,7 @@ void UART_Send_t(uint8_t Com)
 
 }
 
-#if 1
+#if 0
 
 static uint8_t get_len(uint16_t i)
 {
@@ -223,7 +223,7 @@ void get_packet(void)  //确认是否 有效包
 		Buffer_t.head = get_len(Buffer_t.head);//如果不是前导码错误则丢弃执行轮寻buffer数据
 		return;
 	}
-		
+	udly1us(100*1000);	
 	//计算有效数据
 	if(((Buffer_t.tail+BUFFER_LEN-Buffer_t.head)%BUFFER_LEN) < 6) return;
 
@@ -261,12 +261,13 @@ void get_data(void)
 	//计算有效数据
 	//uart_data_typedef.len 长度为 指令+数据+校验  另须加+帧尾
 	if(((Buffer_t.tail+BUFFER_LEN-Buffer_t.head)%BUFFER_LEN) < uart_data_typedef.len+1)return;  //COM-FE长度
-	if( Buffer_t.buffer[uart_data_typedef.len+Buffer_t.head] != 0xFE) //指令+数据+校验+1=FE位 读取帧尾 判断是否完整包
+	if( Buffer_t.buffer[(uart_data_typedef.len+Buffer_t.head)%BUFFER_LEN] != 0xFE) //指令+数据+校验+1=FE位 读取帧尾 判断是否完整包
 	{
 		//帧尾错误
+		memset(&Buffer_t,0,sizeof(Buffer));
 		WriteUartBuf(packet_num);
 		WriteUartBuf(0x01);
-		UART_Send_t(TX_PAG_ACK);
+		UART_Send_t(TX_OTA_DATA_ACK);
 		memset(&uart_data_typedef,0,sizeof(uart_data_typedef));
 		return;
 	}
@@ -281,24 +282,33 @@ void get_data(void)
 //			memset(&uart_data_typedef,0,sizeof(uart_data_typedef));
 			if(uart_data_typedef.xor_verify == get_buffer_data())
 			{
+				memset(&Buffer_t,0,sizeof(Buffer));
 				//校验成功
 				if (uart_data_typedef.command == 0xF1)
 					UART_Send_t(TX_OTA_ACK);
-				else {
-							 WriteUartBuf(packet_num);
-							 WriteUartBuf(0x00);
-							 UART_Send_t(TX_OTA_DATA_ACK);
-						 }
+				else 
+					{
+						WriteUartBuf(packet_num);
+						WriteUartBuf(0x00);
+						UART_Send_t(TX_OTA_DATA_ACK);
+					}
 				memset(&uart_data_typedef,0,sizeof(uart_data_typedef)); //清除状态
+				
 //				get_command_data.flag = true; //BUF 满标
 
 			}else{
+				
+				memset(&Buffer_t,0,sizeof(Buffer));
 				//校验失败
-				WriteUartBuf(packet_num);
-				WriteUartBuf(0x01);
-				UART_Send_t(TX_PAG_ACK);
+				if (uart_data_typedef.command == 0xF2)
+				{
+					WriteUartBuf(packet_num);
+					WriteUartBuf(0x01);
+					UART_Send_t(TX_OTA_DATA_ACK);
+				}
 				memset(&uart_data_typedef,0,sizeof(uart_data_typedef));
 				memset(&get_command_data,0,sizeof(get_command_data)); //清空BUF
+				
 			}	
 		
 		}
@@ -336,7 +346,7 @@ void UART0_IRQHandler(void)
 
 #endif
 
-#if 0
+#if 1
 
 typedef enum state {
 	recv_start,
@@ -346,7 +356,7 @@ typedef enum state {
 	command,
 	len_low,
 	frame_number,
-	xor_verify,
+	state_xor_verify,
 	valid_data,
 	recv_end
 }_serial_state;
@@ -361,15 +371,19 @@ typedef struct recv_data_config {
 	uint8_t now_packet_num;
 	uint8_t recv_xor_verify;
 	uint8_t recv_stop;
-	uint8_t recv_update_data[1024];
+	uint8_t recv_update_data[1026];
 }_recv_data_config;
 
 
 uint8_t recv_data = 0;
 uint8_t recv_update_flag = 0;
-uint8_t recv_update_hand_flag = 0;
-uint8_t recv_ptr = 0;
+uint8_t receive_complete_flag = 0;
+uint16_t recv_ptr = 0;
 uint8_t recv_state = recv_start;
+
+uint8_t toal_packet_num = 0;
+uint8_t has_receive_packet_num = 0;
+
 _recv_data_config packet_data;
 
 
@@ -382,10 +396,41 @@ uint8_t XorVerify(void)
 	return result;
 }
 
+void reset_config()
+{
+	memset(&packet_data,0,sizeof(_recv_data_config));
+	recv_state = recv_start;
+	receive_complete_flag = 0;
+	recv_ptr = 0;
 
+}
+
+void flash_write()
+{
+	uint32_t RamSource; 
+	uint8_t j;
+	uint32_t flah_offset = ApplicationAddress;   
+	uint32_t flah_offset_erase = ApplicationAddress;//需要擦除的起始地址
+
+	if (flah_offset_erase < FLASH_SIZE)
+   {
+     IAP_FlashErase(flah_offset_erase);
+     flah_offset_erase+=512;
+   }
+	RamSource = ( uint32_t)(packet_data.recv_update_data+1)+8;
+  for (j=0; (j<packet_data.recv_data_len-1) && (flah_offset<FLASH_SIZE); j+=4)
+   {
+     //将数据写入flash
+     IAP_FlashProgram(flah_offset,*(uint32_t*)RamSource);
+     flah_offset += 4;
+     RamSource += 4;
+   }
+	 reset_config();
+}
 
 void data_handle(uint8_t data)
 {
+	uint16_t data_length;
 	switch (recv_state)
 	{
 		case recv_start:
@@ -399,19 +444,24 @@ void data_handle(uint8_t data)
 			recv_state = len;
 			break;
 		case len:
-			packet_data.recv_len = data;
-			recv_state = command;
+			if (data <=4)
+			{
+				packet_data.recv_len = data;
+				recv_state = command;
+			}
+			else
+				reset_config();
 			break;
 		case len_low:
 			packet_data.recv_len_low = data;
-			packet_data.recv_data_len = (uint16_t)(packet_data.recv_len<<8)&packet_data.recv_len_low ;
-			recv_state = packet_num;
+			packet_data.recv_data_len = (uint16_t)(packet_data.recv_len<<8)|packet_data.recv_len_low ;
+			recv_state = valid_data;
 			break;
 		case command:
 			packet_data.recv_command = data;
 			if (packet_data.recv_command == 0xF1)
 				{
-					recv_state = packet_num;
+					recv_state = valid_data;
 					recv_update_flag = 1;			
 				}
 			else if (packet_data.recv_command == 0xF2)
@@ -419,46 +469,108 @@ void data_handle(uint8_t data)
 					recv_state = len_low;
 				}
 			break;
-		case packet_num:
-			if (recv_update_flag)
-			{
-				recv_state = xor_verify;
-				packet_data.total_packet_num = data;
-			}
-			else
-			{
-				recv_state = valid_data;
-				packet_data.now_packet_num = data;
-			}
-			break;
-		case xor_verify:
+//		case packet_num:
+//			if (recv_update_flag)
+//			{
+//				recv_state = xor_verify;
+//				packet_data.total_packet_num = data;
+//			}
+//			else
+//			{
+//				recv_state = valid_data;
+//				packet_data.now_packet_num = data;
+//			}
+//			break;
+		case state_xor_verify:
 			packet_data.recv_xor_verify = data;
-			if (recv_update_flag)
-			{
-				if (packet_data.recv_xor_verify == XorVerify())
-					recv_state = recv_end;
-			}
-			else
-			{
-				recv_state = recv_end;
-			}
+			recv_state = recv_end;
+			break;
 		case recv_end:
 			packet_data.recv_stop = data;
 			if (packet_data.recv_stop == 0xFE)
 			{
-				if (recv_update_flag)
-					recv_update_hand_flag = 1;
+				receive_complete_flag = 1;
 					
 			}
+			else
+				reset_config();
 			break;
 		case valid_data:
-			packet_data.recv_update_data[recv_ptr] = data;
-			recv_ptr++;
-			if (recv_ptr >= packet_data.recv_data_len-2)
+			if (packet_data.recv_command == 0xF1)
+				data_length = packet_data.recv_len;
+			else if(packet_data.recv_command == 0xF2)
+				data_length = packet_data.recv_data_len;
+			if (data_length !=0)
 			{
-				recv_state = xor_verify;
-				recv_ptr = 0;
+				packet_data.recv_update_data[recv_ptr] = data;
+				recv_ptr++;
+
+				if (recv_ptr > data_length-2)
+				{
+					recv_state = state_xor_verify;
+	//			recv_ptr = 0;
+				}
 			}
+			else
+				reset_config();
+			break;
+	}
+}
+
+
+
+void packet_handle()
+{
+	uint8_t xor_verify = 0;
+	uint8_t data_xor_verify = 0;
+	uint16_t i = 0;
+	if (receive_complete_flag == 1)
+	{
+		data_xor_verify ^= packet_data.recv_command;
+		if (packet_data.recv_command == 0xF1)
+			data_xor_verify ^= packet_data.recv_len;
+		else
+		{
+			data_xor_verify ^= packet_data.recv_len;
+			data_xor_verify ^= packet_data.recv_len_low;
+		}
+			
+		for (i=0;i<recv_ptr;i++)
+		{
+			data_xor_verify ^= packet_data.recv_update_data[i];
+		}
+		if (data_xor_verify == packet_data.recv_xor_verify)
+		{
+			if (packet_data.recv_command == 0xF1)
+			{
+				 toal_packet_num= packet_data.recv_update_data[0];
+				UART_Send_t(TX_OTA_ACK);
+			}
+			else if (packet_data.recv_command == 0xF2)
+			{
+				has_receive_packet_num = packet_data.recv_update_data[0];
+				WriteUartBuf(packet_data.recv_update_data[0]);
+				WriteUartBuf(0x00);
+				UART_Send_t(TX_OTA_DATA_ACK);
+			}
+			//flash_write();
+			reset_config();
+		}
+		else
+		{
+			if (packet_data.recv_command == 0xF1)
+			{
+				WriteUartBuf(0x01);
+				UART_Send_t(TX_OTA_ACK);
+			}
+			else if (packet_data.recv_command == 0xF2)
+			{
+				WriteUartBuf(packet_data.recv_update_data[0]);
+				WriteUartBuf(0x01);
+				UART_Send_t(TX_OTA_DATA_ACK);
+			}
+			reset_config();
+		}
 	}
 }
 

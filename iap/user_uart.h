@@ -94,7 +94,7 @@ void UART_Send_t(unsigned char Com);
 void WriteUartBuf(unsigned char data);
 void uart0_get_cmd(uint8_t *g_com);
 void get_packet(void);
-
+void flash_write(void);
 
 
 
