@@ -376,20 +376,30 @@ void DisablePhrClk_t(void)
 	
 	#if DEEP_SLEEP
 	
-	#if defined( DeBug )
-		LOG(LOG_DEBUG," get deep sleep mode with gpioa on\r\n");
+		#if defined( DeBug )
+			LOG(LOG_DEBUG," get deep sleep mode with gpioa on\r\n");
+		#endif
+		
+		#if 0
+		NVIC_DisableIRQ(GPIOA_IRQn);
+		SYS_DisablePhrClk(AHB_GPIOA);
+		SYS_DisablePhrClk(AHB_GPIOC);
+		SYS_DisablePhrClk(AHB_GPIOB);
+		SYS_DisablePhrClk(AHB_WDT);
+		SYS_DisablePhrClk(AHB_IOCON);
+		SYS_DisablePhrClk(AHB_UART0);
+		SYS_DisablePhrClk(AHB_ADC);
+		#endif
+	#else
+		
+		
+		SYS_DisablePhrClk(AHB_GPIOC);
+		SYS_DisablePhrClk(AHB_GPIOB);
+		SYS_DisablePhrClk(AHB_WDT);
+		SYS_DisablePhrClk(AHB_IOCON);
+		SYS_DisablePhrClk(AHB_UART0);
+		SYS_DisablePhrClk(AHB_ADC);
 	#endif
-	
-	NVIC_DisableIRQ(GPIOA_IRQn);
-	SYS_DisablePhrClk(AHB_GPIOA);
-	#endif
-	
-	SYS_DisablePhrClk(AHB_GPIOC);
-	SYS_DisablePhrClk(AHB_GPIOB);
-	SYS_DisablePhrClk(AHB_WDT);
-	SYS_DisablePhrClk(AHB_IOCON);
-	SYS_DisablePhrClk(AHB_UART0);
-	SYS_DisablePhrClk(AHB_ADC);
 }
 
 

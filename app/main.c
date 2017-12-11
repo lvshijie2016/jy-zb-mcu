@@ -11,7 +11,7 @@ static uint8_t 	bat_value = 100;
 static uint8_t  bat_last_value = 50;
 static uint8_t  get_Com[10] = {0};
 static uint16_t sleep_off_timer = SLEEP_DEFAULT_OFF_TIMER; //睡眠关机时间
-static uint8_t FIRMWARE_VERSION[3]= {2,6,11};
+static uint8_t FIRMWARE_VERSION[3]= {2,6,13};
 
 static void LowPowerConsumptionConfig(void);
 static void dly1us(uint32_t dlytime) {while(dlytime--);}
@@ -155,31 +155,38 @@ void LowPowerConsumptionConfig(void)
 	moto_P();
 	configpad(0);
 
-	#if defined( DeBug )
-		LOG(LOG_DEBUG," get sleep mode \r\n");
-	#endif
+	
+	
 	DisablePhrClk_t();
 	
-	
 	#if DEEP_SLEEP
+		#if defined( DeBug )
+			LOG(LOG_DEBUG," get deep sleep mode \r\n");
+		#endif
 		SYS_SetDeepSleepWakeupPin(PIN0|PIN5,FALL_EDGE);//set wakeup pin
+		SYS_DisablePhrClk(0xfffffff0 & (~(1<<29)));//disable all except gpioa's clk
+		IOCON->PIOA_0.all  = PIN0|PIN5;//|PIN5 as wakeup pin pullup
 	#else
-		
+		#if defined( DeBug )
+			LOG(LOG_DEBUG," get normal sleep mode \r\n");
+		#endif
 	#endif
 
-	SYS_DisablePhrClk(0xfffffff0 & (~(1<<29)));//disable all except gpioa's clk
-	IOCON->PIOA_0.all  = PIN0|PIN5;//|PIN5 as wakeup pin pullup
+	
+	
 	dly1us(50000);
 	
 	#if DEEP_SLEEP
-	SYS_EnterDeepSleep(PD_RTCOSC | PD_BOD, 0);	
+		SYS_EnterDeepSleep(PD_RTCOSC | PD_BOD, 0);	
 	#else
-	SYS_EnterSleep();
+	
+		SYS_EnterSleep();
 	#endif
 	
 	sys_init_t();
 	
 	Information_events = get_Alarm_Int_state() ? RTC_INT_EVENTS : POWER_KEY_EVENTS;
+	
 	# if defined(DeBug)
 		LOG(LOG_DEBUG," exit sleep mode...  ->%d \r\n",Information_events);
 	#endif
