@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 del *.bak /s
 del *.ddk /s
 del *.edk /s
@@ -28,3 +29,35 @@ del *.zhangfeifei /s
 del *.PRI /s
 del *.WK3 /s
 exit
+=======
+del *.bak /s
+del *.ddk /s
+del *.edk /s
+del *.lst /s
+del *.lnp /s
+del *.mpf /s
+del *.mpj /s
+del *.obj /s
+del *.omf /s
+::del *.opt /s  ::不允许删除JLINK的设置
+del *.plg /s
+del *.rpt /s
+del *.tmp /s
+del *.__i /s
+del *.crf /s
+del *.o /s
+del *.d /s
+del *.tra /s
+del *.dep /s           
+del JLinkLog.txt /s
+del *.axf /s
+del *.iex /s
+del *.hex /s
+del *.htm /s
+del *.sct /s
+del *.map /s
+del *.zhangfeifei /s
+del *.PRI /s
+del *.WK3 /s
+exit
+>>>>>>> 92867606d15fd17a2514ea9e7883b4cd0d005f2b
