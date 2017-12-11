@@ -374,11 +374,12 @@ void DisablePhrClk_t(void)
 	get_gpio(IOCON_GPIOA,PIN2,PA2_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
 	get_gpio(IOCON_GPIOA,PIN3,PA3_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
 	
-	#if 0
+	#if DEEP_SLEEP
 	
 	#if defined( DeBug )
-		LOG(LOG_DEBUG," get sleep mode with gpioa on\r\n");
+		LOG(LOG_DEBUG," get deep sleep mode with gpioa on\r\n");
 	#endif
+	
 	NVIC_DisableIRQ(GPIOA_IRQn);
 	SYS_DisablePhrClk(AHB_GPIOA);
 	#endif

@@ -11,7 +11,7 @@ static uint8_t 	bat_value = 100;
 static uint8_t  bat_last_value = 50;
 static uint8_t  get_Com[10] = {0};
 static uint16_t sleep_off_timer = SLEEP_DEFAULT_OFF_TIMER; //睡眠关机时间
-static uint8_t FIRMWARE_VERSION[3]= {2,6,9};
+static uint8_t FIRMWARE_VERSION[3]= {2,6,11};
 
 static void LowPowerConsumptionConfig(void);
 static void dly1us(uint32_t dlytime) {while(dlytime--);}
@@ -160,13 +160,23 @@ void LowPowerConsumptionConfig(void)
 	#endif
 	DisablePhrClk_t();
 	
-	SYS_SetDeepSleepWakeupPin(PIN0|PIN5,FALL_EDGE);//set wakeup pin
+	
+	#if DEEP_SLEEP
+		SYS_SetDeepSleepWakeupPin(PIN0|PIN5,FALL_EDGE);//set wakeup pin
+	#else
+		
+	#endif
 
 	SYS_DisablePhrClk(0xfffffff0 & (~(1<<29)));//disable all except gpioa's clk
 	IOCON->PIOA_0.all  = PIN0|PIN5;//|PIN5 as wakeup pin pullup
 	dly1us(50000);
+	
+	#if DEEP_SLEEP
 	SYS_EnterDeepSleep(PD_RTCOSC | PD_BOD, 0);	
-
+	#else
+	SYS_EnterSleep();
+	#endif
+	
 	sys_init_t();
 	
 	Information_events = get_Alarm_Int_state() ? RTC_INT_EVENTS : POWER_KEY_EVENTS;
@@ -690,7 +700,7 @@ static void kar_connect(void)
 				UART_Send_t(HANDSHAKE_COMMAND);
 				
 				#if defined( DeBug )
-					LOG(LOG_DEBUG,"FIRMWARE_VERSION= V %d . %d\r\n",FIRMWARE_VERSION/10,FIRMWARE_VERSION%10);
+					LOG(LOG_DEBUG,"FIRMWARE_VERSION= V %d . %d. %d\r\n",FIRMWARE_VERSION[0],FIRMWARE_VERSION[1],FIRMWARE_VERSION[2]);
 				#endif
 
 			break;
