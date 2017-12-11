@@ -1,9 +1,5 @@
-
-
-
 #include "config.h"
 #include "user_uart.h"
-
 
 
 int main(void)

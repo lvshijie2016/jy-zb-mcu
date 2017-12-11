@@ -154,24 +154,25 @@ void LowPowerConsumptionConfig(void)
 	aperture_all_off();
 	moto_P();
 	configpad(0);
+
 	#if defined( DeBug )
 		LOG(LOG_DEBUG," get sleep mode \r\n");
 	#endif
 	DisablePhrClk_t();
-	SYS_SetDeepSleepWakeupPin(PIN0|PIN5,FALL_EDGE);//设置唤醒引脚	
+	
+	SYS_SetDeepSleepWakeupPin(PIN0|PIN5,FALL_EDGE);//set wakeup pin
 
-	SYS_DisablePhrClk(0xfffffff0 & (~(1<<29)));//关闭GPIOA时钟
-	IOCON->PIOA_0.all  = PIN0|PIN5;//|PIN5;//设置唤醒引脚上拉
+	SYS_DisablePhrClk(0xfffffff0 & (~(1<<29)));//disable all except gpioa's clk
+	IOCON->PIOA_0.all  = PIN0|PIN5;//|PIN5 as wakeup pin pullup
 	dly1us(50000);
 	SYS_EnterDeepSleep(PD_RTCOSC | PD_BOD, 0);	
-	sys_init_t();//重新初始化所有配置
+
+	sys_init_t();
+	
 	Information_events = get_Alarm_Int_state() ? RTC_INT_EVENTS : POWER_KEY_EVENTS;
 	# if defined(DeBug)
 		LOG(LOG_DEBUG," exit sleep mode...  ->%d \r\n",Information_events);
 	#endif
-	
-	
-	
 }
 
 

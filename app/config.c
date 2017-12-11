@@ -362,6 +362,7 @@ void DisablePhrClk_t(void)
 	get_gpio(IOCON_GPIOA,PIN9,PA9_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
 	get_gpio(IOCON_GPIOA,PIN10,PA10_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
 	//ADC
+	
 	get_gpio(IOCON_GPIOA,PIN1,PA1_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
 	get_gpio(IOCON_GPIOA,PIN6,PA6_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
 	get_gpio(IOCON_GPIOA,PIN4,PA4_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
@@ -373,8 +374,15 @@ void DisablePhrClk_t(void)
 	get_gpio(IOCON_GPIOA,PIN2,PA2_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
 	get_gpio(IOCON_GPIOA,PIN3,PA3_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
 	
+	#if 0
+	
+	#if defined( DeBug )
+		LOG(LOG_DEBUG," get sleep mode with gpioa on\r\n");
+	#endif
 	NVIC_DisableIRQ(GPIOA_IRQn);
 	SYS_DisablePhrClk(AHB_GPIOA);
+	#endif
+	
 	SYS_DisablePhrClk(AHB_GPIOC);
 	SYS_DisablePhrClk(AHB_GPIOB);
 	SYS_DisablePhrClk(AHB_WDT);

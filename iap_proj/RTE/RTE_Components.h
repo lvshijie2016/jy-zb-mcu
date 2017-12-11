@@ -4,7 +4,7 @@
  *      *** Do not modify ! ***
  *
  * Project: 'KAR_v1.0' 
- * Target:  'KAR_v1.0' 
+ * Target:  'IAP' 
  */
 
 #ifndef RTE_COMPONENTS_H
