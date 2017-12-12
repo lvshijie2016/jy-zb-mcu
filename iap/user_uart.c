@@ -405,20 +405,34 @@ void reset_config()
 
 }
 
-void flash_write()
-{
 	uint32_t RamSource; 
 	uint8_t j;
-	uint32_t flah_offset = ApplicationAddress;   
-	uint32_t flah_offset_erase = ApplicationAddress;//需要擦除的起始地址
+	uint8_t flag = 0;
+	uint8_t buf[40] = {0};
+	uint32_t flah_offset = (0x2000);   
+	uint32_t flah_offset_erase = (0x2000);//需要擦除的起始地址
 
-	if (flah_offset_erase < FLASH_SIZE)
-   {
-     IAP_FlashErase(flah_offset_erase);
-     flah_offset_erase+=512;
-   }
-	RamSource = ( uint32_t)(packet_data.recv_update_data+1)+8;
-  for (j=0; (j<packet_data.recv_data_len-1) && (flah_offset<FLASH_SIZE); j+=4)
+void flash_write()
+{
+	#if 0
+	uint32_t addr_offesr = 0;
+	uint32_t addr_base   = 0x7C00;
+	uint32_t data        = 0;
+	IAP_FlashProgram(addr_base+addr_offesr,0x55aaaa55);
+	data = *((uint32_t *)(addr_base+addr_offesr));
+	#endif
+	
+	if (flag == 0)
+	{
+		if (flah_offset_erase < FLASH_SIZE)
+		 {
+			 IAP_FlashErase(flah_offset_erase);
+			 flah_offset_erase+=512;
+		 }
+		 flag = 1;
+	}
+	RamSource = ( uint32_t)buf+1;
+  for (j=0; (j<packet_data.recv_data_len-2) && (flah_offset<FLASH_SIZE); j+=4)
    {
      //将数据写入flash
      IAP_FlashProgram(flah_offset,*(uint32_t*)RamSource);
@@ -426,6 +440,7 @@ void flash_write()
      RamSource += 4;
    }
 	 reset_config();
+	 flag = 0;
 }
 
 void data_handle(uint8_t data)
@@ -553,7 +568,7 @@ void packet_handle()
 				WriteUartBuf(0x00);
 				UART_Send_t(TX_OTA_DATA_ACK);
 			}
-			//flash_write();
+			flash_write();
 			reset_config();
 		}
 		else

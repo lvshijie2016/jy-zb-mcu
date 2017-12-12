@@ -35,8 +35,8 @@ typedef  void (*pFunction)(void);
 static pFunction Jump_To_Application;
 static uint32_t JumpAddress;
 
-uint8_t com_rx_data();
-void 	com_tx_data();
+uint8_t com_rx_data(void);
+void 	com_tx_data(void);
 
 void 	iap_send_pkt(uint8_t* data);
 void 	iap_receive_pkt(uint8_t* data);

@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 del *.bak /s
 del *.ddk /s
 del *.edk /s
@@ -29,7 +29,7 @@ del *.zhangfeifei /s
 del *.PRI /s
 del *.WK3 /s
 exit
-=======
+
 del *.bak /s
 del *.ddk /s
 del *.edk /s
@@ -60,4 +60,4 @@ del *.zhangfeifei /s
 del *.PRI /s
 del *.WK3 /s
 exit
->>>>>>> 92867606d15fd17a2514ea9e7883b4cd0d005f2b
+

@@ -72,6 +72,8 @@
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
+            <nStopB1X>0</nStopB1X>
+            <nStopB2X>0</nStopB2X>
           </BeforeMake>
           <AfterMake>
             <RunUserProg1>0</RunUserProg1>
@@ -168,7 +170,7 @@
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>4098</DriverSelection>
+            <DriverSelection>4099</DriverSelection>
           </Flash1>
           <bUseTDR>0</bUseTDR>
           <Flash2>Segger\JL2CM3.dll</Flash2>
@@ -406,24 +408,19 @@
           <GroupName>IAP</GroupName>
           <Files>
             <File>
+              <FileName>user_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\iap\user_uart.c</FilePath>
+            </File>
+            <File>
               <FileName>config.c</FileName>
               <FileType>1</FileType>
-              <FilePath>Y:\iap\config.c</FilePath>
+              <FilePath>..\iap\config.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>Y:\iap\main.c</FilePath>
-            </File>
-            <File>
-              <FileName>user_uart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>Y:\iap\user_uart.c</FilePath>
-            </File>
-            <File>
-              <FileName>user_timer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>Y:\iap\user_timer.c</FilePath>
+              <FilePath>..\iap\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -488,7 +485,7 @@
             <File>
               <FileName>c32f0xx_wdt.c</FileName>
               <FileType>1</FileType>
-              <FilePath>Y:\C32F0xx_library\Drivers\source\c32f0xx_wdt.c</FilePath>
+              <FilePath>..\C32F0xx_library\Drivers\source\c32f0xx_wdt.c</FilePath>
             </File>
           </Files>
         </Group>

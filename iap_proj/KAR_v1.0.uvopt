@@ -115,60 +115,28 @@
       <TargetDriverDllRegistry>
         <SetRegEntry>
           <Number>0</Number>
-          <Key>ARMRTXEVENTFLAGS</Key>
-          <Name>-L70 -Z18 -C0 -M0 -T1</Name>
-        </SetRegEntry>
-        <SetRegEntry>
-          <Number>0</Number>
-          <Key>DLGTARM</Key>
-          <Name>(1010=-1,-1,-1,-1,0)(1007=-1,-1,-1,-1,0)(1008=-1,-1,-1,-1,0)</Name>
-        </SetRegEntry>
-        <SetRegEntry>
-          <Number>0</Number>
-          <Key>ARMDBGFLAGS</Key>
-          <Name></Name>
-        </SetRegEntry>
-        <SetRegEntry>
-          <Number>0</Number>
-          <Key>DLGUARM</Key>
-          <Name></Name>
-        </SetRegEntry>
-        <SetRegEntry>
-          <Number>0</Number>
           <Key>JL2CM3</Key>
-          <Name>-U4294967295 -O78 -S2 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(0BB11477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO15 -FD10000000 -FC800 -FN1 -FF0C32F0xx -FS00 -FL08000</Name>
+          <Name>-U4294967295 -O78 -S2 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(0BB11477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO7 -FD0 -FC800 -FN0</Name>
+        </SetRegEntry>
+        <SetRegEntry>
+          <Number>0</Number>
+          <Key>UL2CM3</Key>
+          <Name>-U -O14 -S0 -C-1 -P00 -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO7 -FD0 -FC800 -FN0</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint>
-        <Bp>
-          <Number>0</Number>
-          <Type>0</Type>
-          <LineNumber>12</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>984</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>Y:\iap\main.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\iap\main.c\12</Expression>
-        </Bp>
-      </Breakpoint>
+      <Breakpoint/>
       <Tracepoint>
         <THDelay>0</THDelay>
       </Tracepoint>
       <DebugFlag>
         <trace>0</trace>
-        <periodic>1</periodic>
-        <aLwin>1</aLwin>
+        <periodic>0</periodic>
+        <aLwin>0</aLwin>
         <aCover>0</aCover>
         <aSer1>0</aSer1>
         <aSer2>0</aSer2>
         <aPa>0</aPa>
-        <viewmode>1</viewmode>
+        <viewmode>0</viewmode>
         <vrSel>0</vrSel>
         <aSym>0</aSym>
         <aTbox>0</aTbox>
@@ -201,18 +169,12 @@
       <GroupNumber>1</GroupNumber>
       <FileNumber>1</FileNumber>
       <FileType>1</FileType>
-      <tvExp>1</tvExp>
+      <tvExp>0</tvExp>
       <Focus>0</Focus>
-<<<<<<< HEAD
-=======
-      <ColumnNumber>17</ColumnNumber>
->>>>>>> 92867606d15fd17a2514ea9e7883b4cd0d005f2b
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>158</TopLine>
-      <CurrentLine>187</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>Y:\iap\config.c</PathWithFileName>
-      <FilenameWithoutPath>config.c</FilenameWithoutPath>
+      <PathWithFileName>..\iap\user_uart.c</PathWithFileName>
+      <FilenameWithoutPath>user_uart.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -222,16 +184,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-<<<<<<< HEAD
-=======
-      <ColumnNumber>21</ColumnNumber>
->>>>>>> 92867606d15fd17a2514ea9e7883b4cd0d005f2b
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1</TopLine>
-      <CurrentLine>15</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>Y:\iap\main.c</PathWithFileName>
-      <FilenameWithoutPath>main.c</FilenameWithoutPath>
+      <PathWithFileName>..\iap\config.c</PathWithFileName>
+      <FilenameWithoutPath>config.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -241,35 +197,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-<<<<<<< HEAD
-=======
-      <ColumnNumber>16</ColumnNumber>
->>>>>>> 92867606d15fd17a2514ea9e7883b4cd0d005f2b
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>200</TopLine>
-      <CurrentLine>69</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>Y:\iap\user_uart.c</PathWithFileName>
-      <FilenameWithoutPath>user_uart.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>1</GroupNumber>
-      <FileNumber>4</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <Focus>0</Focus>
-<<<<<<< HEAD
-=======
-      <ColumnNumber>0</ColumnNumber>
->>>>>>> 92867606d15fd17a2514ea9e7883b4cd0d005f2b
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1</TopLine>
-      <CurrentLine>1</CurrentLine>
-      <bDave2>0</bDave2>
-      <PathWithFileName>Y:\iap\user_timer.c</PathWithFileName>
-      <FilenameWithoutPath>user_timer.c</FilenameWithoutPath>
+      <PathWithFileName>..\iap\main.c</PathWithFileName>
+      <FilenameWithoutPath>main.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -283,17 +214,11 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>5</FileNumber>
+      <FileNumber>4</FileNumber>
       <FileType>2</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-<<<<<<< HEAD
-=======
-      <ColumnNumber>0</ColumnNumber>
->>>>>>> 92867606d15fd17a2514ea9e7883b4cd0d005f2b
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>103</TopLine>
-      <CurrentLine>109</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\startup\arm\startup_c32f0xx_s.s</PathWithFileName>
       <FilenameWithoutPath>startup_c32f0xx_s.s</FilenameWithoutPath>
@@ -302,17 +227,11 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>6</FileNumber>
+      <FileNumber>5</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-<<<<<<< HEAD
-=======
-      <ColumnNumber>49220996</ColumnNumber>
->>>>>>> 92867606d15fd17a2514ea9e7883b4cd0d005f2b
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\system_c32f0xx.c</PathWithFileName>
       <FilenameWithoutPath>system_c32f0xx.c</FilenameWithoutPath>
@@ -329,20 +248,27 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>3</GroupNumber>
+      <FileNumber>6</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <Focus>0</Focus>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_sys.c</PathWithFileName>
+      <FilenameWithoutPath>c32f0xx_sys.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>3</GroupNumber>
       <FileNumber>7</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-<<<<<<< HEAD
-=======
-      <ColumnNumber>0</ColumnNumber>
->>>>>>> 92867606d15fd17a2514ea9e7883b4cd0d005f2b
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>69</TopLine>
-      <CurrentLine>20</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_sys.c</PathWithFileName>
-      <FilenameWithoutPath>c32f0xx_sys.c</FilenameWithoutPath>
+      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_gpio.c</PathWithFileName>
+      <FilenameWithoutPath>c32f0xx_gpio.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -352,16 +278,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-<<<<<<< HEAD
-=======
-      <ColumnNumber>49220996</ColumnNumber>
->>>>>>> 92867606d15fd17a2514ea9e7883b4cd0d005f2b
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_gpio.c</PathWithFileName>
-      <FilenameWithoutPath>c32f0xx_gpio.c</FilenameWithoutPath>
+      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_iap.c</PathWithFileName>
+      <FilenameWithoutPath>c32f0xx_iap.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -371,16 +291,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-<<<<<<< HEAD
-=======
-      <ColumnNumber>49220996</ColumnNumber>
->>>>>>> 92867606d15fd17a2514ea9e7883b4cd0d005f2b
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_iap.c</PathWithFileName>
-      <FilenameWithoutPath>c32f0xx_iap.c</FilenameWithoutPath>
+      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_iic.c</PathWithFileName>
+      <FilenameWithoutPath>c32f0xx_iic.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -390,16 +304,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-<<<<<<< HEAD
-=======
-      <ColumnNumber>49220996</ColumnNumber>
->>>>>>> 92867606d15fd17a2514ea9e7883b4cd0d005f2b
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_iic.c</PathWithFileName>
-      <FilenameWithoutPath>c32f0xx_iic.c</FilenameWithoutPath>
+      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_pwm.c</PathWithFileName>
+      <FilenameWithoutPath>c32f0xx_pwm.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -409,16 +317,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-<<<<<<< HEAD
-=======
-      <ColumnNumber>49220996</ColumnNumber>
->>>>>>> 92867606d15fd17a2514ea9e7883b4cd0d005f2b
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_pwm.c</PathWithFileName>
-      <FilenameWithoutPath>c32f0xx_pwm.c</FilenameWithoutPath>
+      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_timer.c</PathWithFileName>
+      <FilenameWithoutPath>c32f0xx_timer.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -428,16 +330,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-<<<<<<< HEAD
-=======
-      <ColumnNumber>49220996</ColumnNumber>
->>>>>>> 92867606d15fd17a2514ea9e7883b4cd0d005f2b
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_timer.c</PathWithFileName>
-      <FilenameWithoutPath>c32f0xx_timer.c</FilenameWithoutPath>
+      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_uart.c</PathWithFileName>
+      <FilenameWithoutPath>c32f0xx_uart.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -447,16 +343,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-<<<<<<< HEAD
-=======
-      <ColumnNumber>49220996</ColumnNumber>
->>>>>>> 92867606d15fd17a2514ea9e7883b4cd0d005f2b
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_uart.c</PathWithFileName>
-      <FilenameWithoutPath>c32f0xx_uart.c</FilenameWithoutPath>
+      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_adc.c</PathWithFileName>
+      <FilenameWithoutPath>c32f0xx_adc.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -466,35 +356,9 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-<<<<<<< HEAD
-=======
-      <ColumnNumber>49220996</ColumnNumber>
->>>>>>> 92867606d15fd17a2514ea9e7883b4cd0d005f2b
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_adc.c</PathWithFileName>
-      <FilenameWithoutPath>c32f0xx_adc.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>3</GroupNumber>
-      <FileNumber>15</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <Focus>0</Focus>
-<<<<<<< HEAD
-      <tvExpOptDlg>0</tvExpOptDlg>
-=======
-      <ColumnNumber>0</ColumnNumber>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
->>>>>>> 92867606d15fd17a2514ea9e7883b4cd0d005f2b
-      <bDave2>0</bDave2>
-      <PathWithFileName>Y:\C32F0xx_library\Drivers\source\c32f0xx_wdt.c</PathWithFileName>
+      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_wdt.c</PathWithFileName>
       <FilenameWithoutPath>c32f0xx_wdt.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
