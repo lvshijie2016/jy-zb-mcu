@@ -11,7 +11,6 @@ static uint8_t 	bat_value = 100;
 static uint8_t  bat_last_value = 50;
 static uint8_t  get_Com[10] = {0};
 static uint16_t sleep_off_timer = SLEEP_DEFAULT_OFF_TIMER; //睡眠关机时间
-static uint8_t FIRMWARE_VERSION[3]= {2,6,13};
 
 static void LowPowerConsumptionConfig(void);
 static void dly1us(uint32_t dlytime) {while(dlytime--);}
@@ -49,7 +48,7 @@ static void get_adc_value(void)
 			}else bat_value = (adc_typedef.data-adc_typedef.bat_buffer[adc_typedef.head])/BAT_VALUE_BUFFER;
 			
 				if (bat_value >100)
-					bat_value = 100;
+				bat_value = 100;
 			
 //			if (first_get_value) {
 //				first_get_value = 0;
@@ -154,42 +153,23 @@ void LowPowerConsumptionConfig(void)
 	aperture_all_off();
 	moto_P();
 	configpad(0);
-
-	
-	
 	DisablePhrClk_t();
-	
-	#if DEEP_SLEEP
-		#if defined( DeBug )
-			LOG(LOG_DEBUG," get deep sleep mode \r\n");
-		#endif
-		SYS_SetDeepSleepWakeupPin(PIN0|PIN5,FALL_EDGE);//set wakeup pin
-		SYS_DisablePhrClk(0xfffffff0 & (~(1<<29)));//disable all except gpioa's clk
-		IOCON->PIOA_0.all  = PIN0|PIN5;//|PIN5 as wakeup pin pullup
-	#else
-		#if defined( DeBug )
-			LOG(LOG_DEBUG," get normal sleep mode \r\n");
-		#endif
+	SYS_SetDeepSleepWakeupPin(PIN0|PIN5,FALL_EDGE);//设置唤醒引脚	
+	#if defined( DeBug )
+		LOG(LOG_DEBUG," get sleep mode \r\n");
 	#endif
-
-	
-	
+	SYS_DisablePhrClk(0xfffffff0 & (~(1<<29)));//关闭GPIOA时钟
+	IOCON->PIOA_0.all  = PIN0|PIN5;//|PIN5;//设置唤醒引脚上拉
 	dly1us(50000);
-	
-	#if DEEP_SLEEP
-		SYS_EnterDeepSleep(PD_RTCOSC | PD_BOD, 0);	
-	#else
-	
-		SYS_EnterSleep();
-	#endif
-	
-	sys_init_t();
-	
+	SYS_EnterDeepSleep(PD_RTCOSC | PD_BOD, 0);	
+	sys_init_t();//重新初始化所有配置
 	Information_events = get_Alarm_Int_state() ? RTC_INT_EVENTS : POWER_KEY_EVENTS;
-	
 	# if defined(DeBug)
 		LOG(LOG_DEBUG," exit sleep mode...  ->%d \r\n",Information_events);
 	#endif
+	
+	
+	
 }
 
 
@@ -692,7 +672,6 @@ static void state_run_monitoring(void)
 
 static void kar_connect(void)
 {
-	uint8_t i;
 	uart0_get_cmd(get_Com);
 	if(kar_state_t == KAR_RUN  || get_Com[0] ==  KAR_RUN_STATE)
 	{
@@ -700,14 +679,11 @@ static void kar_connect(void)
 
 			case HANDSHAKE_COMMAND:
 				WriteUartBuf(POISON_VERSION);
-				for (i=0;i<3;i++)
-					{
-						WriteUartBuf(FIRMWARE_VERSION[i]);
-					}
+				WriteUartBuf(FIRMWARE_VERSION);
 				UART_Send_t(HANDSHAKE_COMMAND);
 				
 				#if defined( DeBug )
-					LOG(LOG_DEBUG,"FIRMWARE_VERSION= V %d . %d. %d\r\n",FIRMWARE_VERSION[0],FIRMWARE_VERSION[1],FIRMWARE_VERSION[2]);
+					LOG(LOG_DEBUG,"FIRMWARE_VERSION= V %d . %d\r\n",FIRMWARE_VERSION/10,FIRMWARE_VERSION%10);
 				#endif
 
 			break;
@@ -776,17 +752,31 @@ static void kar_connect(void)
 				WriteUartBuf(0x01);
 				UART_Send_t(SLEEP_OFF_TIMER_SEY_COMMAN);
 			break;
+			case SYSTEM_UPDATE_COMMAN:      //升级命令
+				NVIC_SystemReset();
+				break;
 			default:break;
 		}
 	}
 	memset(get_Com,0,sizeof(get_Com));
 }
 
+#define APPLICATION_ADDRESS 0x1800
+#define  VECTOR_SIZE (48*4)
 
+void app_iap_init(void)
+{
+ 	memcpy((void*)0x10000000, (void*)APPLICATION_ADDRESS, VECTOR_SIZE); 
+	SYS_MemRemaptoSRAM;   
+}
 
 int main(void)
 {
 	uint8_t i =0x1f;
+	
+	GPIO_InitTypeDef GPIO_InitStructure;
+	app_iap_init();
+	
 	sys_init();
 	
 	while(Rtc_Check())
