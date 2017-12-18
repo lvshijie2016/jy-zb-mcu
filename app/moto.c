@@ -305,19 +305,18 @@ void moto_run_task(void)
 			else 
 				moto_flag = MOTO_TC;
 			
-			#if 0                                          //展示版本电机延时
-				moto_dealy_P();
-				if(check_soft_timeout(TIMER_MOTO_DELAY))
-					{
-						
-						moto_set_model();	
-						set_soft_timer(TIMER_MOTO_DELAY,300);
-						
-						#if defined( DeBug )
-							LOG(LOG_DEBUG,"MOTOR delay end......\r\n");
-						#endif
-					}
-			#endif
+			moto_set_model();
+//			moto_dealy_P();
+//			if(check_soft_timeout(TIMER_MOTO_DELAY))
+//				{
+//					
+//					moto_set_model();	
+//					set_soft_timer(TIMER_MOTO_DELAY,300);
+//					
+//					#if defined( DeBug )
+//						LOG(LOG_DEBUG,"MOTOR delay end......\r\n");
+//					#endif
+//				}
 			if (MOTO_t.timer != 0xFF)
 				set_soft_timer(TIMER_MOTO,(MOTO_t.timer*25));
 			else

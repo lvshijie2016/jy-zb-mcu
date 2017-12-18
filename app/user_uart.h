@@ -14,7 +14,7 @@
 														format "\n",  level, __func__, __FILE__, __LINE__, \
 														##__VA_ARGS__ );} \
 														while (0)
-#if true
+#if false
 	#define  DeBug 
 #endif 
 
@@ -41,7 +41,8 @@
 #define GET_TIMER_COMMAND														(unsigned char)	0x07
 #define BAT_COMMAN																(unsigned char)	0x25
 #define USB_OUT_COMMAN															(unsigned char)	0x26
-#define SLEEP_OFF_TIMER_SEY_COMMAN												(unsigned char)	0x27
+#define SLEEP_OFF_TIMER_SEY_COMMAN									(unsigned char)	0x27
+#define SYSTEM_UPDATE_COMMAN												(unsigned char)	0xF0
 
 #define KAR_POWER_OFF_COMMAND													(unsigned char)	0x20
 #define KAR_POWER__OFF															(unsigned char)	0x00

@@ -46,7 +46,7 @@
             <NotGenerated>0</NotGenerated>
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
-          <OutputDirectory>Y:\output\</OutputDirectory>
+          <OutputDirectory>..\</OutputDirectory>
           <OutputName>app</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
@@ -310,8 +310,8 @@
               </OCR_RVCT3>
               <OCR_RVCT4>
                 <Type>1</Type>
-                <StartAddress>0x0</StartAddress>
-                <Size>0x8000</Size>
+                <StartAddress>0x1800</StartAddress>
+                <Size>0x6800</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -335,8 +335,8 @@
               </OCR_RVCT8>
               <OCR_RVCT9>
                 <Type>0</Type>
-                <StartAddress>0x10000000</StartAddress>
-                <Size>0x1000</Size>
+                <StartAddress>0x100000c0</StartAddress>
+                <Size>0xf40</Size>
               </OCR_RVCT9>
               <OCR_RVCT10>
                 <Type>0</Type>
@@ -410,14 +410,39 @@
           <GroupName>APP</GroupName>
           <Files>
             <File>
-              <FileName>main.c</FileName>
+              <FileName>Abnormal_Monitoring.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\app\main.c</FilePath>
+              <FilePath>..\app\Abnormal_Monitoring.c</FilePath>
             </File>
             <File>
               <FileName>config.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\app\config.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>moto.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\moto.c</FilePath>
+            </File>
+            <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\led.c</FilePath>
+            </File>
+            <File>
+              <FileName>power_management.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\power_management.c</FilePath>
+            </File>
+            <File>
+              <FileName>rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\rtc.c</FilePath>
             </File>
             <File>
               <FileName>user_it.c</FileName>
@@ -433,31 +458,6 @@
               <FileName>user_uart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\app\user_uart.c</FilePath>
-            </File>
-            <File>
-              <FileName>led.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\app\led.c</FilePath>
-            </File>
-            <File>
-              <FileName>rtc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\app\rtc.c</FilePath>
-            </File>
-            <File>
-              <FileName>moto.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\app\moto.c</FilePath>
-            </File>
-            <File>
-              <FileName>power_management.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\app\power_management.c</FilePath>
-            </File>
-            <File>
-              <FileName>Abnormal_Monitoring.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\app\Abnormal_Monitoring.c</FilePath>
             </File>
           </Files>
         </Group>

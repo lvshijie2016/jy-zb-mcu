@@ -52,7 +52,7 @@
 /*==========================================================
 	 timer
 ===========================================================*/
-#if true
+#if false
 
 #include "c32f0xx_timer.h"
 
@@ -81,9 +81,9 @@
 #endif
 
 /* user header files include --------------------------------------------*/
-#include "user_timer.h"
+//#include "user_timer.h"
 #include "user_uart.h"
-#include "download.h"
+//#include "download.h"
 
 
 
@@ -160,11 +160,11 @@ LED GPIO
 
 
 /*OTA -----------------------------------------------------*/
-#define APPLICATION_ADDRESS 0x800
+#define APPLICATION_ADDRESS 0x1800
 #define  VECTOR_SIZE (48*4)
 
 
-#define ApplicationAddress    (0x0)    //2KB
+#define ApplicationAddress    (0x1800)    //KB
 #define FLASH_SIZE            (0x8000)   /* 32 KBytes */
 #define FLASH_IMAGE_SIZE      (uint32_t) (FLASH_SIZE - ApplicationAddress)
 

@@ -1,4 +1,3 @@
-
 #include "config.h"
 
 /**
@@ -200,7 +199,7 @@ void sys_init(void)
 {
 	
 	SYS_SystemInitial();
-//	wdt_init_t(1);
+//wdt_init_t(1);
 	gpio_init_t();
 	UART1_Init();
 	UART0_Init();

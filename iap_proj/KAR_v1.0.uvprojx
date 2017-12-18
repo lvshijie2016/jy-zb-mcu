@@ -311,7 +311,7 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x0</StartAddress>
-                <Size>0x8000</Size>
+                <Size>0x1800</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -415,11 +415,6 @@
               <FilePath>..\iap\main.c</FilePath>
             </File>
             <File>
-              <FileName>user_timer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\iap\user_timer.c</FilePath>
-            </File>
-            <File>
               <FileName>user_uart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\iap\user_uart.c</FilePath>
@@ -466,11 +461,6 @@
               <FileName>c32f0xx_iap.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\C32F0xx_library\Drivers\source\c32f0xx_iap.c</FilePath>
-            </File>
-            <File>
-              <FileName>c32f0xx_timer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\C32F0xx_library\Drivers\source\c32f0xx_timer.c</FilePath>
             </File>
             <File>
               <FileName>c32f0xx_uart.c</FileName>

@@ -5,9 +5,9 @@
 #include "c32f0xx_iap.h"
 #include "stdio.h"
 
-#define ApplicationAddress    (0x800)    //2KB
-#define FLASH_SIZE            (0x8000)   //32 KBytes
-#define FLASH_IMAGE_SIZE      (uint32_t) (FLASH_SIZE - ApplicationAddress)
+//#define ApplicationAddress    (0x4000)    //2KB
+//#define FLASH_SIZE            (0x8000)   //32 KBytes
+//#define FLASH_IMAGE_SIZE      (uint32_t) (FLASH_SIZE - ApplicationAddress)
 
 #define DOWNLOAD       	(0x31)  
 #define DOWNLOADING    	(0x32)  
@@ -35,8 +35,8 @@ typedef  void (*pFunction)(void);
 static pFunction Jump_To_Application;
 static uint32_t JumpAddress;
 
-uint8_t com_rx_data(void);
-void 	com_tx_data(void);
+uint8_t com_rx_data();
+void 	com_tx_data();
 
 void 	iap_send_pkt(uint8_t* data);
 void 	iap_receive_pkt(uint8_t* data);

@@ -136,7 +136,7 @@ void uart0_get_cmd(uint8_t *g_com)
 	uint8_t i;
 	
 	valid_data = ((Buffer_t.tail+BUFFER_LEN-Buffer_t.head)%BUFFER_LEN);//计算有效数据
-	if(valid_data > 6)
+	if(valid_data > 5)
 	{
 		valid_data = get_head(valid_data);
 		if(valid_data)

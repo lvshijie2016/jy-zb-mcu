@@ -378,6 +378,7 @@ typedef struct recv_data_config {
 uint8_t recv_data = 0;
 uint8_t recv_update_flag = 0;
 uint8_t receive_complete_flag = 0;
+uint8_t receive_ota_flag = 0;
 uint16_t recv_ptr = 0;
 uint8_t recv_state = recv_start;
 
@@ -418,8 +419,8 @@ void flash_write()
 	uint16_t i;
 	uint16_t j;
 	#if 0
-	static uint32_t addr_offesr = 1020;
-	uint32_t addr_base   = 0x7C00;
+	static uint32_t addr_offesr = 0;
+	uint32_t addr_base   = 0x1800;
 	uint32_t data        = 0;
 	uint32_t sector_size = 1024;
 	IAP_FlashProgram(addr_base+addr_offesr,0x55aaaa55);
@@ -457,7 +458,7 @@ void flash_write()
 	{
 		
 	}
-  for (j=1; (j<packet_data.recv_data_len-2-3) && (flah_offset<FLASH_SIZE); j+=4)
+  for (j=1; (j<packet_data.recv_data_len-2-2) && (flah_offset<FLASH_SIZE); j+=4)
    {
 
 		 write_data = (uint32_t)packet_data.recv_update_data[j];
@@ -586,21 +587,23 @@ void packet_handle()
 		{
 			if (packet_data.recv_command == 0xF1)
 			{
-				 toal_packet_num= packet_data.recv_update_data[0];
+				toal_packet_num= packet_data.recv_update_data[0];
 				UART_Send_t(TX_OTA_ACK);
 			}
 			else if (packet_data.recv_command == 0xF2)
 			{
+				receive_ota_flag = 1;
 				has_receive_packet_num = packet_data.recv_update_data[0];
 				WriteUartBuf(packet_data.recv_update_data[0]);
+				flash_write();
 				WriteUartBuf(0x00);
 				UART_Send_t(TX_OTA_DATA_ACK);
-				flash_write();
 				reset_config();
 				if (has_receive_packet_num == toal_packet_num)
 				{
 					WriteUartBuf(0x00);
-					UART_Send_t(TX_OTA_DATA_ACK);
+					UART_Send_t(TX_OTA_LAST_DATA_ACK);
+					IAP_FlashProgram(0x7800,0x55aaaa55);
 				}
 			}
 			reset_config();

@@ -14,7 +14,7 @@
 														format "\n",  level, __func__, __FILE__, __LINE__, \
 														##__VA_ARGS__ );} \
 														while (0)
-#if true
+#if false
 	#define  DeBug 
 #endif 
 
@@ -33,10 +33,15 @@
 #define TX_OTA_ACK 																(unsigned char)	0xF1
 
 #define TX_OTA_DATA_ACK 													(unsigned char)	0xF2
+	
+#define TX_OTA_LAST_DATA_ACK 											 (unsigned char)	0xF3
 
 
 #define HANDSHAKE_COMMAND														(unsigned char)	0x01				
 							
+
+
+
 
 void get_data(void);
 
@@ -55,14 +60,14 @@ typedef struct
 }_Uart0_Typedef;
 
 
-//队列环形BUF
-typedef struct Buffer_t{ 
-	
-	uint16_t 	head;
-	uint16_t 	tail;
-	uint8_t 	buffer[BUFFER_LEN];
+////队列环形BUF
+//typedef struct Buffer_t{ 
+//	
+//	uint16_t 	head;
+//	uint16_t 	tail;
+//	uint8_t 	buffer[BUFFER_LEN];
 
-}Buffer;
+//}Buffer;
 
 
 

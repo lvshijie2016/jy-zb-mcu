@@ -11,6 +11,7 @@ static uint8_t 	bat_value = 100;
 static uint8_t  bat_last_value = 50;
 static uint8_t  get_Com[10] = {0};
 static uint16_t sleep_off_timer = SLEEP_DEFAULT_OFF_TIMER; //睡眠关机时间
+static uint8_t FIRMWARE_VERSION[3]= {2,6,14};
 
 static void LowPowerConsumptionConfig(void);
 static void dly1us(uint32_t dlytime) {while(dlytime--);}
@@ -148,7 +149,7 @@ void configpad(uint32_t pinstat)
 
 void LowPowerConsumptionConfig(void)
 {
-	
+//	get_gpio(IOCON_GPIOC,PIN2,PC2_FUNC_NRST,IO_Output,IO_HIGH,PULL_UP_EN);
 	WDT_Disable;
 	aperture_all_off();
 	moto_P();
@@ -163,6 +164,7 @@ void LowPowerConsumptionConfig(void)
 	dly1us(50000);
 	SYS_EnterDeepSleep(PD_RTCOSC | PD_BOD, 0);	
 	sys_init_t();//重新初始化所有配置
+//	get_gpio(IOCON_GPIOC,PIN2,PC2_FUNC_GPIO,IO_Output,IO_HIGH,PULL_UP_EN);
 	Information_events = get_Alarm_Int_state() ? RTC_INT_EVENTS : POWER_KEY_EVENTS;
 	# if defined(DeBug)
 		LOG(LOG_DEBUG," exit sleep mode...  ->%d \r\n",Information_events);
@@ -205,7 +207,7 @@ static void kar_off(void)
 	POWER_OFF;
 	aperture_all_off();
 	moto_P();
-//	LowPowerConsumptionConfig();//进入睡眠
+	LowPowerConsumptionConfig();//进入睡眠
 }
 /**
   *****************************************************************************
@@ -672,6 +674,7 @@ static void state_run_monitoring(void)
 
 static void kar_connect(void)
 {
+	uint8_t i;
 	uart0_get_cmd(get_Com);
 	if(kar_state_t == KAR_RUN  || get_Com[0] ==  KAR_RUN_STATE)
 	{
@@ -679,11 +682,14 @@ static void kar_connect(void)
 
 			case HANDSHAKE_COMMAND:
 				WriteUartBuf(POISON_VERSION);
-				WriteUartBuf(FIRMWARE_VERSION);
+				for (i=0;i<3;i++)
+					{
+						WriteUartBuf(FIRMWARE_VERSION[i]);
+					}
 				UART_Send_t(HANDSHAKE_COMMAND);
 				
 				#if defined( DeBug )
-					LOG(LOG_DEBUG,"FIRMWARE_VERSION= V %d . %d\r\n",FIRMWARE_VERSION/10,FIRMWARE_VERSION%10);
+					LOG(LOG_DEBUG,"FIRMWARE_VERSION= V %d . %d. %d\r\n",FIRMWARE_VERSION[0],FIRMWARE_VERSION[1],FIRMWARE_VERSION[2]);
 				#endif
 
 			break;
@@ -753,6 +759,11 @@ static void kar_connect(void)
 				UART_Send_t(SLEEP_OFF_TIMER_SEY_COMMAN);
 			break;
 			case SYSTEM_UPDATE_COMMAN:      //升级命令
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"receive SYSTEM_UPDATE_COMMAN\r\n");
+				#endif
+				WriteUartBuf(0x00);
+				UART_Send_t(0xF0);
 				NVIC_SystemReset();
 				break;
 			default:break;
@@ -785,7 +796,7 @@ int main(void)
 		dly1us(100000);
 		led_mode_get_tt(LED_MODE_APERTURE_ALL_BLINK,0xff,10);
 		if(!i){
-			kar_off();//进入睡眠
+//			kar_off();//进入睡眠
 			i = 0xff;
 		}
 	}//检测RTC
@@ -793,7 +804,14 @@ int main(void)
 	#if defined( DeBug )
 		LOG(LOG_DEBUG,"RTC Check Successful.. \r\n");
 	#endif
-	kar_off();//进入睡眠
+	if ((*((uint32_t *)(0x7800))) != 0x55aaaa55)
+		kar_off();//进入睡眠
+	else
+	{
+		kar_state_t =  KAR_RUN;
+		kar_state   =  KAR_RUN;
+		IAP_FlashProgram(0x7800,0);
+	}
 //	POWER_ON; 
 	//moto_D();
 	
