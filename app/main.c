@@ -11,8 +11,9 @@ static uint8_t 	bat_value = 100;
 static uint8_t  bat_last_value = 50;
 static uint8_t  get_Com[10] = {0};
 static uint16_t sleep_off_timer = SLEEP_DEFAULT_OFF_TIMER; //睡眠关机时间
-static uint8_t FIRMWARE_VERSION[3]= {2,6,14};
+static uint8_t FIRMWARE_VERSION[3]= {2,6,18};
 
+extern _GetLedComData_t GetLedComData_t;
 static void LowPowerConsumptionConfig(void);
 static void dly1us(uint32_t dlytime) {while(dlytime--);}
 
@@ -149,11 +150,17 @@ void configpad(uint32_t pinstat)
 
 void LowPowerConsumptionConfig(void)
 {
-//	get_gpio(IOCON_GPIOC,PIN2,PC2_FUNC_NRST,IO_Output,IO_HIGH,PULL_UP_EN);
+	GPIO_InitTypeDef GPIO_InitStructure;
+	
+	#ifdef USING_RESET
+//	GPIO_InitStructure.bit.FUNC = PC2_FUNC_NRST;
+		GPIO_InitStructure.bit.FUNC = PC2_FUNC_GPIO;
+	#endif
+	
 	WDT_Disable;
 	aperture_all_off();
 	moto_P();
-	configpad(0);
+//	configpad(0);
 	DisablePhrClk_t();
 	SYS_SetDeepSleepWakeupPin(PIN0|PIN5,FALL_EDGE);//设置唤醒引脚	
 	#if defined( DeBug )
@@ -164,7 +171,12 @@ void LowPowerConsumptionConfig(void)
 	dly1us(50000);
 	SYS_EnterDeepSleep(PD_RTCOSC | PD_BOD, 0);	
 	sys_init_t();//重新初始化所有配置
-//	get_gpio(IOCON_GPIOC,PIN2,PC2_FUNC_GPIO,IO_Output,IO_HIGH,PULL_UP_EN);
+	
+	#ifdef USING_RESET
+		GPIO_InitStructure.bit.FUNC = PC2_FUNC_NRST;
+	//GPIO_InitStructure.bit.FUNC = PC2_FUNC_GPIO;
+	#endif
+	
 	Information_events = get_Alarm_Int_state() ? RTC_INT_EVENTS : POWER_KEY_EVENTS;
 	# if defined(DeBug)
 		LOG(LOG_DEBUG," exit sleep mode...  ->%d \r\n",Information_events);
@@ -810,8 +822,10 @@ int main(void)
 	{
 		kar_state_t =  KAR_RUN;
 		kar_state   =  KAR_RUN;
+		memset(&GetLedComData_t,0,sizeof(_GetLedComData_t));
 		IAP_FlashProgram(0x7800,0);
 	}
+	
 //	POWER_ON; 
 	//moto_D();
 	
