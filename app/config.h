@@ -90,7 +90,7 @@
 #include  "Abnormal_Monitoring.h"
 
 
-
+#define USING_V50
 
 /* Public typedef -------------------------------------------------------*/
 
@@ -132,14 +132,34 @@ MOTO GPIO
 #define MOTO1_HIGH_PH 												GPIO_SetPin(GPIOA,PIN13)
 #define MOTO1_LOW_PH  												GPIO_ResetPin(GPIOA,PIN13)
 
-#define PWM_1_HIGH 													GPIO_SetPin(GPIOB,PIN3)
-#define PWM_1_LOW  													GPIO_ResetPin(GPIOB,PIN3)
+
+#ifndef USING_V50
+
+	#define PWM_1_HIGH 													GPIO_SetPin(GPIOB,PIN3)
+	#define PWM_1_LOW  													GPIO_ResetPin(GPIOB,PIN3)
+
+#else
+
+	#define PWM_1_HIGH 													GPIO_SetPin(GPIOB,PIN1)
+	#define PWM_1_LOW  													GPIO_ResetPin(GPIOB,PIN1)
+
+#endif 
 
 
 #define PWM_2_HIGH 													GPIO_SetPin(GPIOA,PIN10)
 #define PWM_2_LOW  													GPIO_ResetPin(GPIOA,PIN10)
-#define MOTO2_HIGH_PH 												GPIO_SetPin(GPIOB,PIN1)
-#define MOTO2_LOW_PH  				 								GPIO_ResetPin(GPIOB,PIN1)
+
+#ifndef USING_V50
+
+	#define MOTO2_HIGH_PH 												GPIO_SetPin(GPIOB,PIN1)
+	#define MOTO2_LOW_PH  				 								GPIO_ResetPin(GPIOB,PIN1)
+
+#else
+
+	#define MOTO2_HIGH_PH 												GPIO_SetPin(GPIOB,PIN3)
+	#define MOTO2_LOW_PH  				 								GPIO_ResetPin(GPIOB,PIN3)
+
+#endif
 
 
 
@@ -153,7 +173,7 @@ MOTO GPIO
 /*===============================================================================================
 USB_DET GPIO
 ==============================================================================================*/
-#define USB_DET														PIN12
+#define USB_DET														PIN11
 /*===============================================================================================
 LED GPIO
 ==============================================================================================*/
@@ -183,6 +203,8 @@ LED GPIO
 #define  SLEEP_DEFAULT_OFF_TIMER						(unsigned char)60 //分
 
 #define  BAT_VALUE_BUFFER								(unsigned char) 50
+	
+#define USING_RESET
 
 
 typedef struct

@@ -47,10 +47,10 @@ void GPIOA_IRQHandler(void)
 			Information_events |=  RTC_INT_EVENTS;
 			GPIOA->IC.all |= PIN5;
 			break;
-		case PIN11:
+		case PIN12:
 		
 			Information_events |=  DRV_EVENTS;
-			GPIOA->IC.all |= PIN11;
+			GPIOA->IC.all |= PIN12;
 			break;
 		case USB_DET:
 		

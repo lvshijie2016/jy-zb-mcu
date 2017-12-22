@@ -159,7 +159,7 @@ void gpio_init_t(void)
 {
 	NVIC_SetPriority(GPIOA_IRQn,1);
 	/***************TOUCH2_DRV****************************/
-	get_gpio(IOCON_GPIOA,	PIN11,	PA11_FUNC_GPIO,	IO_Input,	IO_HIGH, PULL_UP_EN);  //->MOTO ADC 1
+	get_gpio(IOCON_GPIOA,	PIN12,	PA12_FUNC_GPIO,	IO_Input,	IO_HIGH, PULL_UP_EN);  //->MOTO ADC 1
 	
 	/***************5V_DRV_EN****************************/
 	get_gpio(IOCON_GPIOC, PIN3, (SPECIAL|PC3_FUNC_GPIO), IO_Output,	IO_LOW, PULL_UP_EN); //5V_DRV_EN
@@ -192,7 +192,7 @@ void gpio_init_t(void)
 	get_gpio(IOCON_GPIOB, PIN4, PB0_FUNC_GPIO,	IO_Output,	IO_LOW, PULL_UP_EN);
 	
 /***************************USB_DET GPIO******************************/
-	get_gpio(IOCON_GPIOA, PIN12, PA12_FUNC_GPIO, IO_Input,	IO_HIGH, DISABLE_ALL_PULL);	
+	get_gpio(IOCON_GPIOA, PIN11, PA11_FUNC_GPIO, IO_Input,	IO_HIGH, DISABLE_ALL_PULL);	
 
 	/***************************MOTO******************************/
   //PWM
