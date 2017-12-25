@@ -226,7 +226,7 @@ static void adc_init_t(void)
 { 
 	SYS_EnablePhrClk(AHB_ADC);
 	ADC_DeInit();
-	ADC_Init(1000000UL);
+	ADC_Init(10000UL);
 	ADC_EnableChannels( ADC_CHN1_ENABLE);
 	ADC_EnableChannels( ADC_CHN4_ENABLE);
 	ADC_EnableChannels( ADC_CHN6_ENABLE);
@@ -373,8 +373,8 @@ void DisablePhrClk_t(void)
 	get_gpio(IOCON_GPIOA,PIN2,PA2_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
 	get_gpio(IOCON_GPIOA,PIN3,PA3_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
 	
-	NVIC_DisableIRQ(GPIOA_IRQn);
-	SYS_DisablePhrClk(AHB_GPIOA);
+//	NVIC_DisableIRQ(GPIOA_IRQn);
+//	SYS_DisablePhrClk(AHB_GPIOA);
 	SYS_DisablePhrClk(AHB_GPIOC);
 	SYS_DisablePhrClk(AHB_GPIOB);
 	SYS_DisablePhrClk(AHB_WDT);

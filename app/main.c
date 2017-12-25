@@ -11,7 +11,7 @@ static uint8_t 	bat_value = 100;
 static uint8_t  bat_last_value = 50;
 static uint8_t  get_Com[10] = {0};
 static uint16_t sleep_off_timer = SLEEP_DEFAULT_OFF_TIMER; //睡眠关机时间
-static uint8_t FIRMWARE_VERSION[3]= {2,6,19};
+static uint8_t FIRMWARE_VERSION[3]= {2,7,1};
 
 extern _GetLedComData_t GetLedComData_t;
 static void LowPowerConsumptionConfig(void);
@@ -322,7 +322,7 @@ static void power_key_event(void)
 		{
 			key_timer = 0;
 			Information_events	 &= 	(~POWER_KEY_EVENTS);
-		}else if(key_timer <30)
+		}else if(key_timer >3&&key_timer <30)
 		{
 			key_event = SHORT_PRESS;	//短按
 			key_timer = 0;
@@ -330,6 +330,11 @@ static void power_key_event(void)
 			#if defined( DeBug )
 				LOG(LOG_DEBUG," SHORT_PRESS event ..\r\n");
 			#endif
+		}
+		else
+		{
+			key_timer = 0;
+			Information_events	 &= 	(~POWER_KEY_EVENTS);
 		}
 	}
 }

@@ -40,6 +40,8 @@ void moto_dealy_P(void)
 	MOTO2_LOW_PH;
 }
 
+#ifndef USING_V50 
+
 /*前进*/
 void moto_D(void)
 {
@@ -53,10 +55,6 @@ void moto_D(void)
 	//MOTO_t.L_duty  = 100;
 	//MOTO_t.R_duty  = 100;
 	CT16B1_START;
-	
-	#if defined( DeBug )
-		LOG(LOG_DEBUG,"motor qian-jin action ......\r\n");
-	#endif
 }
 
 /*右前转*/
@@ -69,10 +67,6 @@ static void moto_R_D(void)
 	MOTO1_LOW_PH;
 	MOTO_t.L_duty = 0; 
 	CT16B1_START;
-	
-	#if defined( DeBug )
-		LOG(LOG_DEBUG,"motor you-zhuan action ......\r\n");
-	#endif
 }
 
 /*左前转*/
@@ -84,10 +78,6 @@ static void moto_L_D(void)
 	//MOTO1_HIGH_PH;
 	MOTO_t.L_duty  = 0;
 	CT16B1_START;
-	
-	#if defined( DeBug )
-		LOG(LOG_DEBUG,"motor zuo-qian-zhuan action ......\r\n");
-	#endif
 
 }
 
@@ -101,10 +91,6 @@ static void moto_R_H(void)
 	//MOTO1_LOW_PH;
 	MOTO_t.L_duty = 0;
 	CT16B1_START;
-	
-	#if defined( DeBug )
-		LOG(LOG_DEBUG,"motor you-hou-zhuan action ......\r\n");
-	#endif
 
 }
 
@@ -117,10 +103,6 @@ static void moto_L_H(void)
 	//MOTO1_HIGH_PH;
 	MOTO_t.R_duty = 0;
 	CT16B1_START;
-	
-	#if defined( DeBug )
-		LOG(LOG_DEBUG,"motor zuo-hou-zhuan action ......\r\n");
-	#endif
 
 }
 
@@ -135,42 +117,112 @@ static void moto_H(void)
 	MOTO1_LOW_PH;
 	CT16B1_START;
 	
-	#if defined( DeBug )
-		LOG(LOG_DEBUG,"motor hou-tui action ......\r\n");
-	#endif
+}
+
+#else
+
+
+/*前进*/
+void moto_D(void)
+{
+	//MOTO2_LOW_PH;
+	MOTO2_HIGH_PH;
+	//MOTO1_HIGH_PH;
+	MOTO1_LOW_PH;
+	CT16B1_START;
+}
+
+/*右前转*/
+
+static void moto_R_D(void)
+{
+	//MOTO2_LOW_PH;
+	MOTO2_HIGH_PH;
+	MOTO1_LOW_PH;
+	//MOTO1_HIGH_PH;
+	MOTO_t.L_duty  = 0;
+	CT16B1_START;
+}
+
+/*左前转*/
+static void moto_L_D(void)
+{
+	MOTO2_LOW_PH;
+	//MOTO2_HIGH_PH;
+	//MOTO1_HIGH_PH;
+	MOTO1_LOW_PH;
+	MOTO_t.L_duty = 0; 
+	CT16B1_START;
+
+}
+
+
+/*右后转*/
+static void moto_R_H(void)
+{
+	MOTO2_LOW_PH;
+	//MOTO2_HIGH_PH;
+	MOTO1_HIGH_PH;
+	//MOTO1_LOW_PH;
+	MOTO_t.L_duty = 0;
+	CT16B1_START;
+
+}
+
+/*左后转*/
+static void moto_L_H(void)
+{
+	MOTO2_LOW_PH;
+	//MOTO2_HIGH_PH;
+	MOTO1_LOW_PH;
+	//MOTO1_HIGH_PH;
+	MOTO_t.R_duty = 0;
+	CT16B1_START;
+
+}
+
+
+
+/*后退*/
+static void moto_H(void)
+{
+		MOTO2_LOW_PH;
+	//MOTO2_HIGH_PH;
+	
+	
+	
+	MOTO1_HIGH_PH;
+	//MOTO1_LOW_PH;
+	//MOTO_t.L_duty  = 100;
+	//MOTO_t.R_duty  = 100;
+	CT16B1_START;
 	
 }
+
+#endif
 
 
 /*右转圈*/
 
-static void moto_R_T(void)
+static void moto_L_T(void)
 {
 	MOTO1_LOW_PH;
 	//MOTO1_HIGH_PH;
 	//MOTO2_HIGH_PH;
 	MOTO2_LOW_PH;
 	CT16B1_START;
-	
-	#if defined( DeBug )
-		LOG(LOG_DEBUG,"motor you-zhuan-quan ......\r\n");
-	#endif
 
 }
 
 
 /*左转圈*/
-static void moto_L_T(void)
+static void moto_R_T(void)
 {
 	MOTO1_HIGH_PH;
 	//MOTO1_LOW_PH;
 	//MOTO2_LOW_PH;
 	MOTO2_HIGH_PH;
 	CT16B1_START;
-	
-	#if defined( DeBug )
-		LOG(LOG_DEBUG,"motor zuo-zhuan-quan ......\r\n");
-	#endif
 }
 
 
