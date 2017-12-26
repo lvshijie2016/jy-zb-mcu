@@ -295,6 +295,12 @@ static void UART1_Init(void)
 		get_adc_gpio(IOCON_GPIOA,PIN14,PA14_FUNC_TXD1,PULL_UP_EN);
 		UART_Open(UART1, 115200, UART_NO_PARITY, UART_RX_NOT_EMPTY);
 	#endif
+	
+	#if defined( V50_DeBug )
+		SYS_EnablePhrClk(AHB_UART1);  
+		get_adc_gpio(IOCON_GPIOA,PIN14,PA14_FUNC_TXD1,PULL_UP_EN);
+		UART_Open(UART1, 115200, UART_NO_PARITY, UART_RX_NOT_EMPTY);
+	#endif
 }
 
 
@@ -367,7 +373,7 @@ void DisablePhrClk_t(void)
 	get_gpio(IOCON_GPIOA,PIN4,PA4_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
 	
 	//USB_DET
-	get_gpio(IOCON_GPIOA,PIN12,PA12_FUNC_GPIO,IO_Output,IO_LOW,PULL_DOWN_EN);
+	get_gpio(IOCON_GPIOA,PIN11,PA11_FUNC_GPIO,IO_Output,IO_LOW,PULL_DOWN_EN);
 	
 	//uart0
 	get_gpio(IOCON_GPIOA,PIN2,PA2_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
