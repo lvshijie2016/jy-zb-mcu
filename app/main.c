@@ -11,7 +11,9 @@ static uint8_t 	bat_value = 100;
 static uint8_t  bat_last_value = 50;
 static uint8_t  get_Com[10] = {0};
 static uint16_t sleep_off_timer = SLEEP_DEFAULT_OFF_TIMER; //睡眠关机时间
-static uint8_t FIRMWARE_VERSION[3]= {2,7,1};
+static uint8_t FIRMWARE_VERSION[3]= {2,7,4};
+
+static uint8_t sleep_flag = 0;
 
 extern _GetLedComData_t GetLedComData_t;
 static void LowPowerConsumptionConfig(void);
@@ -150,39 +152,25 @@ void configpad(uint32_t pinstat)
 
 void LowPowerConsumptionConfig(void)
 {
-	GPIO_InitTypeDef GPIO_InitStructure;
-	
-	#ifdef USING_RESET
-//	GPIO_InitStructure.bit.FUNC = PC2_FUNC_NRST;
-		GPIO_InitStructure.bit.FUNC = PC2_FUNC_GPIO;
-	#endif
-	
-	WDT_Disable;
+	sleep_flag = 1;
+//	WDT_Disable;
 	aperture_all_off();
 	moto_P();
-//	configpad(0);
+//configpad(0);
 	DisablePhrClk_t();
-	SYS_SetDeepSleepWakeupPin(PIN0|PIN5,FALL_EDGE);//设置唤醒引脚	
+//	SYS_SetDeepSleepWakeupPin(PIN0|PIN5,FALL_EDGE);//设置唤醒引脚	
 	#if defined( DeBug )
 		LOG(LOG_DEBUG," get sleep mode \r\n");
 	#endif
-	SYS_DisablePhrClk(0xfffffff0 & (~(1<<29)));//关闭GPIOA时钟
-	IOCON->PIOA_0.all  = PIN0|PIN5;//|PIN5;//设置唤醒引脚上拉
-	dly1us(50000);
-	SYS_EnterDeepSleep(PD_RTCOSC | PD_BOD, 0);	
-	sys_init_t();//重新初始化所有配置
-	
-	#ifdef USING_RESET
-		GPIO_InitStructure.bit.FUNC = PC2_FUNC_NRST;
-	//GPIO_InitStructure.bit.FUNC = PC2_FUNC_GPIO;
-	#endif
-	
-	Information_events = get_Alarm_Int_state() ? RTC_INT_EVENTS : POWER_KEY_EVENTS;
+//	SYS_DisablePhrClk(0xfffffff0 & (~(1<<29)));//关闭GPIOA时钟
+//	IOCON->PIOA_0.all  = PIN0|PIN5;//|PIN5;//设置唤醒引脚上拉
+//	dly1us(50000);
+//	SYS_EnterDeepSleep(PD_RTCOSC | PD_BOD, 0);	
+//	sys_init_t();//重新初始化所有配置
+//	Information_events = get_Alarm_Int_state() ? RTC_INT_EVENTS : POWER_KEY_EVENTS;
 	# if defined(DeBug)
 		LOG(LOG_DEBUG," exit sleep mode...  ->%d \r\n",Information_events);
 	#endif
-	
-	
 	
 }
 
@@ -209,9 +197,18 @@ static void kar_off(void)
 	#if defined( DeBug )
 		LOG(LOG_DEBUG,"kar_state&kar_state_t =  KAR_STOP");
 	#endif
+	
+	#if defined( V50_DeBug )
+		LOG(LOG_DEBUG,"kar_state&kar_state_t =  KAR_STOP");
+	#endif
 	dly1us(50000);
 	DRV_Disable;//USB截止输出
+	
 	#if defined( DeBug )
+		LOG(LOG_DEBUG,"power OFF...... \r\n");
+	#endif
+	
+	#if defined( V50_DeBug )
 		LOG(LOG_DEBUG,"power OFF...... \r\n");
 	#endif
 	dly1us(50000);
@@ -252,11 +249,20 @@ static void kar_on(void)
 			LOG(LOG_DEBUG,"state start power ON...... \r\n");
 			
 		#endif
+		
+		#if defined( V50_DeBug )
+			LOG(LOG_DEBUG,"state start power ON...... \r\n");
+			
+		#endif
 		kar_state_t = KAR_RUN;  //开始接收串口数据
 	}else 
 	{
 		led_mode_get_t(0x01,0x03,8 );	
 		#if defined( DeBug )
+			LOG(LOG_DEBUG,"Low energy,state exit power ON ...... \r\n");
+		#endif
+		
+		#if defined( V50_DeBug )
 			LOG(LOG_DEBUG,"Low energy,state exit power ON ...... \r\n");
 		#endif
 		i = 0x1F;
@@ -305,6 +311,10 @@ static void power_key_event(void)
 					LOG(LOG_DEBUG,"LONG_PRESS event ....\r\n");
 				#endif
 				
+				#if defined( V50_DeBug )
+					LOG(LOG_DEBUG,"LONG_PRESS event ....\r\n");
+				#endif
+				
 			}
 			else if(key_timer > 1200) 
 			{
@@ -328,6 +338,10 @@ static void power_key_event(void)
 			key_timer = 0;
 			Information_events	 &= 	(~POWER_KEY_EVENTS);
 			#if defined( DeBug )
+				LOG(LOG_DEBUG," SHORT_PRESS event ..\r\n");
+			#endif
+			
+			#if defined( V50_DeBug )
 				LOG(LOG_DEBUG," SHORT_PRESS event ..\r\n");
 			#endif
 		}
@@ -370,6 +384,10 @@ static void power_OFF_ON(void)
 						#if defined( DeBug )
 							LOG(LOG_DEBUG,"send kar power off...... \r\n");
 						#endif
+				
+						#if defined( V50_DeBug )
+							LOG(LOG_DEBUG,"send kar power off...... \r\n");
+						#endif
 						key_event = MAX_KEYS_EVENT;
 				break;
 				case KAR_DORMANCY:                   //触发唤醒事件  
@@ -378,6 +396,9 @@ static void power_OFF_ON(void)
 						LOG(LOG_DEBUG," state KAR_DORMANCY,Triggering SHORT_PRESS event ...... \r\n");
 					#endif
 					
+					#if defined( V50_DeBug )
+						LOG(LOG_DEBUG," state KAR_DORMANCY,Triggering SHORT_PRESS event ...... \r\n");
+					#endif
 				break;
 
 				default:break;
@@ -396,6 +417,10 @@ static void power_OFF_ON(void)
 				#if defined( DeBug )
 						LOG(LOG_DEBUG,"wakes up start ...... \r\n");
 				#endif
+				
+				#if defined( V50_DeBug )
+						LOG(LOG_DEBUG,"wakes up start ...... \r\n");
+				#endif
 			}
 			break;
 			
@@ -406,6 +431,10 @@ static void power_OFF_ON(void)
 				KAR_DORMANCY_Disable;
 				key_event = MAX_KEYS_EVENT;
 				#if defined( DeBug )
+						LOG(LOG_DEBUG,"KAR wakes up system...... \r\n");
+				#endif
+				
+				#if defined( V50_DeBug )
 						LOG(LOG_DEBUG,"KAR wakes up system...... \r\n");
 				#endif
 			}
@@ -473,6 +502,11 @@ static void Handler_event(void)
 	//时钟中断事件处理
 	if(Information_events&RTC_INT_EVENTS)
 	{
+		if (sleep_flag)
+		{
+			sys_init_t();//重新初始化所有配置
+			sleep_flag = 0;
+		}
 		#if defined( DeBug )
 			LOG(LOG_DEBUG,"RTC_INT_EVENTS\n");
 		#endif
@@ -499,6 +533,10 @@ static void Handler_event(void)
 		#if defined( DeBug )
 			LOG(LOG_DEBUG,"USB_DET_EVENTS \r\n");
 		#endif
+		
+		#if defined( V50_DeBug )
+			LOG(LOG_DEBUG,"USB_DET_EVENTS \r\n");
+		#endif
 		if(kar_state == KAR_RUN && GPIO_GetPinState(GPIOA,USB_DET))
 		{
 			WriteUartBuf(0x02);
@@ -511,6 +549,11 @@ static void Handler_event(void)
 	//按键处理
 	if(Information_events&POWER_KEY_EVENTS)
 	{
+		if (sleep_flag)
+		{
+			sys_init_t();//重新初始化所有配置
+			sleep_flag = 0;
+		}
 		power_key_event();
 		//heartbeat_flag = 0;
 	}
@@ -632,6 +675,10 @@ static void state_run_monitoring(void)
 				#if defined( DeBug )
 					LOG(LOG_DEBUG,"energy LOW 5 get -> POWER_OFF bat_value = %d\r\n",bat_value);
 				#endif
+					
+				#if defined( V50_DeBug )
+					LOG(LOG_DEBUG,"energy LOW 5 get -> POWER_OFF bat_value = %d\r\n",bat_value);
+				#endif
 					bat_alarm_timer_t = 3;
 				}else bat_alarm_timer_t--;
 				
@@ -650,6 +697,10 @@ static void state_run_monitoring(void)
 				LOG(LOG_DEBUG,"get_sleep_timer = %d\r\n",(get_sleep_timer*10));
 			#endif
 			
+			#if defined( V50_DeBug )
+				LOG(LOG_DEBUG,"get_sleep_timer = %d\r\n",(get_sleep_timer*10));
+			#endif
+			
 			if(!get_sleep_timer)
 			{
 				#if defined( DeBug )
@@ -664,6 +715,10 @@ static void state_run_monitoring(void)
 				if(!GPIO_GetPinState(GPIOA,USB_DET)){
 					//读取是否在充电状态
 					#if defined( DeBug )
+						LOG(LOG_DEBUG,"KAR_DORMANCY energy LOW 5 get kar_off() %d\r\n" , bat_value);
+					#endif
+					
+					#if defined( V50_DeBug )
 						LOG(LOG_DEBUG,"KAR_DORMANCY energy LOW 5 get kar_off() %d\r\n" , bat_value);
 					#endif
 					kar_off();
@@ -706,6 +761,10 @@ static void kar_connect(void)
 				UART_Send_t(HANDSHAKE_COMMAND);
 				
 				#if defined( DeBug )
+					LOG(LOG_DEBUG,"FIRMWARE_VERSION= V %d . %d. %d\r\n",FIRMWARE_VERSION[0],FIRMWARE_VERSION[1],FIRMWARE_VERSION[2]);
+				#endif
+					
+				#if defined( V50_DeBug )
 					LOG(LOG_DEBUG,"FIRMWARE_VERSION= V %d . %d. %d\r\n",FIRMWARE_VERSION[0],FIRMWARE_VERSION[1],FIRMWARE_VERSION[2]);
 				#endif
 
