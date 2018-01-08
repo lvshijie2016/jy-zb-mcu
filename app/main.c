@@ -11,9 +11,7 @@ static uint8_t 	bat_value = 100;
 static uint8_t  bat_last_value = 50;
 static uint8_t  get_Com[10] = {0};
 static uint16_t sleep_off_timer = SLEEP_DEFAULT_OFF_TIMER; //睡眠关机时间
-static uint8_t FIRMWARE_VERSION[3]= {2,7,4};
-
-static uint8_t sleep_flag = 0;
+static uint8_t FIRMWARE_VERSION[3]= {2,7,6};
 
 extern _GetLedComData_t GetLedComData_t;
 static void LowPowerConsumptionConfig(void);
@@ -152,23 +150,43 @@ void configpad(uint32_t pinstat)
 
 void LowPowerConsumptionConfig(void)
 {
-	sleep_flag = 1;
-//	WDT_Disable;
+	GPIO_InitTypeDef GPIO_InitStructure;
+	
+	#ifdef USING_RESET
+//	GPIO_InitStructure.bit.FUNC = PC2_FUNC_NRST;
+		GPIO_InitStructure.bit.FUNC = PC2_FUNC_GPIO;
+	#endif
+	
+	WDT_Disable;
 	aperture_all_off();
 	moto_P();
-//configpad(0);
+//	configpad(0);
 	DisablePhrClk_t();
-//	SYS_SetDeepSleepWakeupPin(PIN0|PIN5,FALL_EDGE);//设置唤醒引脚	
+	SYS_SetDeepSleepWakeupPin(PIN0|PIN5,FALL_EDGE);//设置唤醒引脚	
 	#if defined( DeBug )
 		LOG(LOG_DEBUG," get sleep mode \r\n");
 	#endif
-//	SYS_DisablePhrClk(0xfffffff0 & (~(1<<29)));//关闭GPIOA时钟
-//	IOCON->PIOA_0.all  = PIN0|PIN5;//|PIN5;//设置唤醒引脚上拉
-//	dly1us(50000);
-//	SYS_EnterDeepSleep(PD_RTCOSC | PD_BOD, 0);	
-//	sys_init_t();//重新初始化所有配置
-//	Information_events = get_Alarm_Int_state() ? RTC_INT_EVENTS : POWER_KEY_EVENTS;
+	
+	#if defined( V50_DeBug )
+		LOG(LOG_DEBUG," get sleep mode \r\n");
+	#endif
+	SYS_DisablePhrClk(0xfffffff0 & (~(1<<29)));//关闭GPIOA时钟
+	IOCON->PIOA_0.all  = PIN0|PIN5;//|PIN5;//设置唤醒引脚上拉
+	dly1us(50000);
+	SYS_EnterDeepSleep(PD_RTCOSC | PD_BOD, 0);	
+	sys_init_t();//重新初始化所有配置
+	
+	#ifdef USING_RESET
+		GPIO_InitStructure.bit.FUNC = PC2_FUNC_NRST;
+	//GPIO_InitStructure.bit.FUNC = PC2_FUNC_GPIO;
+	#endif
+	
+	Information_events = get_Alarm_Int_state() ? RTC_INT_EVENTS : POWER_KEY_EVENTS;
 	# if defined(DeBug)
+		LOG(LOG_DEBUG," exit sleep mode...  ->%d \r\n",Information_events);
+	#endif
+	
+	# if defined(V50_DeBug)
 		LOG(LOG_DEBUG," exit sleep mode...  ->%d \r\n",Information_events);
 	#endif
 	
@@ -502,11 +520,6 @@ static void Handler_event(void)
 	//时钟中断事件处理
 	if(Information_events&RTC_INT_EVENTS)
 	{
-		if (sleep_flag)
-		{
-			sys_init_t();//重新初始化所有配置
-			sleep_flag = 0;
-		}
 		#if defined( DeBug )
 			LOG(LOG_DEBUG,"RTC_INT_EVENTS\n");
 		#endif
@@ -549,11 +562,6 @@ static void Handler_event(void)
 	//按键处理
 	if(Information_events&POWER_KEY_EVENTS)
 	{
-		if (sleep_flag)
-		{
-			sys_init_t();//重新初始化所有配置
-			sleep_flag = 0;
-		}
 		power_key_event();
 		//heartbeat_flag = 0;
 	}
@@ -880,13 +888,26 @@ int main(void)
 	#if defined( DeBug )
 		LOG(LOG_DEBUG,"RTC Check Successful.. \r\n");
 	#endif
+	
 	if ((*((uint32_t *)(0x7800))) != 0x55aaaa55)
-		kar_off();//进入睡眠
+	{
+		if ((1==SYSCON->SYSRESSTAT.bit.SYSRST)||(1==SYSCON->SYSRESSTAT.bit.WDTRST))
+			{
+				GetLedComData_t.com = LED_MODE_APERTURE_ALL_BLINK;
+				kar_state_t =  KAR_RUN;
+				kar_state   =  KAR_RUN;
+				POWER_ON;
+				SYS_ClearResetStatus();
+			}
+		else
+			kar_off();//进入睡眠
+	}
 	else
 	{
 		kar_state_t =  KAR_RUN;
 		kar_state   =  KAR_RUN;
-		memset(&GetLedComData_t,0,sizeof(_GetLedComData_t));
+		POWER_ON;
+		GetLedComData_t.com = LED_MODE_APERTURE_ALL_ON;
 		IAP_FlashProgram(0x7800,0);
 	}
 	
