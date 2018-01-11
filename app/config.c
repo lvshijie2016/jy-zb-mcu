@@ -309,7 +309,7 @@ static void UART1_Init(void)
 
 void sys_init(void)
 {
-	
+	SYS_BODResetSystem(0);
 	SYS_SystemInitial();
 	wdt_init_t(2);
 	gpio_init_t();
@@ -374,6 +374,7 @@ void DisablePhrClk_t(void)
 	
 	//USB_DET
 	get_gpio(IOCON_GPIOA,PIN11,PA11_FUNC_GPIO,IO_Output,IO_LOW,PULL_DOWN_EN);
+	get_gpio(IOCON_GPIOA,PIN12,PA12_FUNC_GPIO,IO_Output,IO_LOW,PULL_DOWN_EN);
 	
 	//uart0
 	get_gpio(IOCON_GPIOA,PIN2,PA2_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
