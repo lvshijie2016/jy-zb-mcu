@@ -1,5 +1,6 @@
 #include "config.h"
 
+
 /**
   *****************************************************************************
   * @Name   : IO设置
@@ -20,7 +21,7 @@
 
 void get_gpio(uint8_t gpio, uint16_t pin, uint8_t function,uint8_t I_O, uint8_t HL ,uint8_t edge)
 {
-
+#if defined C32F0
 	GPIO_TypeDef 		*port;
 	IRQn_Type 			IRQ;
 	
@@ -101,13 +102,14 @@ void get_gpio(uint8_t gpio, uint16_t pin, uint8_t function,uint8_t I_O, uint8_t 
 			NVIC_EnableIRQ(IRQ);
 		}
 	}
+#endif
 }
 	
 
 void get_adc_gpio(uint8_t gpio, uint16_t pin, uint8_t function, uint8_t edge)	
 {
 	
-	
+#if defined C32F0	
 	GPIO_InitTypeDef GPIO_InitStructure;
 	
 	
@@ -151,12 +153,15 @@ void get_adc_gpio(uint8_t gpio, uint16_t pin, uint8_t function, uint8_t edge)
 	GPIO_InitStructure.bit.S_MODE = INPUT_FILTER_DISABLE;
 	GPIO_InitStructure.bit.FUNC  = function;
 	SYS_IOCONInit(gpio, pin, GPIO_InitStructure);
+	
+	#endif
 
 }	
 	
 
 void gpio_init_t(void)
 {
+#if defined C32F0	
 	NVIC_SetPriority(GPIOA_IRQn,1);
 	/***************TOUCH2_DRV****************************/
 	get_gpio(IOCON_GPIOA,	PIN12,	PA12_FUNC_GPIO,	IO_Input,	IO_HIGH, PULL_UP_EN);  //->MOTO ADC 1
@@ -209,21 +214,69 @@ void gpio_init_t(void)
 	
 /***************************VBAT_ADC******************************/
 	get_adc_gpio(IOCON_GPIOA,	PIN4,	PA4_FUNC_ADC_IN4, DISABLE_ALL_PULL);
+#elif defined MM32F031K6
 	
+	
+#endif	
 }
 
 static void pwm_init_t(void)
 {
+#if defined C32F0
 	PWM_Init(10, PWMDIV_1, PWM_DEPENDENT, PWM_EDGE, PWM_POSITIVE);
 	PWM_SetRiseDeadZone(1);
 	PWM_SetFallDeadZone(1);
 	PWM_EnableFaultProtect(PWMFAULT, PWM_AUTOMATIC, DISINT);
 	PWM_Start();
+	
+#elif defined MM32F031K6
+ GPIO_InitTypeDef GPIO_InitStructure;
+    TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+    TIM_OCInitTypeDef  TIM_OCInitStructure;
+    
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
+    
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB|RCC_APB2Periph_GPIOA, ENABLE);  
+    
+    
+    GPIOB->AFRL=0x00001;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0; //TIM3_CH3
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; 
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+    
+		GPIOA->AFRL=0x10000000;
+		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7; //TIM3_CH2
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; 
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    
+    TIM_TimeBaseStructure.TIM_Period = 199; 
+    TIM_TimeBaseStructure.TIM_Prescaler =0; 
+    TIM_TimeBaseStructure.TIM_ClockDivision = 0; 
+    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  
+    TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure); 
+    
+    TIM_OCStructInit(&TIM_OCInitStructure);
+    TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM2; 
+    TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; 
+    TIM_OCInitStructure.TIM_Pulse = 0; 
+    TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High; 
+    TIM_OC1Init(TIM3, &TIM_OCInitStructure);  
+    
+    
+    TIM_OC1PreloadConfig(TIM3, TIM_OCPreload_Enable); 
+    
+    TIM_ARRPreloadConfig(TIM3, ENABLE); 
+    
+    TIM_Cmd(TIM3, ENABLE); 	
+#endif
 }
 
 
 static void adc_init_t(void)
 { 
+#if defined C32F0
 	SYS_EnablePhrClk(AHB_ADC);
 	ADC_DeInit();
 	ADC_Init(10000UL);
@@ -239,12 +292,14 @@ static void adc_init_t(void)
 //	ADC_EnableConversionInt(ADC_CHN6_ENABLE);
 	ADC_WaitAdcReady();
 	ADC_IssueSoftTrigger;
+#endif
 
 }
 
 
 static void timer0_init_t(void)
 {
+#if defined C32F0
 	CT16B0_Init(TMR0, 100000UL);
 	CT16B0_ResetTimerCounter(TMR0);
 	/* ---------- Set Timer return to zero when it matches MR value ----------*/
@@ -253,12 +308,44 @@ static void timer0_init_t(void)
 	NVIC_SetPriority(CT16B0_IRQn,2);
 	NVIC_EnableIRQ(CT16B0_IRQn);
 	CT16B0_START;
+	
+#elif defined MM32F031K6
+	TIM_TimeBaseInitTypeDef TIM_StructInit;
+  NVIC_InitTypeDef NVIC_StructInit;
+	
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM16, ENABLE);
+	
+	//1ms for 1 tick
+	TIM_StructInit.TIM_Period=100;                                                                      //ARR寄存器值
+	TIM_StructInit.TIM_Prescaler=SystemCoreClock/100000;                                                //预分频值
+ 
+	
+	TIM_StructInit.TIM_ClockDivision=TIM_CKD_DIV1;                                                      //采样分频值
+	TIM_StructInit.TIM_CounterMode=TIM_CounterMode_Up;                                                     //计数模式
+	TIM_StructInit.TIM_RepetitionCounter=0;
+	
+	TIM_TimeBaseInit(TIM16, &TIM_StructInit);
+	
+	TIM_ITConfig(TIM16, TIM_IT_Update, ENABLE);
+	TIM_Cmd(TIM16, ENABLE);	
+	
+	/*更新定时器时会产生更新时间,清除标志位*/
+	TIM_ClearFlag(TIM16, TIM_FLAG_Update);
+	
+	
+	NVIC_StructInit.NVIC_IRQChannel=TIM16_IRQn;
+	NVIC_StructInit.NVIC_IRQChannelCmd=ENABLE;
+	NVIC_StructInit.NVIC_IRQChannelPriority = 0x02;	
+	
+	NVIC_Init(&NVIC_StructInit);
+		
+#endif
 }
 
 
 static void timer1_init_t_PWM(void)
 {
-	
+#if defined C32F0
 	CT16B0_Init(TMR1, 1000000UL);
 	CT16B0_ResetTimerCounter(TMR1);
 	/* ---------- Set Timer return to zero when it matches MR value ----------*/
@@ -267,12 +354,14 @@ static void timer1_init_t_PWM(void)
 	NVIC_SetPriority(CT16B1_IRQn,3);
 	NVIC_EnableIRQ(CT16B1_IRQn);
 	CT16B1_STOP;
+#endif
 }
 
 
 
 void wdt_init_t(uint8_t timer)
 {
+#if defined C32F0
 	SYS_EnablePhrClk(AHB_WDT);
 	SYS_SelectWDTClkSrc(WDT_CLK);//select watch dog clock 32k
 	/* ------------------- Set WachDog Window size ---------------------------*/
@@ -283,6 +372,7 @@ void wdt_init_t(uint8_t timer)
 	WDT_Enable;
 	WDT->MOD.bit.WDEN  = 1;
 	WDT_Feed();	
+#endif
 }
 
 
@@ -290,6 +380,7 @@ void wdt_init_t(uint8_t timer)
 
 static void UART1_Init(void)
 {
+#if defined C32F0
 	#if defined( DeBug )
 		SYS_EnablePhrClk(AHB_UART1);  
 		get_adc_gpio(IOCON_GPIOA,PIN14,PA14_FUNC_TXD1,PULL_UP_EN);
@@ -301,6 +392,7 @@ static void UART1_Init(void)
 		get_adc_gpio(IOCON_GPIOA,PIN14,PA14_FUNC_TXD1,PULL_UP_EN);
 		UART_Open(UART1, 115200, UART_NO_PARITY, UART_RX_NOT_EMPTY);
 	#endif
+#endif
 }
 
 
@@ -309,7 +401,7 @@ static void UART1_Init(void)
 
 void sys_init(void)
 {
-	SYS_BODResetSystem(0);
+#if defined C32F0	
 	SYS_SystemInitial();
 	wdt_init_t(2);
 	gpio_init_t();
@@ -332,10 +424,19 @@ void sys_init(void)
 	clear_all_event();
 	led_mode_get_t(0x06,0xff,30 );
 	moto_P();
+#elif defined MM32F031K6
+	timer0_init_t();
+	pwm_init_t();
+	//UART0_Init();
+	#if defined MM32F031K8
+		UART1_Init();
+	#endif
+#endif
 }
 
 void sys_init_t(void)
 {
+#if defined C32F0
 	SYS_SystemInitial();
 	wdt_init_t(2);
 	gpio_init_t();
@@ -355,10 +456,12 @@ void sys_init_t(void)
 	#if defined( DeBug )
 		LOG(LOG_DEBUG,"mcu wakeup sysinit! .......... \r\n");
 	#endif
+#endif
 }
 
 void DisablePhrClk_t(void)
 {
+#if defined C32F0
 	//IIC
 	get_gpio(IOCON_GPIOB,PIN6,PB6_FUNC_GPIO,IO_Output,IO_HIGH,PULL_UP_EN);
 	get_gpio(IOCON_GPIOB,PIN7,PB7_FUNC_GPIO,IO_Output,IO_HIGH,PULL_UP_EN);
@@ -374,7 +477,6 @@ void DisablePhrClk_t(void)
 	
 	//USB_DET
 	get_gpio(IOCON_GPIOA,PIN11,PA11_FUNC_GPIO,IO_Output,IO_LOW,PULL_DOWN_EN);
-	get_gpio(IOCON_GPIOA,PIN12,PA12_FUNC_GPIO,IO_Output,IO_LOW,PULL_DOWN_EN);
 	
 	//uart0
 	get_gpio(IOCON_GPIOA,PIN2,PA2_FUNC_GPIO,IO_Output,IO_LOW, PULL_DOWN_EN);
@@ -388,6 +490,7 @@ void DisablePhrClk_t(void)
 	SYS_DisablePhrClk(AHB_IOCON);
 	SYS_DisablePhrClk(AHB_UART0);
 	SYS_DisablePhrClk(AHB_ADC);
+#endif
 }
 
 

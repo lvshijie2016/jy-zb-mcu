@@ -2,11 +2,21 @@
 
 
 _Uart0_Typedef  Uart0_Typedef;
+
+
 static Buffer Buffer_t;
 void udly1us(uint32_t dlytime) {while(dlytime--);}
 
+
+//com for c600
+#if defined C32F0
 void UART0_Init(void)
+#elif defined MM32F031K6
+void UART1_Init(void)
+#endif
 {
+#if defined C32F0
+	
 	GPIO_InitTypeDef uart0_gpio;
 	SYS_EnablePhrClk(AHB_IOCON);
 	SYS_EnablePhrClk(AHB_GPIOA);    
@@ -34,14 +44,61 @@ void UART0_Init(void)
 	NVIC_SetPriority(UART0_IRQn,0);
 	NVIC_EnableIRQ(UART0_IRQn); 
 	
+#elif MM32F031K6
+	GPIO_InitTypeDef GPIO_InitStructure;
+	UART_InitTypeDef UART_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
+	
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_UART1|RCC_APB2Periph_GPIOA, ENABLE);	//使能UART1，GPIOA时钟
+	
+	//UART1 NVIC 配置
+	NVIC_InitStructure.NVIC_IRQChannel = UART1_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPriority = 0x0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+	
+	//UART 初始化设置
+	GPIO_PinAFConfig(GPIOA,GPIO_PinSource2,GPIO_AF_1);
+	GPIO_PinAFConfig(GPIOA,GPIO_PinSource3,GPIO_AF_1);
+	
+	UART_InitStructure.UART_BaudRate = 151200;//串口波特率
+	UART_InitStructure.UART_WordLength = UART_WordLength_8b;//字长为8位数据格式
+	UART_InitStructure.UART_StopBits = UART_StopBits_1;//一个停止位
+	UART_InitStructure.UART_Parity = UART_Parity_No;//无奇偶校验位
+	UART_InitStructure.UART_HardwareFlowControl = UART_HardwareFlowControl_None;//无硬件数据流控制
+	UART_InitStructure.UART_Mode = UART_Mode_Rx | UART_Mode_Tx;	//收发模式
+	
+	UART_Init(UART1, &UART_InitStructure); //初始化串口1
+	UART_ITConfig(UART1, UART_IT_RXIEN, ENABLE);//开启串口接受中断
+	UART_Cmd(UART1, ENABLE);                    //使能串口1 
+	
+	
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2; //PA2
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	
+	
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;//PA3
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+#endif
+	
 	memset(&Buffer_t,0,sizeof(Buffer));
 }
 
 int fputc(int ch, FILE *f) 
 {
+#if defined C32F0
     while (UART1->STAT.bit.TXF);	
     UART1->DAT.all = ch;
     return ch;
+#elif defined MM32F031K6
+	
+	
+	
+#endif
 }
 
 
@@ -188,6 +245,9 @@ void uart0_get_cmd(uint8_t *g_com)
 }
 
 
+
+//com rx from c600
+#if defined C32F0
 void UART0_IRQHandler(void)
 {
 	
@@ -211,12 +271,15 @@ void UART0_IRQHandler(void)
 	//UART_ClearIntFlag(UART0);
 	return;
 }
+#elif defined MM32F031K6
+void UART1_IRQHandler(void)
+{
+	if(UART_GetITStatus(UART1, UART_IT_RXIEN)  != RESET)  
+	{
+		UART_ClearITPendingBit(UART1,UART_IT_RXIEN);
+		Buffer_t.buffer[Buffer_t.tail]	=  (uint8_t)UART_ReceiveData(UART1);
+		Buffer_t.tail = get_len(Buffer_t.tail);					
+	}
 
-
-
-
-
-
-
-
-
+}
+#endif

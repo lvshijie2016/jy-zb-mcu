@@ -8,9 +8,10 @@ static unsigned char PWM_flag = 0;
 static unsigned char led_flag = 0;
 _GetLedComData_t GetLedComData_t;
 
-
+	
 static void led_set_x(unsigned char num)
 {
+#if defined C32F0	
 	GPIO_InitTypeDef init_gpio;
 	SYS_EnablePhrClk(AHB_IOCON);
 	SYS_EnablePhrClk(AHB_GPIOA);
@@ -39,35 +40,84 @@ static void led_set_x(unsigned char num)
 	
 	GPIO_ConfigPinsAsOutput(GPIOA,PIN9 | PIN8 | PIN7);
 	GPIO_ConfigPinsAsOutput(GPIOB,PIN0);
-		
-		
+
+#elif defined MM32F031K6
+
+    GPIO_InitTypeDef  GPIO_InitStructure;
+    
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOB, ENABLE);
+    
+    GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_7|GPIO_Pin_8|GPIO_Pin_9;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    
+    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_0;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+#endif
+
 	switch(num&0x0f) {
 		case 0x01:
+		#if defined C32F0
 			GPIO_SetPin(GPIOA, PIN8);
 			GPIO_ResetPin(GPIOA, PIN7 | PIN9);
 			GPIO_ResetPin(GPIOB, PIN0);
+		#elif defined MM32F031K6
+			GPIO_SetBits(GPIOA, GPIO_Pin_8);
+			GPIO_ResetBits(GPIOA, GPIO_Pin_7 | GPIO_Pin_9);
+			GPIO_ResetBits(GPIOB, GPIO_Pin_0);
+		#endif
 			break;
 		case 0x02:
+		#if defined C32F0
 			GPIO_SetPin(GPIOA, PIN7);
 			GPIO_ResetPin(GPIOA, PIN8 | PIN9);
 			GPIO_ResetPin(GPIOB, PIN0);
+		#elif defined MM32F031K6
+			GPIO_SetBits(GPIOA, GPIO_Pin_7);
+			GPIO_ResetBits(GPIOA, GPIO_Pin_8 | GPIO_Pin_9);
+			GPIO_ResetBits(GPIOB, GPIO_Pin_0);
+		#endif
 			break;
 		case 0x04:
+			#if defined C32F0
 			GPIO_SetPin(GPIOA, PIN9);
 			GPIO_ResetPin(GPIOA, PIN8 | PIN7);
 			GPIO_ResetPin(GPIOB, PIN0);
+		#elif defined MM32F031K6
+			GPIO_SetBits(GPIOA, GPIO_Pin_9);
+			GPIO_ResetBits(GPIOA, GPIO_Pin_8 | GPIO_Pin_7);
+			GPIO_ResetBits(GPIOB, GPIO_Pin_0);
+		#endif
 			break;
 		case 0x08:
+			#if defined C32F0
 			GPIO_ResetPin(GPIOA, PIN8 | PIN7 | PIN9);
 			GPIO_SetPin(GPIOB, PIN0);
+		#elif defined MM32F031K6
+			GPIO_ResetBits(GPIOA, GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9);
+			GPIO_SetBits(GPIOB, GPIO_Pin_0);		
+		#endif
 			break;
 		case 0x0f:
+			#if defined C32F0
 			GPIO_SetPin(GPIOA, PIN8 | PIN7 | PIN9);
 			GPIO_SetPin(GPIOB, PIN0);
+		#elif defined MM32F031K6
+			GPIO_SetBits(GPIOA, GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9);
+			GPIO_SetBits(GPIOB, GPIO_Pin_0);
+		#endif
 			break;
 		case 0x00:
+			#if defined C32F0
 			GPIO_ResetPin(GPIOA, PIN8 | PIN7 | PIN9);
 			GPIO_ResetPin(GPIOB, PIN0);
+		#elif defined MM32F031K6
+			GPIO_ResetBits(GPIOA, GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9);
+			GPIO_SetBits(GPIOA, GPIO_Pin_0);
+		#endif
 			break;
 		default:
 			break;
@@ -78,6 +128,7 @@ static void led_set_x(unsigned char num)
 
 static void led_set_x_pwm(unsigned char value)
 {
+#if defined C32F0
 	GPIO_InitTypeDef init_gpio;
 	SYS_EnablePhrClk(AHB_IOCON);
 	SYS_EnablePhrClk(AHB_GPIOA);
@@ -111,6 +162,17 @@ static void led_set_x_pwm(unsigned char value)
 	
 	
 	PWM_SetDuty(PWM1 | PWM2 |PWM3 | PWM0, value);
+	
+	#elif defined MM32F031K6
+	
+	
+	
+	
+	TIM_SetCompare1(TIM3,value);	
+	
+	
+	
+	#endif
 }
 
 
@@ -118,8 +180,27 @@ static void led_set_x_pwm(unsigned char value)
 
 static void led_set_y(unsigned char num)
 {
+#ifdef MM32F031K6
+	GPIO_InitTypeDef  GPIO_InitStructure;
+    
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD|RCC_APB2Periph_GPIOB, ENABLE);  
 	
-
+    GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_4|GPIO_Pin_5;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+    
+		//PD0,PD1/OSC REMAP TO GPIO
+		GPIOD->AFRL = 0x00000011;
+	
+	
+	
+    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_0|GPIO_Pin_1;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_Init(GPIOD, &GPIO_InitStructure);
+#endif
+	
 	switch(num&0x0f) {
 
 	case 0x01:
@@ -149,7 +230,7 @@ static void led_set_y(unsigned char num)
 		GPIO_2_LOW;
 		GPIO_3_LOW;
 		break;
-	//Ë«µÆ
+	//˫��
 	case 0x03:
 		GPIO_1_HIGH;
 		GPIO_2_HIGH;
@@ -169,14 +250,14 @@ static void led_set_y(unsigned char num)
 		GPIO_1_LOW;
 		GPIO_2_LOW;
 		break;
-	//È«ÁÁ
+	//ȫ��
 	case 0x0f:
 		GPIO_1_HIGH;
 		GPIO_2_HIGH;
 		GPIO_3_HIGH;
 		GPIO_4_HIGH;
 		break;
-	//È«Ãð
+	//ȫ��
 	case 0x00:
 		GPIO_1_LOW;
 		GPIO_2_LOW;
@@ -217,9 +298,7 @@ static void aperture_all_breathe(void)
 void aperture_all_on(void)
 {
 	led_set_y(0x0f);
-	led_set_x(0x0f);
-	
-	
+	led_set_x(0x0f);	
 }
 
 

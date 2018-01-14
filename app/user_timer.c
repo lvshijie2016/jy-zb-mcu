@@ -38,13 +38,24 @@ void timer_delay_ms(uint16_t delay)
 
 
 //ÖÐ¶Ï¼ÆÊ± 
-void TIMER16_0_IRQHandler(void)
+#if defined C32F0
+	void TIMER16_0_IRQHandler(void)
+#elif defined MM32F031K6
+	void TIM16_IRQHandler(void)
+#endif
 {
+
 	unsigned int i = 0;
 	for(i = 0; i< TIMER_MAX; i++)
 	if(soft_timer[i] > 0 ) soft_timer[i]--;
 	else  soft_timer[i] = 0;
+	
+#if defined C32F0	
 	CT16B0_ClearIntFlag(TMR0);
+#elif defined MM32F031K6
+  
+ TIM_ClearITPendingBit(TIM16, TIM_IT_Update);
+#endif
 }
 
 

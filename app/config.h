@@ -4,90 +4,108 @@
 /* sys header files include --------------------------------------------*/
 
 #include "stdint.h"
+
+#if defined C32F0
 #include "stdbool.h"
+#endif
+
 #include "string.h"
 #include "stdio.h"
+
+
+
+
 
 /*==========================================================
 	gpio 
 ===========================================================*/
-#if true
 
-#include "c32f0xx_gpio.h"
+#if defined C32F0
+	#if true
 
+	#include "c32f0xx_gpio.h"
+
+	#endif
+	/*==========================================================
+		IIC 
+	===========================================================*/
+	#if true
+
+	#include "c32f0xx_iic.h"
+
+	#endif
+	/*==========================================================
+		PWM
+	===========================================================*/
+	#if true
+
+	#include "c32f0xx_pwm.h"
+
+	#endif
+	/*==========================================================
+		UART
+	===========================================================*/
+	#if true
+
+	#include "c32f0xx_uart.h"
+
+	#endif
+	/*==========================================================
+		IAP
+	===========================================================*/
+
+	#if true
+
+	#include "c32f0xx_iap.h"
+
+	#endif
+	/*==========================================================
+		 timer
+	===========================================================*/
+	#if true
+
+	#include "c32f0xx_timer.h"
+
+	#endif
+	/*==========================================================
+		 adc
+	===========================================================*/
+	#if true
+
+	#include "c32f0xx_adc.h"
+
+	#endif
+	/*==========================================================
+		 sys
+	===========================================================*/
+	#if true
+
+	#include "c32f0xx_sys.h"
+
+	#endif
+
+	#if true
+
+	#include "c32f0xx_wdt.h"
+
+	#endif
+
+#elif defined MM32F031K6
+
+#include "HAL_conf.h"
+extern u32 SystemCoreClock;	
 #endif
-/*==========================================================
-	IIC 
-===========================================================*/
-#if true
 
-#include "c32f0xx_iic.h"
-
-#endif
-/*==========================================================
-	PWM
-===========================================================*/
-#if true
-
-#include "c32f0xx_pwm.h"
-
-#endif
-/*==========================================================
-	UART
-===========================================================*/
-#if true
-
-#include "c32f0xx_uart.h"
-
-#endif
-/*==========================================================
-	IAP
-===========================================================*/
-
-#if true
-
-#include "c32f0xx_iap.h"
-
-#endif
-/*==========================================================
-	 timer
-===========================================================*/
-#if true
-
-#include "c32f0xx_timer.h"
-
-#endif
-/*==========================================================
-	 adc
-===========================================================*/
-#if true
-
-#include "c32f0xx_adc.h"
-
-#endif
-/*==========================================================
-	 sys
-===========================================================*/
-#if true
-
-#include "c32f0xx_sys.h"
-
-#endif
-
-#if true
-
-#include "c32f0xx_wdt.h"
-
-#endif
 
 /* user header files include --------------------------------------------*/
+
 #include "user_timer.h"
 #include "user_it.h"
 #include "user_uart.h"
 #include "led.h"
 #include "rtc.h"
 #include "moto.h" 
-#include  "Abnormal_Monitoring.h"
+#include "Abnormal_Monitoring.h"
 
 
 #define USING_V50
@@ -177,19 +195,32 @@ USB_DET GPIO
 /*===============================================================================================
 LED GPIO
 ==============================================================================================*/
+#if defined C32F0
+	#define GPIO_1_HIGH  													GPIO_SetPin(GPIOB,PIN5)
+	#define GPIO_1_LOW   				  									GPIO_ResetPin(GPIOB,PIN5)
 
-#define GPIO_1_HIGH  													GPIO_SetPin(GPIOB,PIN5)
-#define GPIO_1_LOW   				  									GPIO_ResetPin(GPIOB,PIN5)
+	#define GPIO_2_HIGH  													GPIO_SetPin(GPIOC,PIN0)
+	#define GPIO_2_LOW   				  									GPIO_ResetPin(GPIOC,PIN0)
 
-#define GPIO_2_HIGH  													GPIO_SetPin(GPIOC,PIN0)
-#define GPIO_2_LOW   				  									GPIO_ResetPin(GPIOC,PIN0)
+	#define GPIO_3_HIGH  													GPIO_SetPin(GPIOC,PIN1)
+	#define GPIO_3_LOW   				  									GPIO_ResetPin(GPIOC,PIN1)
 
-#define GPIO_3_HIGH  													GPIO_SetPin(GPIOC,PIN1)
-#define GPIO_3_LOW   				  									GPIO_ResetPin(GPIOC,PIN1)
+	#define GPIO_4_HIGH  													GPIO_SetPin(GPIOB,PIN4)
+	#define GPIO_4_LOW   				  									GPIO_ResetPin(GPIOB,PIN4)
 
-#define GPIO_4_HIGH  													GPIO_SetPin(GPIOB,PIN4)
-#define GPIO_4_LOW   				  									GPIO_ResetPin(GPIOB,PIN4)
+#elif defined MM32F031K6
+	#define GPIO_1_HIGH  													GPIO_SetBits(GPIOB,GPIO_Pin_5)
+	#define GPIO_1_LOW   				  									GPIO_ResetBits(GPIOB,GPIO_Pin_5)
 
+	#define GPIO_2_HIGH  													GPIO_SetBits(GPIOD,GPIO_Pin_0)
+	#define GPIO_2_LOW   				  									GPIO_ResetBits(GPIOD,GPIO_Pin_0)
+
+	#define GPIO_3_HIGH  													GPIO_SetBits(GPIOD,GPIO_Pin_1)
+	#define GPIO_3_LOW   				  									GPIO_ResetBits(GPIOD,GPIO_Pin_1)
+
+	#define GPIO_4_HIGH  													GPIO_SetBits(GPIOB,GPIO_Pin_4)
+	#define GPIO_4_LOW   				  									GPIO_ResetBits(GPIOB,GPIO_Pin_4)
+#endif
 
 #define ENERGY_SAMPLING_TIMER 											50 //ms
 	
@@ -250,6 +281,9 @@ typedef struct
 
 extern _KEY_EVENT  KEY_EVENT;
 /* Public function declaration ------------------------------------------*/
+void led_gpio_config(void);
+
+
 void get_gpio(uint8_t gpio, uint16_t pin, uint8_t function,uint8_t I_O, uint8_t HL ,uint8_t edge);
 void sys_init(void);
 void sys_init_t(void);

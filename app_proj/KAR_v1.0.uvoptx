@@ -13,6 +13,7 @@
     <tExt>*.txt; *.h; *.inc</tExt>
     <pExt>*.plm</pExt>
     <CppX>*.cpp</CppX>
+    <nMigrate>0</nMigrate>
   </Extensions>
 
   <DaveTm>
@@ -21,7 +22,7 @@
   </DaveTm>
 
   <Target>
-    <TargetName>KAR_v1.0</TargetName>
+    <TargetName>MM32F031K6</TargetName>
     <ToolsetNumber>0x4</ToolsetNumber>
     <ToolsetName>ARM-ADS</ToolsetName>
     <TargetOption>
@@ -31,6 +32,7 @@
         <BeepAtEnd>1</BeepAtEnd>
         <RunSim>0</RunSim>
         <RunTarget>1</RunTarget>
+        <RunAbUc>0</RunAbUc>
       </OPTTT>
       <OPTHX>
         <HexSelection>1</HexSelection>
@@ -75,7 +77,29 @@
         <tvExpOptDlg>0</tvExpOptDlg>
         <IsCurrentTarget>1</IsCurrentTarget>
       </OPTFL>
-      <CpuCode>0</CpuCode>
+      <CpuCode>255</CpuCode>
+      <Books>
+        <Book>
+          <Number>0</Number>
+          <Title>MM32_MBF031C_Board Schematics (MM32_MBF031C_Board)</Title>
+          <Path>C:\Keil_v5\ARM\PACK\MindMotion\MM32F031_DFP\1.3.4\Documents\boards\MM32_MiniBoard_Schematic_Ver1_1.pdf</Path>
+        </Book>
+        <Book>
+          <Number>1</Number>
+          <Title>MM32_MBF031C_Board Product Brief (MM32_MBF031C_Board)</Title>
+          <Path>C:\Keil_v5\ARM\PACK\MindMotion\MM32F031_DFP\1.3.4\Documents\boards\PB_MM32_MiniBoard_Ver1_1.pdf</Path>
+        </Book>
+        <Book>
+          <Number>2</Number>
+          <Title>MM32_MBF031C_Board Quick Start Guide (MM32_MBF031C_Board)</Title>
+          <Path>C:\Keil_v5\ARM\PACK\MindMotion\MM32F031_DFP\1.3.4\Documents\boards\QS_MiniBoard_Quick_Start_Guide_Ver1_2.pdf</Path>
+        </Book>
+        <Book>
+          <Number>3</Number>
+          <Title>MM32_MBF031C_Board UserManual (MM32_MBF031C_Board)</Title>
+          <Path>C:\Keil_v5\ARM\PACK\MindMotion\MM32F031_DFP\1.3.4\Documents\boards\UM_MM32_MiniBoard_Ver1_1.pdf</Path>
+        </Book>
+      </Books>
       <DebugOpt>
         <uSim>0</uSim>
         <uTrg>1</uTrg>
@@ -87,7 +111,7 @@
         <sRfunc>1</sRfunc>
         <sRbox>1</sRbox>
         <tLdApp>1</tLdApp>
-        <tGomain>0</tGomain>
+        <tGomain>1</tGomain>
         <tRbreak>1</tRbreak>
         <tRwatch>1</tRwatch>
         <tRmem>1</tRmem>
@@ -96,10 +120,9 @@
         <tRtrace>1</tRtrace>
         <sRSysVw>1</sRSysVw>
         <tRSysVw>1</tRSysVw>
-        <tPdscDbg>1</tPdscDbg>
         <sRunDeb>0</sRunDeb>
         <sLrtime>0</sLrtime>
-        <nTsel>6</nTsel>
+        <nTsel>3</nTsel>
         <sDll></sDll>
         <sDllPa></sDllPa>
         <sDlgDll></sDlgDll>
@@ -126,7 +149,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>UL2CM3</Key>
-          <Name>UL2CM3(-S0 -C0 -P0 ) -FN1 -FC1000 -FD20000000 -FF0NEW_DEVICE -FL040000 -FS00 -FP0($$Device:ARMCM0$Device\ARM\Flash\NEW_DEVICE.FLM)</Name>
+          <Name>UL2CM3(-S0 -C0 -P0 )  -FN1 -FC1000 -FD20000000 -FF0MM32F031_32 -FL08000 -FS08000000 -FP0($$Device:MM32F031K6U$Flash\MM32F031_32.FLM)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -146,7 +169,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>JL2CM3</Key>
-          <Name>-U682243414 -O78 -S2 -ZTIFSpeedSel5000 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(0BB11477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8004 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO15 -FD10000000 -FC800 -FN1 -FF0C32F0xx -FS00 -FL08000</Name>
+          <Name>-U4294967295 -O78 -S6 -ZTIFSpeedSel500 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(0BB11477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8027 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO15 -FD10000000 -FC800 -FN1 -FF0MM32F031_32.FLM -FS08000000 -FL08000 -FP0($$Device:MM32F031K6U$Flash\MM32F031_32.FLM)</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
       <Breakpoint/>
@@ -198,6 +221,10 @@
       </DebugFlag>
       <LintExecutable></LintExecutable>
       <LintConfigFile></LintConfigFile>
+      <bLintAuto>0</bLintAuto>
+      <Lin2Executable></Lin2Executable>
+      <Lin2ConfigFile></Lin2ConfigFile>
+      <bLin2Auto>0</bLin2Auto>
     </TargetOption>
   </Target>
 
@@ -212,7 +239,6 @@
       <FileNumber>1</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\app\Abnormal_Monitoring.c</PathWithFileName>
@@ -225,7 +251,6 @@
       <FileNumber>2</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\app\config.c</PathWithFileName>
@@ -238,7 +263,6 @@
       <FileNumber>3</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\app\main.c</PathWithFileName>
@@ -251,7 +275,6 @@
       <FileNumber>4</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\app\moto.c</PathWithFileName>
@@ -264,7 +287,6 @@
       <FileNumber>5</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\app\led.c</PathWithFileName>
@@ -277,7 +299,6 @@
       <FileNumber>6</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\app\power_management.c</PathWithFileName>
@@ -290,7 +311,6 @@
       <FileNumber>7</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\app\rtc.c</PathWithFileName>
@@ -303,7 +323,6 @@
       <FileNumber>8</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\app\user_it.c</PathWithFileName>
@@ -316,7 +335,6 @@
       <FileNumber>9</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\app\user_timer.c</PathWithFileName>
@@ -329,7 +347,6 @@
       <FileNumber>10</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\app\user_uart.c</PathWithFileName>
@@ -337,37 +354,47 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
+    <File>
+      <GroupNumber>1</GroupNumber>
+      <FileNumber>11</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\app\test.c</PathWithFileName>
+      <FilenameWithoutPath>test.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
   </Group>
 
   <Group>
     <GroupName>CORE</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>11</FileNumber>
-      <FileType>2</FileType>
+      <FileNumber>12</FileNumber>
+      <FileType>1</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\startup\arm\startup_c32f0xx_s.s</PathWithFileName>
-      <FilenameWithoutPath>startup_c32f0xx_s.s</FilenameWithoutPath>
+      <PathWithFileName>..\MM32F0xx_library\MM32F031x4_x6\Source\system_MM32F031x4_x6.c</PathWithFileName>
+      <FilenameWithoutPath>system_MM32F031x4_x6.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>12</FileNumber>
-      <FileType>1</FileType>
+      <FileNumber>13</FileNumber>
+      <FileType>2</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\C32F0xx_library\Core\CM0\DeviceSupport\C32F0xx\system_c32f0xx.c</PathWithFileName>
-      <FilenameWithoutPath>system_c32f0xx.c</FilenameWithoutPath>
+      <PathWithFileName>..\MM32F0xx_library\MM32F031x4_x6\Source\KEIL_StartAsm\startup_MM32F031x4_x6.s</PathWithFileName>
+      <FilenameWithoutPath>startup_MM32F031x4_x6.s</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -375,33 +402,19 @@
 
   <Group>
     <GroupName>FWLIB</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>3</GroupNumber>
-      <FileNumber>13</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <Focus>0</Focus>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_sys.c</PathWithFileName>
-      <FilenameWithoutPath>c32f0xx_sys.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>3</GroupNumber>
       <FileNumber>14</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_gpio.c</PathWithFileName>
-      <FilenameWithoutPath>c32f0xx_gpio.c</FilenameWithoutPath>
+      <PathWithFileName>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_adc.c</PathWithFileName>
+      <FilenameWithoutPath>HAL_adc.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -410,11 +423,10 @@
       <FileNumber>15</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_iap.c</PathWithFileName>
-      <FilenameWithoutPath>c32f0xx_iap.c</FilenameWithoutPath>
+      <PathWithFileName>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_dma.c</PathWithFileName>
+      <FilenameWithoutPath>HAL_dma.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -423,11 +435,10 @@
       <FileNumber>16</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_iic.c</PathWithFileName>
-      <FilenameWithoutPath>c32f0xx_iic.c</FilenameWithoutPath>
+      <PathWithFileName>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_exti.c</PathWithFileName>
+      <FilenameWithoutPath>HAL_exti.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -436,11 +447,10 @@
       <FileNumber>17</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_pwm.c</PathWithFileName>
-      <FilenameWithoutPath>c32f0xx_pwm.c</FilenameWithoutPath>
+      <PathWithFileName>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_flash.c</PathWithFileName>
+      <FilenameWithoutPath>HAL_flash.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -449,11 +459,10 @@
       <FileNumber>18</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_timer.c</PathWithFileName>
-      <FilenameWithoutPath>c32f0xx_timer.c</FilenameWithoutPath>
+      <PathWithFileName>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_gpio.c</PathWithFileName>
+      <FilenameWithoutPath>HAL_gpio.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -462,11 +471,10 @@
       <FileNumber>19</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_uart.c</PathWithFileName>
-      <FilenameWithoutPath>c32f0xx_uart.c</FilenameWithoutPath>
+      <PathWithFileName>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_i2c.c</PathWithFileName>
+      <FilenameWithoutPath>HAL_i2c.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -475,11 +483,10 @@
       <FileNumber>20</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_adc.c</PathWithFileName>
-      <FilenameWithoutPath>c32f0xx_adc.c</FilenameWithoutPath>
+      <PathWithFileName>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_iwdg.c</PathWithFileName>
+      <FilenameWithoutPath>HAL_iwdg.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -488,11 +495,94 @@
       <FileNumber>21</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
-      <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\C32F0xx_library\Drivers\source\c32f0xx_wdt.c</PathWithFileName>
-      <FilenameWithoutPath>c32f0xx_wdt.c</FilenameWithoutPath>
+      <PathWithFileName>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_misc.c</PathWithFileName>
+      <FilenameWithoutPath>HAL_misc.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>3</GroupNumber>
+      <FileNumber>22</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_pwr.c</PathWithFileName>
+      <FilenameWithoutPath>HAL_pwr.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>3</GroupNumber>
+      <FileNumber>23</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_rcc.c</PathWithFileName>
+      <FilenameWithoutPath>HAL_rcc.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>3</GroupNumber>
+      <FileNumber>24</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_spi.c</PathWithFileName>
+      <FilenameWithoutPath>HAL_spi.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>3</GroupNumber>
+      <FileNumber>25</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_syscfg.c</PathWithFileName>
+      <FilenameWithoutPath>HAL_syscfg.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>3</GroupNumber>
+      <FileNumber>26</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_tim.c</PathWithFileName>
+      <FilenameWithoutPath>HAL_tim.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>3</GroupNumber>
+      <FileNumber>27</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_uart.c</PathWithFileName>
+      <FilenameWithoutPath>HAL_uart.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>3</GroupNumber>
+      <FileNumber>28</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_wwdg.c</PathWithFileName>
+      <FilenameWithoutPath>HAL_wwdg.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

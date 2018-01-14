@@ -1,4 +1,5 @@
-
+del *.lnp /s
+del *.Bak /s
 del *.bak /s
 del *.ddk /s
 del *.edk /s
