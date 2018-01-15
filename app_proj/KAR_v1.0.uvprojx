@@ -10,19 +10,19 @@
       <TargetName>MM32F031K6</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060183::V5.06 update 2 (build 183)::ARMCC</pCCUsed>
+      <pCCUsed>5060300::V5.06 update 3 (build 300)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
-          <Device>MM32F031K6U</Device>
+          <Device>MM32F031K8U</Device>
           <Vendor>MindMotion</Vendor>
-          <PackID>MindMotion.MM32F031_DFP.1.3.4</PackID>
+          <PackID>MindMotion.MM32F031_DFP.1.3.5</PackID>
           <PackURL>http://www.mindmotion.com.cn/Download/MDK_KEIL/</PackURL>
-          <Cpu>IRAM(0x20000000,0x1000) IROM(0x08000000,0x8000) CPUTYPE("Cortex-M0") CLOCK(12000000) ELITTLE</Cpu>
+          <Cpu>IRAM(0x20000000,0x2000) IROM(0x08000000,0x10000) CPUTYPE("Cortex-M0") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
-          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0MM32F031_32 -FS08000000 -FL08000 -FP0($$Device:MM32F031K6U$Flash\MM32F031_32.FLM))</FlashDriverDll>
+          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0MM32F031x8_64 -FS08000000 -FL010000 -FP0($$Device:MM32F031K8U$Flash\MM32F031x8_64.FLM))</FlashDriverDll>
           <DeviceId>0</DeviceId>
-          <RegisterFile>$$Device:MM32F031K6U$Device\MM32F031\Include\HAL_device.h</RegisterFile>
+          <RegisterFile>$$Device:MM32F031K8U$Device\MM32F031x8\Include\HAL_device.h</RegisterFile>
           <MemoryEnv></MemoryEnv>
           <Cmp></Cmp>
           <Asm></Asm>
@@ -32,7 +32,7 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <SFDFile>$$Device:MM32F031K6U$SVD\MM32F031.svd</SFDFile>
+          <SFDFile>$$Device:MM32F031K8U$SVD\MM32F031x8.svd</SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
@@ -243,12 +243,12 @@
               <IRAM>
                 <Type>0</Type>
                 <StartAddress>0x20000000</StartAddress>
-                <Size>0x1000</Size>
+                <Size>0x2000</Size>
               </IRAM>
               <IROM>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x8000</Size>
+                <Size>0x10000</Size>
               </IROM>
               <XRAM>
                 <Type>0</Type>
@@ -273,7 +273,7 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x8000</Size>
+                <Size>0x10000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -298,7 +298,7 @@
               <OCR_RVCT9>
                 <Type>0</Type>
                 <StartAddress>0x20000000</StartAddress>
-                <Size>0x1000</Size>
+                <Size>0x2000</Size>
               </OCR_RVCT9>
               <OCR_RVCT10>
                 <Type>0</Type>
@@ -330,11 +330,12 @@
             <vShortWch>1</vShortWch>
             <v6Lto>0</v6Lto>
             <v6WtE>0</v6WtE>
+            <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define>MM32F031K6</Define>
               <Undefine></Undefine>
-              <IncludePath>..\app;..\MM32F0xx_library\CMSIS\KEIL_CORE;..\MM32F0xx_library\MM32F031x4_x6\Include;..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\inc</IncludePath>
+              <IncludePath>..\app;..\MM32F0xx_library\CMSIS\KEIL_CORE;..\MM32F0xx_library\MM32F031x8\HAL_lib\inc;..\MM32F0xx_library\MM32F031x8\Include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -347,6 +348,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>0</uSurpInc>
             <useXO>0</useXO>
+            <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
@@ -421,6 +423,7 @@
                     <vShortWch>2</vShortWch>
                     <v6Lto>0</v6Lto>
                     <v6WtE>0</v6WtE>
+                    <v6Rtti>2</v6Rtti>
                     <VariousControls>
                       <MiscControls></MiscControls>
                       <Define></Define>
@@ -480,6 +483,7 @@
                     <vShortWch>2</vShortWch>
                     <v6Lto>0</v6Lto>
                     <v6WtE>0</v6WtE>
+                    <v6Rtti>2</v6Rtti>
                     <VariousControls>
                       <MiscControls></MiscControls>
                       <Define></Define>
@@ -534,6 +538,7 @@
                     <vShortWch>2</vShortWch>
                     <v6Lto>0</v6Lto>
                     <v6WtE>0</v6WtE>
+                    <v6Rtti>2</v6Rtti>
                     <VariousControls>
                       <MiscControls></MiscControls>
                       <Define></Define>
@@ -593,6 +598,7 @@
                     <vShortWch>2</vShortWch>
                     <v6Lto>0</v6Lto>
                     <v6WtE>0</v6WtE>
+                    <v6Rtti>2</v6Rtti>
                     <VariousControls>
                       <MiscControls></MiscControls>
                       <Define></Define>
@@ -647,6 +653,7 @@
                     <vShortWch>2</vShortWch>
                     <v6Lto>0</v6Lto>
                     <v6WtE>0</v6WtE>
+                    <v6Rtti>2</v6Rtti>
                     <VariousControls>
                       <MiscControls></MiscControls>
                       <Define></Define>
@@ -701,6 +708,7 @@
                     <vShortWch>2</vShortWch>
                     <v6Lto>0</v6Lto>
                     <v6WtE>0</v6WtE>
+                    <v6Rtti>2</v6Rtti>
                     <VariousControls>
                       <MiscControls></MiscControls>
                       <Define></Define>
@@ -760,6 +768,7 @@
                     <vShortWch>2</vShortWch>
                     <v6Lto>0</v6Lto>
                     <v6WtE>0</v6WtE>
+                    <v6Rtti>2</v6Rtti>
                     <VariousControls>
                       <MiscControls></MiscControls>
                       <Define></Define>
@@ -781,14 +790,14 @@
           <GroupName>CORE</GroupName>
           <Files>
             <File>
-              <FileName>system_MM32F031x4_x6.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\MM32F0xx_library\MM32F031x4_x6\Source\system_MM32F031x4_x6.c</FilePath>
+              <FileName>startup_MM32F031x8.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>..\MM32F0xx_library\MM32F031x8\Source\KEIL_StartAsm\startup_MM32F031x8.s</FilePath>
             </File>
             <File>
-              <FileName>startup_MM32F031x4_x6.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>..\MM32F0xx_library\MM32F031x4_x6\Source\KEIL_StartAsm\startup_MM32F031x4_x6.s</FilePath>
+              <FileName>system_MM32F031x8.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\MM32F0xx_library\MM32F031x8\Source\system_MM32F031x8.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -798,77 +807,82 @@
             <File>
               <FileName>HAL_adc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_adc.c</FilePath>
+              <FilePath>..\MM32F0xx_library\MM32F031x8\HAL_lib\src\HAL_adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>HAL_bkp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\MM32F0xx_library\MM32F031x8\HAL_lib\src\HAL_bkp.c</FilePath>
             </File>
             <File>
               <FileName>HAL_dma.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_dma.c</FilePath>
+              <FilePath>..\MM32F0xx_library\MM32F031x8\HAL_lib\src\HAL_dma.c</FilePath>
             </File>
             <File>
               <FileName>HAL_exti.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_exti.c</FilePath>
+              <FilePath>..\MM32F0xx_library\MM32F031x8\HAL_lib\src\HAL_exti.c</FilePath>
             </File>
             <File>
               <FileName>HAL_flash.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_flash.c</FilePath>
+              <FilePath>..\MM32F0xx_library\MM32F031x8\HAL_lib\src\HAL_flash.c</FilePath>
             </File>
             <File>
               <FileName>HAL_gpio.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_gpio.c</FilePath>
+              <FilePath>..\MM32F0xx_library\MM32F031x8\HAL_lib\src\HAL_gpio.c</FilePath>
             </File>
             <File>
               <FileName>HAL_i2c.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_i2c.c</FilePath>
+              <FilePath>..\MM32F0xx_library\MM32F031x8\HAL_lib\src\HAL_i2c.c</FilePath>
             </File>
             <File>
               <FileName>HAL_iwdg.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_iwdg.c</FilePath>
+              <FilePath>..\MM32F0xx_library\MM32F031x8\HAL_lib\src\HAL_iwdg.c</FilePath>
             </File>
             <File>
               <FileName>HAL_misc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_misc.c</FilePath>
+              <FilePath>..\MM32F0xx_library\MM32F031x8\HAL_lib\src\HAL_misc.c</FilePath>
             </File>
             <File>
               <FileName>HAL_pwr.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_pwr.c</FilePath>
+              <FilePath>..\MM32F0xx_library\MM32F031x8\HAL_lib\src\HAL_pwr.c</FilePath>
             </File>
             <File>
               <FileName>HAL_rcc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_rcc.c</FilePath>
+              <FilePath>..\MM32F0xx_library\MM32F031x8\HAL_lib\src\HAL_rcc.c</FilePath>
             </File>
             <File>
               <FileName>HAL_spi.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_spi.c</FilePath>
+              <FilePath>..\MM32F0xx_library\MM32F031x8\HAL_lib\src\HAL_spi.c</FilePath>
             </File>
             <File>
               <FileName>HAL_syscfg.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_syscfg.c</FilePath>
+              <FilePath>..\MM32F0xx_library\MM32F031x8\HAL_lib\src\HAL_syscfg.c</FilePath>
             </File>
             <File>
               <FileName>HAL_tim.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_tim.c</FilePath>
+              <FilePath>..\MM32F0xx_library\MM32F031x8\HAL_lib\src\HAL_tim.c</FilePath>
             </File>
             <File>
               <FileName>HAL_uart.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_uart.c</FilePath>
+              <FilePath>..\MM32F0xx_library\MM32F031x8\HAL_lib\src\HAL_uart.c</FilePath>
             </File>
             <File>
               <FileName>HAL_wwdg.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\MM32F0xx_library\MM32F031x4_x6\HAL_lib\src\HAL_wwdg.c</FilePath>
+              <FilePath>..\MM32F0xx_library\MM32F031x8\HAL_lib\src\HAL_wwdg.c</FilePath>
             </File>
           </Files>
         </Group>

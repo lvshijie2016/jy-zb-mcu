@@ -236,7 +236,7 @@ static void pwm_init_t(void)
     
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
     
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB|RCC_APB2Periph_GPIOA, ENABLE);  
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB|RCC_AHBPeriph_GPIOA, ENABLE);  
     
     
     GPIOB->AFRL=0x00001;

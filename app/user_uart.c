@@ -272,14 +272,38 @@ void UART0_IRQHandler(void)
 	return;
 }
 #elif defined MM32F031K6
-void UART1_IRQHandler(void)
+void UART2_IRQHandler(void)                	//´®¿Ú2ÖÐ¶Ï·þÎñ³ÌÐò
 {
-	if(UART_GetITStatus(UART1, UART_IT_RXIEN)  != RESET)  
-	{
-		UART_ClearITPendingBit(UART1,UART_IT_RXIEN);
-		Buffer_t.buffer[Buffer_t.tail]	=  (uint8_t)UART_ReceiveData(UART1);
-		Buffer_t.tail = get_len(Buffer_t.tail);					
-	}
 
-}
+  if(UART_GetITStatus(UART2, UART_IT_RXIEN))       
+	{
+		    
+        UART_ClearITPendingBit(UART2,UART_IT_RXIEN);
+        UART2_RxBuff[Uart2_Rx_Write++] = UART_ReceiveData(UART2);
+		    ucTim1Flag = 0; 
+				
+  } 
+//  else if(UART_GetITStatus(UART2, UART_IT_TXIEN))  //·¢ËÍÖÐ¶Ï
+//	{
+//		
+//		UART_ClearITPendingBit(UART2,UART_IT_TXIEN);
+//		Uart2_Tx_Read++;
+//		
+//		if(Uart2_Tx_Write != Uart2_Tx_Read)//ÊÇ·ñ·¢ËÍÍê³É						
+//		{
+//			UART_SendData(UART2, UART2_TxBuff[Uart2_Tx_Read]);  
+//		}
+//		else   //·¢ËÍÍê³É
+//		{
+//			
+//			UART_ITConfig(UART2, UART_IT_TXIEN, DISABLE);			//
+//			Uart2_Tx_Read = 0x00;
+//			Uart2_Tx_Write = 0x00;
+//		}
+//		
+//		
+//	}
+
+		
+} 
 #endif

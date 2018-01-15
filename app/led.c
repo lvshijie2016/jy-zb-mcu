@@ -45,7 +45,7 @@ static void led_set_x(unsigned char num)
 
     GPIO_InitTypeDef  GPIO_InitStructure;
     
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOB, ENABLE);
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA|RCC_AHBPeriph_GPIOB, ENABLE);
     
     GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_7|GPIO_Pin_8|GPIO_Pin_9;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -183,7 +183,7 @@ static void led_set_y(unsigned char num)
 #ifdef MM32F031K6
 	GPIO_InitTypeDef  GPIO_InitStructure;
     
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD|RCC_APB2Periph_GPIOB, ENABLE);  
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOD|RCC_AHBPeriph_GPIOB, ENABLE);  
 	
     GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_4|GPIO_Pin_5;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
