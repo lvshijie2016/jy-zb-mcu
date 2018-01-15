@@ -93,6 +93,7 @@
 #elif defined MM32F031K6
 
 #include "HAL_conf.h"
+#include "HAL_device.h"
 extern u32 SystemCoreClock;	
 #endif
 
@@ -126,7 +127,7 @@ extern u32 SystemCoreClock;
 #define PULL_UP_EN													0x01
 #define DISABLE_ALL_PULL											0x03
 
-
+#define DISABLE_ALL_CHANNEL     9
 
 /*==========================================================================
 5V_DRV_EN

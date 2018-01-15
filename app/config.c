@@ -292,6 +292,33 @@ static void adc_init_t(void)
 //	ADC_EnableConversionInt(ADC_CHN6_ENABLE);
 	ADC_WaitAdcReady();
 	ADC_IssueSoftTrigger;
+#elif defined MM32F031K6
+	
+	    ADC_InitTypeDef  ADC_InitStructure;
+    
+ // GPIO_Configuration();
+	
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
+    
+    /* Initialize the ADC_PRESCARE values */
+    ADC_InitStructure.ADC_PRESCARE = ADC_PCLK2_PRESCARE_16;   //48M / 16= 3M
+    /* Initialize the ADC_Mode member */
+    ADC_InitStructure.ADC_Mode = ADC_Mode_Single;
+    /* Initialize the ADC_ContinuousConvMode member */
+    ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;
+    /* Initialize the ADC_DataAlign member */
+    ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+    /* Initialize the ADC_ExternalTrigConv member */
+    ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_T1_CC1;//ADC1 通道1，
+    ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
+    ADC_Init(ADC1, &ADC_InitStructure);
+    
+    /*屏蔽所有通道*/
+    ADC_RegularChannelConfig(ADC1, DISABLE_ALL_CHANNEL , 0, 0); 
+    /*使能选中通道,后面参数保留*/
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 1, ADC_SampleTime_13_5Cycles); 
+    
+    ADC_Cmd(ADC1, ENABLE); 
 #endif
 
 }

@@ -116,7 +116,7 @@ static void led_set_x(unsigned char num)
 			GPIO_ResetPin(GPIOB, PIN0);
 		#elif defined MM32F031K6
 			GPIO_ResetBits(GPIOA, GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9);
-			GPIO_SetBits(GPIOA, GPIO_Pin_0);
+			GPIO_ResetBits(GPIOB, GPIO_Pin_0);
 		#endif
 			break;
 		default:

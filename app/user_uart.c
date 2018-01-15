@@ -45,43 +45,90 @@ void UART1_Init(void)
 	NVIC_EnableIRQ(UART0_IRQn); 
 	
 #elif MM32F031K6
-	GPIO_InitTypeDef GPIO_InitStructure;
-	UART_InitTypeDef UART_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
-	
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_UART1|RCC_APB2Periph_GPIOA, ENABLE);	//使能UART1，GPIOA时钟
-	
-	//UART1 NVIC 配置
-	NVIC_InitStructure.NVIC_IRQChannel = UART1_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPriority = 0x0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-	
-	//UART 初始化设置
-	GPIO_PinAFConfig(GPIOA,GPIO_PinSource2,GPIO_AF_1);
-	GPIO_PinAFConfig(GPIOA,GPIO_PinSource3,GPIO_AF_1);
-	
-	UART_InitStructure.UART_BaudRate = 151200;//串口波特率
-	UART_InitStructure.UART_WordLength = UART_WordLength_8b;//字长为8位数据格式
-	UART_InitStructure.UART_StopBits = UART_StopBits_1;//一个停止位
-	UART_InitStructure.UART_Parity = UART_Parity_No;//无奇偶校验位
-	UART_InitStructure.UART_HardwareFlowControl = UART_HardwareFlowControl_None;//无硬件数据流控制
-	UART_InitStructure.UART_Mode = UART_Mode_Rx | UART_Mode_Tx;	//收发模式
-	
-	UART_Init(UART1, &UART_InitStructure); //初始化串口1
-	UART_ITConfig(UART1, UART_IT_RXIEN, ENABLE);//开启串口接受中断
-	UART_Cmd(UART1, ENABLE);                    //使能串口1 
+    GPIO_InitTypeDef GPIO_InitStructure;
+    UART_InitTypeDef UART_InitStructure;
+    NVIC_InitTypeDef NVIC_InitStructure;
 	
 	
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2; //PA2
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-	
-	
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;//PA3
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
+#ifdef Debug	
+    
+    
+    GPIO_InitTypeDef GPIO_InitStructure;
+    UART_InitTypeDef UART_InitStructure;
+    NVIC_InitTypeDef NVIC_InitStructure;
+    
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_UART1, ENABLE);	
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);  
+    
+    
+    NVIC_InitStructure.NVIC_IRQChannel = UART1_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPriority = 3;		
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			
+    NVIC_Init(&NVIC_InitStructure);	
+    
+    
+    GPIO_PinAFConfig(GPIOA,GPIO_PinSource9,GPIO_AF_1);
+    GPIO_PinAFConfig(GPIOA,GPIO_PinSource10,GPIO_AF_1);
+    
+    UART_InitStructure.UART_BaudRate = bound;
+    UART_InitStructure.UART_WordLength = UART_WordLength_8b;
+    UART_InitStructure.UART_StopBits = UART_StopBits_1;
+    UART_InitStructure.UART_Parity = UART_Parity_No;
+    UART_InitStructure.UART_HardwareFlowControl = UART_HardwareFlowControl_None;
+    UART_InitStructure.UART_Mode = UART_Mode_Rx | UART_Mode_Tx;	
+    
+    UART_Init(UART1, &UART_InitStructure);      
+    UART_ITConfig(UART1, UART_IT_RXIEN|UART_IT_TXIEN, ENABLE);
+    UART_Cmd(UART1, ENABLE);                     
+    
+    //UART1_TX   GPIOA.9
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9; 
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    
+    //UART1_RX	  
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;//PA10
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);  
+  
+#endif
+
+
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART2, ENABLE);	
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);  
+    
+
+    NVIC_InitStructure.NVIC_IRQChannel = UART2_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPriority = 3;		
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;		
+    NVIC_Init(&NVIC_InitStructure);	
+    
+  
+    GPIO_PinAFConfig(GPIOA,GPIO_PinSource2,GPIO_AF_1);
+    GPIO_PinAFConfig(GPIOA,GPIO_PinSource3,GPIO_AF_1);
+    
+    UART_InitStructure.UART_BaudRate = 115200;
+    UART_InitStructure.UART_WordLength = UART_WordLength_8b;
+    UART_InitStructure.UART_StopBits = UART_StopBits_1;
+    UART_InitStructure.UART_Parity = UART_Parity_No;
+    UART_InitStructure.UART_HardwareFlowControl = UART_HardwareFlowControl_None;
+    UART_InitStructure.UART_Mode = UART_Mode_Rx | UART_Mode_Tx;	
+    
+    UART_Init(UART2, &UART_InitStructure); 
+    UART_ITConfig(UART2, UART_IT_RXIEN|UART_IT_TXIEN, ENABLE);
+    UART_Cmd(UART2, ENABLE);                    
+    
+    //UART2_TX   GPIOA.2
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2; 
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    
+    
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 #endif
 	
@@ -100,6 +147,24 @@ int fputc(int ch, FILE *f)
 	
 #endif
 }
+
+#if defined MM32F031K6 
+
+void UART_PutChar(UART_TypeDef* UARTx, uint8_t Data)  
+{  
+    UART_SendData(UART2, Data);  
+    while(UART_GetFlagStatus(UART1, UART_FLAG_TXEMPTY) == RESET){}  
+}  
+void UART_PutStr (UART_TypeDef* UARTx, uint8_t *str)    
+{    
+    while (0 != *str)    
+    {    
+        UART_PutChar(UART2, *str);    
+        str++;    
+    }    
+} 
+
+#endif
 
 
 void WriteUartBuf(uint8_t data)
@@ -125,6 +190,7 @@ void UART_Send_t(uint8_t Com)
 	Uart0_Typedef.tx_buf[4+(Uart0_Typedef.tx_buf_len++)] = Xor_verify;//校验
 	Uart0_Typedef.tx_buf[4+(Uart0_Typedef.tx_buf_len++)] = TX_FT;//帧尾
 	
+	#if defined C32F0
 	
 	for(i=0; i<(4+Uart0_Typedef.tx_buf_len); i++)
 	{
@@ -135,6 +201,15 @@ void UART_Send_t(uint8_t Com)
 
 	Uart0_Typedef.tx_buf_len = 0;
 	if(Uart0_Typedef.tx_sequence_pag >= 0xFF) Uart0_Typedef.tx_sequence_pag = 0;//清楚包号重新累加
+	
+	#elif defined MM32F031K6
+
+	UART_PutStr(UART1,Uart0_Typedef.tx_buf);	
+
+	Uart0_Typedef.tx_buf_len = 0;
+	if(Uart0_Typedef.tx_sequence_pag >= 0xFF) Uart0_Typedef.tx_sequence_pag = 0;//清楚包号重新累加
+	
+	#endif
 
 }
 
@@ -272,15 +347,14 @@ void UART0_IRQHandler(void)
 	return;
 }
 #elif defined MM32F031K6
-void UART2_IRQHandler(void)                	//´®¿Ú2ÖÐ¶Ï·þÎñ³ÌÐò
+void UART2_IRQHandler(void)                	//
 {
 
   if(UART_GetITStatus(UART2, UART_IT_RXIEN))       
 	{
-		    
-        UART_ClearITPendingBit(UART2,UART_IT_RXIEN);
-        UART2_RxBuff[Uart2_Rx_Write++] = UART_ReceiveData(UART2);
-		    ucTim1Flag = 0; 
+     UART_ClearITPendingBit(UART2,UART_IT_RXIEN);
+     Buffer_t.buffer[Buffer_t.tail] = UART_ReceiveData(UART2);
+		 Buffer_t.tail = get_len(Buffer_t.tail);
 				
   } 
 //  else if(UART_GetITStatus(UART2, UART_IT_TXIEN))  //·¢ËÍÖÐ¶Ï
