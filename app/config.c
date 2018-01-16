@@ -218,9 +218,17 @@ void gpio_init_t(void)
 
     GPIO_InitTypeDef  GPIO_InitStructure;
     RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA|RCC_AHBPeriph_GPIOB, ENABLE);  //ø™∆ÙGPIOA,GPIOB ±÷
-	  GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_15;  //POWER C600 
+	  GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_15| GPIO_Pin_14;  //POWER C600 
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+		
+		RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);  
+    
+    GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_4;      //VBT_MCU_INT
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    /*Ω´PA4≈‰÷√Œ™ƒ£ƒ‚ ‰»Î*/
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 		
 		
@@ -362,7 +370,7 @@ static void adc_init_t(void)
     /*∆¡±ŒÀ˘”–Õ®µ¿*/
     ADC_RegularChannelConfig(ADC1, DISABLE_ALL_CHANNEL , 0, 0); 
     /* πƒ‹—°÷–Õ®µ¿,∫Û√Ê≤Œ ˝±£¡Ù*/
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 1, ADC_SampleTime_13_5Cycles); 
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 1, ADC_SampleTime_13_5Cycles); 
     
     ADC_Cmd(ADC1, ENABLE); 
 #endif
@@ -541,6 +549,7 @@ void sys_init(void)
 	pwm_init_t();
 	exit_irq_init();
 	UART2_Init();
+	adc_init_t();
 	//UART0_Init();
 	#if defined MM32F031K8
 		UART1_Init();

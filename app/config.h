@@ -96,6 +96,8 @@
 #include "HAL_conf.h"
 #include "HAL_device.h"
 #include "MM32F031x8.h"
+#include "HAL_pwr.h"
+
 extern u32 SystemCoreClock;	
 #endif
 
@@ -251,7 +253,7 @@ LED GPIO
 
 #define  POISON_VERSION									(unsigned char)(10+2)
 
-#define  SLEEP_DEFAULT_OFF_TIMER						(unsigned char)60 //分
+#define  SLEEP_DEFAULT_OFF_TIMER						(unsigned char)60 //?
 
 #define  BAT_VALUE_BUFFER								(unsigned char) 50
 	
@@ -311,9 +313,5 @@ void gpio_init_t(void);
 void wdt_init_t(uint8_t timer);
 void DisablePhrClk_t(void);	
 #endif
-
-
-
-
 
 
