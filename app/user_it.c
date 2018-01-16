@@ -14,7 +14,7 @@ void clear_all_event(void)
 
 
 
-
+#if defined C32F0
 
 /**********************清楚GPIO中断*****************************/
 void GPIO_Clear_INT(GPIO_TypeDef *port, uint16_t pin)
@@ -71,7 +71,37 @@ void WAKEUP_IRQHandler(void)
 }
 
 
+#elif defined MM32F031K6
 
+/********************************************************************************************************
+
+********************************************************************************************************/
+void EXTI0_1_IRQHandler(void)
+{ 	
+	if(EXTI_GetITStatus(EXTI_Line0)!=RESET)
+	{
+		Information_events |=  POWER_KEY_EVENTS;
+	}
+   EXTI_ClearITPendingBit(EXTI_Line0); 
+     	
+} 
+
+/********************************************************************************************************
+
+********************************************************************************************************/
+
+
+void EXTI4_15_IRQHandler(void)
+{
+	if(EXTI_GetITStatus(EXTI_Line5)!=RESET)
+	{
+		Information_events |=  RTC_INT_EVENTS;
+	}
+	EXTI_ClearITPendingBit(EXTI_Line5); 	
+	
+}
+
+#endif
 
 
 

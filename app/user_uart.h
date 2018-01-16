@@ -82,6 +82,7 @@ extern _Uart0_Typedef  Uart0_Typedef;
 
 
 void UART0_Init(void);
+void UART2_Init(void);
 void UART_Send_t(unsigned char Com);
 void WriteUartBuf(unsigned char data);
 void uart0_get_cmd(uint8_t *g_com);

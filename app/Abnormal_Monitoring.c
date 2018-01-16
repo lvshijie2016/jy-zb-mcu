@@ -1,6 +1,8 @@
 #include  "Abnormal_Monitoring.h"
 
 
+#if defined C32F0
+
 _EXCEPTION_HANDLING_FLAG  exceotion_flag = MAX_EXCEPTION;
 bool  process_flag = true;
 
@@ -104,7 +106,7 @@ void exceotion_management(void)
 	
 }
 
-
+#endif
 
 
 

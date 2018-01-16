@@ -215,7 +215,15 @@ void gpio_init_t(void)
 /***************************VBAT_ADC******************************/
 	get_adc_gpio(IOCON_GPIOA,	PIN4,	PA4_FUNC_ADC_IN4, DISABLE_ALL_PULL);
 #elif defined MM32F031K6
-	
+
+    GPIO_InitTypeDef  GPIO_InitStructure;
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA|RCC_AHBPeriph_GPIOB, ENABLE);  //ø™∆ÙGPIOA,GPIOB ±÷
+	  GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_15;  //POWER C600 
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+		
+		
 	
 #endif	
 }
@@ -230,28 +238,67 @@ static void pwm_init_t(void)
 	PWM_Start();
 	
 #elif defined MM32F031K6
- GPIO_InitTypeDef GPIO_InitStructure;
+	
+	  GPIO_InitTypeDef GPIO_InitStructure;
     TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
     TIM_OCInitTypeDef  TIM_OCInitStructure;
+    
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
+    
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);  //ø™∆ÙGPIOB ±÷”
+    
+		GPIO_PinAFConfig(GPIOA, GPIO_PinSource8, GPIO_AF_2);
+		GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_2);
+    //SYSCFG->CFGR|=0x1<<11;
+ //   GPIOA->AFRH=0x2;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8|GPIO_Pin_9; //TIM1_CH1
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;  //∏¥”√Õ∆ÕÏ ‰≥ˆ
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    
+    
+    TIM_TimeBaseStructure.TIM_Period = 99; //…Ë÷√‘⁄œ¬“ª∏ˆ∏¸–¬ ¬º˛◊∞»ÎªÓ∂Øµƒ◊‘∂Ø÷ÿ◊∞‘ÿºƒ¥Ê∆˜÷‹∆⁄µƒ÷µ	 80K
+    TIM_TimeBaseStructure.TIM_Prescaler =0; //…Ë÷√”√¿¥◊˜Œ™TIMx ±÷”∆µ¬ ≥˝ ˝µƒ‘§∑÷∆µ÷µ  ≤ª∑÷∆µ
+    TIM_TimeBaseStructure.TIM_ClockDivision = 0; //…Ë÷√ ±÷”∑÷∏Ó:TDTS = Tck_tim
+    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  //TIMœÚ…œº∆ ˝ƒ£ Ω
+    TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure); //∏˘æ›TIM_TimeBaseInitStruct÷–÷∏∂®µƒ≤Œ ˝≥ı ºªØTIMxµƒ ±º‰ª˘ ˝µ•Œª
+    
+    TIM_OCStructInit(&TIM_OCInitStructure);
+    TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM2; //—°‘Ò∂® ±∆˜ƒ£ Ω:TIM¬ˆ≥ÂøÌ∂»µ˜÷∆ƒ£ Ω2
+    TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; //±»Ωœ ‰≥ˆ πƒ‹
+    TIM_OCInitStructure.TIM_Pulse = 0; //…Ë÷√¥˝◊∞»Î≤∂ªÒ±»Ωœºƒ¥Ê∆˜µƒ¬ˆ≥Â÷µ
+    TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High; // ‰≥ˆº´–‘:TIM ‰≥ˆ±»Ωœº´–‘∏ﬂ
+    TIM_OC1Init(TIM1, &TIM_OCInitStructure);  //∏˘æ›TIM_OCInitStruct÷–÷∏∂®µƒ≤Œ ˝≥ı ºªØÕ‚…ËTIMx
+    TIM_OC2Init(TIM1, &TIM_OCInitStructure);  //∏˘æ›TIM_OCInitStruct÷–÷∏∂®µƒ≤Œ ˝≥ı ºªØÕ‚…ËTIMx
+    
+    TIM_OC1PreloadConfig(TIM1, TIM_OCPreload_Enable);  //CH1‘§◊∞‘ÿ πƒ‹
+		TIM_OC2PreloadConfig(TIM1, TIM_OCPreload_Enable);  //CH1‘§◊∞‘ÿ πƒ
+    
+    TIM_ARRPreloadConfig(TIM1, ENABLE); // πƒ‹TIMx‘⁄ARR…œµƒ‘§◊∞‘ÿºƒ¥Ê∆˜
+		
+		TIM_CtrlPWMOutputs(TIM1, ENABLE); 
+    
+    TIM_Cmd(TIM1, ENABLE);  // πƒ‹TIM1
+	
     
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
     
     RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB|RCC_AHBPeriph_GPIOA, ENABLE);  
     
-    
-    GPIOB->AFRL=0x00001;
+		GPIO_PinAFConfig(GPIOB, GPIO_PinSource0, GPIO_AF_1);
+		GPIO_PinAFConfig(GPIOA, GPIO_PinSource7, GPIO_AF_1);
+	
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0; //TIM3_CH3
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; 
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOB, &GPIO_InitStructure);
     
-		GPIOA->AFRL=0x10000000;
 		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7; //TIM3_CH2
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; 
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
     
-    TIM_TimeBaseStructure.TIM_Period = 199; 
+    TIM_TimeBaseStructure.TIM_Period = 99; 
     TIM_TimeBaseStructure.TIM_Prescaler =0; 
     TIM_TimeBaseStructure.TIM_ClockDivision = 0; 
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  
@@ -262,13 +309,12 @@ static void pwm_init_t(void)
     TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; 
     TIM_OCInitStructure.TIM_Pulse = 0; 
     TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High; 
-    TIM_OC1Init(TIM3, &TIM_OCInitStructure);  
+    TIM_OC2Init(TIM3, &TIM_OCInitStructure);  
+    TIM_OC3Init(TIM3, &TIM_OCInitStructure);
     
-    
-    TIM_OC1PreloadConfig(TIM3, TIM_OCPreload_Enable); 
-    
+    TIM_OC2PreloadConfig(TIM3, TIM_OCPreload_Enable);
+		TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable); 
     TIM_ARRPreloadConfig(TIM3, ENABLE); 
-    
     TIM_Cmd(TIM3, ENABLE); 	
 #endif
 }
@@ -423,6 +469,44 @@ static void UART1_Init(void)
 }
 
 
+void exit_irq_init()
+{
+	#if defined MM32F031K6
+	
+	  GPIO_InitTypeDef GPIO_InitStructure;  		  
+    NVIC_InitTypeDef NVIC_InitStructure;
+    EXTI_InitTypeDef EXTI_InitStructure;
+    
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);// πƒ‹GPIOA∫Õ∏¥”√π¶ƒ‹ ±÷”
+    
+    GPIO_InitStructure.GPIO_Pin =GPIO_Pin_0|GPIO_Pin_5;	 //PA.0     POWER KEY   PA.5      RTC INT   
+    GPIO_InitStructure.GPIO_Mode =GPIO_Mode_IPU;//…œ¿≠ ‰»Î
+    GPIO_Init(GPIOA, &GPIO_InitStructure);	//≥ı ºªØIO
+	
+	
+    // π”√Õ‚≤ø÷–∂œ∑Ω Ω
+    SYSCFG_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0|GPIO_PinSource5);	//÷–∂œœﬂ0¡¨Ω”GPIOA.0  GPIOA.5  
+
+    EXTI_InitStructure.EXTI_Line = EXTI_Line0|EXTI_Line5;	//…Ë÷√∞¥º¸À˘”–µƒÕ‚≤øœﬂ¬∑   
+    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;			//…ËÕ‚Õ‚≤ø÷–∂œƒ£ Ω:EXTIœﬂ¬∑Œ™÷–∂œ«Î«Û
+    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;  //…œ…˝/œ¬Ωµ—ÿ¥•∑¢
+    EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+    EXTI_Init(&EXTI_InitStructure);	// ≥ı ºªØÕ‚≤ø÷–∂œ
+    
+    NVIC_InitStructure.NVIC_IRQChannel = EXTI0_1_IRQn; // πƒ‹∞¥º¸À˘‘⁄µƒÕ‚≤ø÷–∂œÕ®µ¿  POWER KEY
+    NVIC_InitStructure.NVIC_IRQChannelPriority = 2; //¥””≈œ»º∂2º∂
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; // πƒ‹Õ‚≤ø÷–∂œÕ®µ¿
+    NVIC_Init(&NVIC_InitStructure); //∏˘æ›NVIC_InitStruct÷–÷∏∂®µƒ≤Œ ˝≥ı ºªØÕ‚…ËNVICºƒ¥Ê∆˜
+
+    NVIC_InitStructure.NVIC_IRQChannel = EXTI4_15_IRQn; // πƒ‹∞¥º¸À˘‘⁄µƒÕ‚≤ø÷–∂œÕ®µ¿  RTC_INT   
+    NVIC_InitStructure.NVIC_IRQChannelPriority = 2; //¥””≈œ»º∂2º∂
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; // πƒ‹Õ‚≤ø÷–∂œÕ®µ¿
+    NVIC_Init(&NVIC_InitStructure); //∏˘æ›NVIC_InitStruct÷–÷∏∂®µƒ≤Œ ˝≥ı ºªØÕ‚…ËNVICºƒ¥Ê∆˜
+	
+	#endif
+	
+}
 
 
 
@@ -452,12 +536,16 @@ void sys_init(void)
 	led_mode_get_t(0x06,0xff,30 );
 	moto_P();
 #elif defined MM32F031K6
+	gpio_init_t();
 	timer0_init_t();
 	pwm_init_t();
+	exit_irq_init();
+	UART2_Init();
 	//UART0_Init();
 	#if defined MM32F031K8
 		UART1_Init();
 	#endif
+	
 #endif
 }
 

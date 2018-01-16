@@ -1,6 +1,5 @@
 #include "config.h"
 
- 
 
 static _KAR_STATE	 	kar_state 	= KAR_STOP;
 static _KAR_STATE	 	kar_state_t = MAX_KAR_STATE;
@@ -23,10 +22,15 @@ static void get_adc_value(void)
 	static	 _ADC_typedef		adc_typedef;
 	double  		 			adValue;
 	uint32_t         			adValue_t;
-	static  bool				bat_flag = true;
+	#if defined C32F0
+		static  bool				bat_flag = true;
+	#elif defined MM32F031K6
+		static  bool				bat_flag = TRUE;
+	#endif
 	static uint16_t				moto_R_state_flag;				
 	static uint16_t				moto_L_state_flag;
-	
+
+	#if defined C32F0
 	if(check_soft_timeout(TIMER_BAT)) //状态运行检测时间50us
 	{	
 		SYS_EnablePhrClk(AHB_ADC); 
@@ -109,9 +113,15 @@ static void get_adc_value(void)
 		get_moto_current_state(moto_R_state_flag,moto_L_state_flag,bat_value);
 		
 	}
+	#elif defined MM32F031K6
+	
+	
+	
+	#endif
 }
 void configpad(uint32_t pinstat)
 {
+	#ifdef C32F0
 	//IOCON->PIOA_0.all  = pinstat;  //POWERR_KEY
 	IOCON->PIOA_1.all  = pinstat;
 	IOCON->PIOA_2.all  = pinstat;
@@ -146,10 +156,13 @@ void configpad(uint32_t pinstat)
 	IOCON->PIOC_1.all  = pinstat;
 	IOCON->PIOC_2.all  = pinstat;
 	IOCON->PIOC_3.all  = pinstat;
+	
+	#endif
 }
 
 void LowPowerConsumptionConfig(void)
 {
+	#if defined C32F0
 	GPIO_InitTypeDef GPIO_InitStructure;
 	
 	#ifdef USING_RESET
@@ -190,6 +203,7 @@ void LowPowerConsumptionConfig(void)
 		LOG(LOG_DEBUG," exit sleep mode...  ->%d \r\n",Information_events);
 	#endif
 	
+	#endif
 }
 
 
@@ -233,7 +247,9 @@ static void kar_off(void)
 	
 	POWER_OFF;
 	aperture_all_off();
-	moto_P();
+	#if defined C32F0
+		moto_P();
+	#endif
 	LowPowerConsumptionConfig();//进入睡眠
 }
 /**
@@ -259,7 +275,11 @@ static void kar_on(void)
 		LOG(LOG_DEBUG,"Energy state (BAT = %d)\r\n",bat_value);	
 	#endif
 	
-	if(bat_value >= (BAT_VALUE_LOW+5)|| GPIO_GetPinState(GPIOA,USB_DET))//电池电量大于10%开机
+	#if defined C32F0
+		if(bat_value >= (BAT_VALUE_LOW+5)|| GPIO_GetPinState(GPIOA,USB_DET))//电池电量大于10%开机
+	#elif defined MM32F031K6
+		if(bat_value >= (BAT_VALUE_LOW+5)|| GPIO_ReadInputDataBit(GPIOA,USB_DET))//电池电量大于10%开机
+	#endif
 	{
 		POWER_ON; //C6板电源开启
 		led_mode_get_t(0x04,0xff,20 ); //开机灯效
@@ -319,7 +339,11 @@ static void power_key_event(void)
 	if(check_soft_timeout(TIMER_KEY))
 	{	
 		timer_delay_ms(1);
-		if(!GPIO_GetPinState(GPIOA,PIN0))
+		#if defined C32F0
+			if(!GPIO_GetPinState(GPIOA,PIN0))
+		#elif defined MM32F031K6
+			if(!GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0))
+		#endif
 		{
 			key_timer++;
 			if(key_timer == 30) 	
@@ -398,7 +422,11 @@ static void power_OFF_ON(void)
 						led_mode_get_t(0x01,0xff,15 );		//关机灯效
 						WriteUartBuf(KAR_POWER__OFF);
 						UART_Send_t(KAR_POWER_OFF_COMMAND); //发送关机指令
-						moto_P();
+				
+						#if defined C32F0
+							moto_P();
+						#endif
+				
 						#if defined( DeBug )
 							LOG(LOG_DEBUG,"send kar power off...... \r\n");
 						#endif
@@ -464,7 +492,9 @@ static void power_OFF_ON(void)
 				#if defined( DeBug )
 						LOG(LOG_DEBUG,"MCU reset  ...... \r\n");
 				#endif
-				SYS_ResetSystem();
+				#if defined C32F0
+					SYS_ResetSystem();
+				#endif
 				//kar_off();
 			break;
 
@@ -500,7 +530,11 @@ static void Handler_event(void)
 		{
 			DRV_Disable;//USB截止输出
 			
-			all_event_flag.DRV = false;
+			#if defined C32F0
+				all_event_flag.DRV = false;
+			#elif defined MM32F031K6
+				all_event_flag.DRV = FALSE;
+			#endif
 			WriteUartBuf(0x00);  
 			UART_Send_t(USB_OUT_COMMAN);
 			
@@ -509,7 +543,11 @@ static void Handler_event(void)
 		{
 			DRV_Enable;//USB输出
 			
-			all_event_flag.DRV = true;
+			#if defined C32F0
+				all_event_flag.DRV = true;
+			#elif defined MM32F031K6
+				all_event_flag.DRV = TRUE;
+			#endif
 			WriteUartBuf(0x01);
 			UART_Send_t(USB_OUT_COMMAN);
 				
@@ -550,7 +588,12 @@ static void Handler_event(void)
 		#if defined( V50_DeBug )
 			LOG(LOG_DEBUG,"USB_DET_EVENTS \r\n");
 		#endif
-		if(kar_state == KAR_RUN && GPIO_GetPinState(GPIOA,USB_DET))
+		
+		#if defined C32F0
+			if(kar_state == KAR_RUN && GPIO_GetPinState(GPIOA,USB_DET))
+		#elif MM32F031K6
+			if(kar_state == KAR_RUN && GPIO_ReadInputDataBit(GPIOA,USB_DET))
+		#endif
 		{
 			WriteUartBuf(0x02);
 			WriteUartBuf(bat_value);
@@ -612,8 +655,10 @@ static void get_kar_run_state(uint8_t *Com)
 			#if defined( DeBug )
 				LOG(LOG_DEBUG,"KAR_RESET  EVENTS ......");
 			#endif
-		
+			
+			#if defined C32F0
 			EXCEPTION(EXCEPTION_3);
+			#endif
 			//kar_state_t = KAR_RUN;
 		break;
 		
@@ -674,7 +719,11 @@ static void state_run_monitoring(void)
 				bat_alarm_timer_t = 3;
 			}
 			
-			if(bat_value < BAT_VALUE_LOW && !GPIO_GetPinState(GPIOA,USB_DET) )  //KAR运行下 低于5%执行正常关机
+			#if defined C32F0
+				if(bat_value < BAT_VALUE_LOW && !GPIO_GetPinState(GPIOA,USB_DET) )  //KAR运行下 低于5%执行正常关机
+			#elif defined MM32F031K6
+				if(bat_value < BAT_VALUE_LOW && !GPIO_ReadInputDataBit(GPIOA,USB_DET) )  //KAR运行下 低于5%执行正常关机
+			#endif
 			{ 
 			
 				if(!bat_alarm_timer_t)
@@ -720,16 +769,21 @@ static void state_run_monitoring(void)
 			
 			if(bat_value < BAT_VALUE_LOW) //KAR休眠下电量低5% 执行强制关机
 			{
-				if(!GPIO_GetPinState(GPIOA,USB_DET)){
-					//读取是否在充电状态
-					#if defined( DeBug )
-						LOG(LOG_DEBUG,"KAR_DORMANCY energy LOW 5 get kar_off() %d\r\n" , bat_value);
-					#endif
-					
-					#if defined( V50_DeBug )
-						LOG(LOG_DEBUG,"KAR_DORMANCY energy LOW 5 get kar_off() %d\r\n" , bat_value);
-					#endif
-					kar_off();
+				#if defined C32F0
+					if(!GPIO_GetPinState(GPIOA,USB_DET))
+				#elif defined MM32F031K6
+					if(!GPIO_ReadInputDataBit(GPIOA,USB_DET))
+				#endif
+					{
+						//读取是否在充电状态
+						#if defined( DeBug )
+							LOG(LOG_DEBUG,"KAR_DORMANCY energy LOW 5 get kar_off() %d\r\n" , bat_value);
+						#endif
+						
+						#if defined( V50_DeBug )
+							LOG(LOG_DEBUG,"KAR_DORMANCY energy LOW 5 get kar_off() %d\r\n" , bat_value);
+						#endif
+						kar_off();
 				}
 			}
 		}else if(kar_state_t != KAR_RUN){
@@ -758,6 +812,7 @@ static void kar_connect(void)
 	uart0_get_cmd(get_Com);
 	if(kar_state_t == KAR_RUN  || get_Com[0] ==  KAR_RUN_STATE)
 	{
+		#if defined C32F0
 		switch(get_Com[0]) {
 
 			case HANDSHAKE_COMMAND:
@@ -852,6 +907,104 @@ static void kar_connect(void)
 				break;
 			default:break;
 		}
+	#elif defined MM32F031K6
+				switch(get_Com[0]) {
+
+			case HANDSHAKE_COMMAND:
+				WriteUartBuf(POISON_VERSION);
+				for (i=0;i<3;i++)
+					{
+						WriteUartBuf(FIRMWARE_VERSION[i]);
+					}
+				UART_Send_t(HANDSHAKE_COMMAND);
+				
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"FIRMWARE_VERSION= V %d . %d. %d\r\n",FIRMWARE_VERSION[0],FIRMWARE_VERSION[1],FIRMWARE_VERSION[2]);
+				#endif
+					
+				#if defined( V50_DeBug )
+					LOG(LOG_DEBUG,"FIRMWARE_VERSION= V %d . %d. %d\r\n",FIRMWARE_VERSION[0],FIRMWARE_VERSION[1],FIRMWARE_VERSION[2]);
+				#endif
+
+			break;
+			case KAR_RUN_STATE:
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"KAR_RUN_STATE\r\n");
+				#endif
+				get_kar_run_state(get_Com);
+				
+				
+			break;
+			case HEARTBEAT_COMMAND:
+			
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"HEARTBEAT_COMMAND\r\n");
+				#endif
+		
+			break;
+			case LIGHT_COMMAND:
+				led_mode_get(get_Com);
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"LED_state = %d\r\n",get_Com[GET_LED_NUM]);
+				#endif
+
+			break;
+//			case ALARM_COMMAND:
+//				#if defined( DeBug )
+//					LOG(LOG_DEBUG,"Set_Alarm_Clock(get_Com) \r\n");
+//				#endif
+//				Set_Alarm_Clock(get_Com);
+//				
+//			break;
+//			case MOTO_COMMAND:
+//				#if defined( DeBug )
+//					LOG(LOG_DEBUG,"GetMotoCom(get_Com)\r\n");
+//				#endif
+//				GetMotoCom(get_Com);
+//			break;
+//			case TIMER_DATA_COMMAND:
+//				#if defined( DeBug )
+//					LOG(LOG_DEBUG,"Set_date_timer(get_Com)\r\n");
+//				#endif
+//				Set_date_timer(get_Com);
+//			
+//			break;
+//			
+//			case GET_TIMER_COMMAND:
+//				#if defined( DeBug )
+//					LOG(LOG_DEBUG,"Get_date_timer()\r\n");
+//				#endif
+//				Get_date_timer();
+//			break;
+//			case BAT_COMMAN:
+//				#if defined( DeBug )
+//					LOG(LOG_DEBUG,"BAT_COMMAN\r\n");
+//				#endif
+//				WriteUartBuf(0x00);
+//				WriteUartBuf(bat_value);
+//				UART_Send_t(BAT_COMMAN);
+//			break;
+//			case SLEEP_OFF_TIMER_SEY_COMMAN:  //kar睡眠关机时间设置
+//				#if defined( DeBug )
+//					LOG(LOG_DEBUG,"Set Sleep off timer ......");
+//				#endif
+//				sleep_off_timer  = get_Com[1];
+//				WriteUartBuf(0x01);
+//				UART_Send_t(SLEEP_OFF_TIMER_SEY_COMMAN);
+//			break;
+//			case SYSTEM_UPDATE_COMMAN:      //升级命令
+//				#if defined( DeBug )
+//					LOG(LOG_DEBUG,"receive SYSTEM_UPDATE_COMMAN\r\n");
+//				#endif
+//				WriteUartBuf(0x00);
+//				UART_Send_t(0xF0);
+//				NVIC_SystemReset();
+//				break;
+			default:break;
+		}
+		
+		
+	#endif
 	}
 	memset(get_Com,0,sizeof(get_Com));
 }
@@ -861,8 +1014,11 @@ static void kar_connect(void)
 
 void app_iap_init(void)
 {
+	#if defined C32F0
+	
  	memcpy((void*)0x10000000, (void*)APPLICATION_ADDRESS, VECTOR_SIZE); 
-	SYS_MemRemaptoSRAM;   
+	SYS_MemRemaptoSRAM; 
+	#endif
 }
 
 int main(void)
@@ -874,6 +1030,7 @@ int main(void)
 	
 	sys_init();
 	
+	#if defined C32F0
 	while(Rtc_Check())
 	{
 		i--;
@@ -910,6 +1067,10 @@ int main(void)
 		GetLedComData_t.com = LED_MODE_APERTURE_ALL_ON;
 		IAP_FlashProgram(0x7800,0);
 	}
+	#elif defined MM32F031K6
+	kar_off();
+	
+	#endif
 	
 //	POWER_ON; 
 	//moto_D();
@@ -923,12 +1084,17 @@ int main(void)
 			Handler_event();
 			power_OFF_ON();
 			led_run_task();
-			moto_run_task();
+			
+			#if defined C32F0
+				moto_run_task();
+			#endif
 		//exceotion_management();
 			state_run_monitoring();
 		}
 		//get_adc_value();
-		WDT_Feed();	
+		#if defined C32F0
+			WDT_Feed();	
+		#endif
 		dly1us(100000);
 	}
 }

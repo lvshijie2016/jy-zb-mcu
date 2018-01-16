@@ -165,13 +165,10 @@ static void led_set_x_pwm(unsigned char value)
 	
 	#elif defined MM32F031K6
 	
-	
-	
-	
-	TIM_SetCompare1(TIM3,value);	
-	
-	
-	
+	TIM_SetCompare2(TIM3,value);	
+	TIM_SetCompare3(TIM3,value);
+	TIM_SetCompare1(TIM1,value);
+	TIM_SetCompare2(TIM1,value);
 	#endif
 }
 

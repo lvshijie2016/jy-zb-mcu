@@ -3,7 +3,8 @@
 
 /* sys header files include --------------------------------------------*/
 
-#include "stdint.h"
+//#include "stdint.h"
+//#include "stdbool.h"
 
 #if defined C32F0
 #include "stdbool.h"
@@ -94,6 +95,7 @@
 
 #include "HAL_conf.h"
 #include "HAL_device.h"
+#include "MM32F031x8.h"
 extern u32 SystemCoreClock;	
 #endif
 
@@ -132,16 +134,33 @@ extern u32 SystemCoreClock;
 /*==========================================================================
 5V_DRV_EN
 ============================================================================*/
-#define DRV_Enable   												GPIO_SetPin(GPIOC,PIN3)
-#define DRV_Disable    				  								GPIO_ResetPin(GPIOC,PIN3)
-/*==========================================================================
-POWER_ON _OFF
-============================================================================*/
-#define POWER_ON   													GPIO_SetPin(GPIOA,PIN15)
-#define POWER_OFF   				  								GPIO_ResetPin(GPIOA,PIN15)
+#if defined C32F0
 
-#define KAR_DORMANCY_Enable   										GPIO_SetPin(GPIOA,PIN14)
-#define KAR_DORMANCY_Disable   				  						GPIO_ResetPin(GPIOA,PIN14)
+	#define DRV_Enable   												GPIO_SetPin(GPIOC,PIN3)
+	#define DRV_Disable    				  								GPIO_ResetPin(GPIOC,PIN3)
+	/*==========================================================================
+	POWER_ON _OFF
+	============================================================================*/
+	#define POWER_ON   													GPIO_SetPin(GPIOA,PIN15)
+	#define POWER_OFF   				  								GPIO_ResetPin(GPIOA,PIN15)
+
+	#define KAR_DORMANCY_Enable   										GPIO_SetPin(GPIOA,PIN14)
+	#define KAR_DORMANCY_Disable   				  						GPIO_ResetPin(GPIOA,PIN14)
+
+#elif MM32F031K6
+
+	#define DRV_Enable   												GPIO_SetBits(GPIOC,GPIO_Pin_3)
+	#define DRV_Disable    				  						GPIO_ResetBits(GPIOC,GPIO_Pin_3)
+	/*==========================================================================
+	POWER_ON _OFF
+	============================================================================*/
+	#define POWER_ON   													GPIO_SetBits(GPIOA,GPIO_Pin_15)
+	#define POWER_OFF   				  							GPIO_ResetBits(GPIOA,GPIO_Pin_15)
+
+	#define KAR_DORMANCY_Enable   						  GPIO_SetBits(GPIOA,GPIO_Pin_14)
+	#define KAR_DORMANCY_Disable   				  		GPIO_ResetBits(GPIOA,GPIO_Pin_14)
+
+#endif
 
 
 /*===============================================================================================
@@ -192,7 +211,7 @@ MOTO GPIO
 /*===============================================================================================
 USB_DET GPIO
 ==============================================================================================*/
-#define USB_DET														PIN11
+#define USB_DET														GPIO_Pin_11
 /*===============================================================================================
 LED GPIO
 ==============================================================================================*/

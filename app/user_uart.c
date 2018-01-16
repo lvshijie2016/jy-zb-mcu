@@ -12,7 +12,7 @@ void udly1us(uint32_t dlytime) {while(dlytime--);}
 #if defined C32F0
 void UART0_Init(void)
 #elif defined MM32F031K6
-void UART1_Init(void)
+void UART2_Init(void)
 #endif
 {
 #if defined C32F0
@@ -116,7 +116,7 @@ void UART1_Init(void)
     UART_InitStructure.UART_Mode = UART_Mode_Rx | UART_Mode_Tx;	
     
     UART_Init(UART2, &UART_InitStructure); 
-    UART_ITConfig(UART2, UART_IT_RXIEN|UART_IT_TXIEN, ENABLE);
+    UART_ITConfig(UART2, UART_IT_RXIEN, ENABLE);
     UART_Cmd(UART2, ENABLE);                    
     
     //UART2_TX   GPIOA.2
@@ -150,19 +150,19 @@ int fputc(int ch, FILE *f)
 
 #if defined MM32F031K6 
 
-void UART_PutChar(UART_TypeDef* UARTx, uint8_t Data)  
-{  
-    UART_SendData(UART2, Data);  
-    while(UART_GetFlagStatus(UART1, UART_FLAG_TXEMPTY) == RESET){}  
-}  
-void UART_PutStr (UART_TypeDef* UARTx, uint8_t *str)    
-{    
-    while (0 != *str)    
-    {    
-        UART_PutChar(UART2, *str);    
-        str++;    
-    }    
-} 
+void UART2_Send_BUFF( uint8_t *Str,uint8_t len)
+{
+	uint8_t index;
+	for(index=0;index<len;index++)
+	{
+		
+		UART_SendData(UART2, Str[index]);
+		while(UART_GetFlagStatus(UART2, UART_FLAG_TXEMPTY) == RESET)   // µÈ´ý·¢ËÍ»º³åÎª¿Õ
+		{
+		}
+		
+	}	
+}
 
 #endif
 
@@ -204,7 +204,7 @@ void UART_Send_t(uint8_t Com)
 	
 	#elif defined MM32F031K6
 
-	UART_PutStr(UART1,Uart0_Typedef.tx_buf);	
+	UART2_Send_BUFF(Uart0_Typedef.tx_buf,4+Uart0_Typedef.tx_buf_len);
 
 	Uart0_Typedef.tx_buf_len = 0;
 	if(Uart0_Typedef.tx_sequence_pag >= 0xFF) Uart0_Typedef.tx_sequence_pag = 0;//清楚包号重新累加
@@ -271,7 +271,7 @@ void uart0_get_cmd(uint8_t *g_com)
 	if(valid_data > 5)
 	{
 		valid_data = get_head(valid_data);
-		if(valid_data)
+		if(valid_data>3&&valid_data<14)
 		{
 			valid_data -= 3;
 			Xor_verify = valid_data;
