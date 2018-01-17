@@ -165,76 +165,86 @@ void gpio_init_t(void)
 	NVIC_SetPriority(GPIOA_IRQn,1);
 	/***************TOUCH2_DRV****************************/
 	get_gpio(IOCON_GPIOA,	PIN12,	PA12_FUNC_GPIO,	IO_Input,	IO_HIGH, PULL_UP_EN);  //->MOTO ADC 1
-	
+
 	/***************5V_DRV_EN****************************/
 	get_gpio(IOCON_GPIOC, PIN3, (SPECIAL|PC3_FUNC_GPIO), IO_Output,	IO_LOW, PULL_UP_EN); //5V_DRV_EN
-	
+
 	/***************MCU_INT_KAR_PA14****************************/
 	get_gpio(IOCON_GPIOA,	PIN14, (SPECIAL|PA14_FUNC_GPIO), IO_Output, IO_LOW, PULL_UP_EN);
-	
+
 	/**************POWER_KEY_PA0****************************/
 	get_gpio(IOCON_GPIOA,	PIN0,	PA0_FUNC_GPIO,	IO_Input, IO_LOW, PULL_UP_EN);  
-	
+
 	/**************MCU_POWER_PA15****************************/
 	get_gpio(IOCON_GPIOA,	PIN15,	PA15_FUNC_GPIO,	IO_Output, IO_DEFAULT, PULL_UP_EN); //KAR_POWER_ON_OFF  
-	
+
 	/***************RTC_INT_PA5****************************/
 	get_gpio(IOCON_GPIOA,	PIN5,	PA5_FUNC_GPIO,	IO_Input, IO_LOW, PULL_UP_EN);  //RTC_INT_PB5
 	//RTC _ IIC IO
 	get_adc_gpio(IOCON_GPIOB,PIN6,PB6_FUNC_I2C_SCL,PULL_UP_EN);
 	get_adc_gpio(IOCON_GPIOB,PIN7,PB7_FUNC_I2C_SDA,PULL_UP_EN);
-	
-	
-/***************************LED******************************/	
+
+
+	/***************************LED******************************/	
 	//GPIO1
 	get_gpio(IOCON_GPIOB, PIN5, PB5_FUNC_GPIO,	IO_Output,	IO_LOW, PULL_UP_EN);
 	//GPIO2
 	get_gpio(IOCON_GPIOC, PIN0, PC0_FUNC_GPIO,	IO_Output,	IO_LOW, PULL_UP_EN); 
-	
+
 	//GPIO3
 	get_gpio(IOCON_GPIOC, PIN1, PC1_FUNC_GPIO,	IO_Output,	IO_LOW, PULL_UP_EN);
 	//GPIO4
 	get_gpio(IOCON_GPIOB, PIN4, PB0_FUNC_GPIO,	IO_Output,	IO_LOW, PULL_UP_EN);
-	
-/***************************USB_DET GPIO******************************/
+
+	/***************************USB_DET GPIO******************************/
 	get_gpio(IOCON_GPIOA, PIN11, PA11_FUNC_GPIO, IO_Input,	IO_HIGH, DISABLE_ALL_PULL);	
 
 	/***************************MOTO******************************/
-  //PWM
+	//PWM
 	get_gpio(IOCON_GPIOA, PIN10, PA10_FUNC_GPIO, IO_Output, IO_LOW, PULL_UP_EN);
 	get_gpio(IOCON_GPIOB, PIN1, PB1_FUNC_GPIO, IO_Output, IO_LOW, PULL_UP_EN);
-	
+
 	//PH PL
 	get_gpio(IOCON_GPIOA, PIN13, (SPECIAL|PA13_FUNC_GPIO), IO_Output, IO_LOW, PULL_UP_EN);
 	get_gpio(IOCON_GPIOB, PIN3,	PB3_FUNC_GPIO, IO_Output, IO_LOW, PULL_UP_EN);
-	
+
 	//MOTO_ADC
 	get_adc_gpio(IOCON_GPIOA, PIN1, PA1_FUNC_ADC_IN1,DISABLE_ALL_PULL);
 	get_adc_gpio(IOCON_GPIOA, PIN6, PA6_FUNC_ADC_IN6,PULL_DOWN_EN);
-	
-/***************************VBAT_ADC******************************/
-	get_adc_gpio(IOCON_GPIOA,	PIN4,	PA4_FUNC_ADC_IN4, DISABLE_ALL_PULL);
-#elif defined MM32F031K6
 
-    GPIO_InitTypeDef  GPIO_InitStructure;
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA|RCC_AHBPeriph_GPIOB, ENABLE);  //¿ªÆôGPIOA,GPIOBÊ±Ö
-	  GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_15| GPIO_Pin_14;  //POWER C600 
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-		
-		RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);  
-    
-    GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_4;      //VBT_MCU_INT
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    /*½«PA4ÅäÖÃÎªÄ£ÄâÊäÈë*/
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-		
-		
-	
+	/***************************VBAT_ADC******************************/
+	get_adc_gpio(IOCON_GPIOA,	PIN4,	PA4_FUNC_ADC_IN4, DISABLE_ALL_PULL);
+
+#elif defined MM32F031K6
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA|RCC_AHBPeriph_GPIOB, ENABLE);  //¿ªÆôGPIOA,GPIOBÊ±Ö
+	GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_15| GPIO_Pin_14;  //POWER C600 
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB | RCC_AHBPeriph_GPIOA, ENABLE);  
+
+	GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_4;      //VBT_MCU_INT
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	/*½«PA4ÅäÖÃÎªÄ£ÄâÊäÈë*/
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+
+	/*	motor gpio init	*/
+	GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_10 | GPIO_Pin_13;      //motor_4, motor_1
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_1| GPIO_Pin_3;      //motor_2, motor_3
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+	GPIO_PinAFConfig(GPIOB,GPIO_PinSource13,GPIO_AF_7);
 #endif	
 }
+
 
 static void pwm_init_t(void)
 {
@@ -324,6 +334,7 @@ static void pwm_init_t(void)
 		TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable); 
     TIM_ARRPreloadConfig(TIM3, ENABLE); 
     TIM_Cmd(TIM3, ENABLE); 	
+		
 #endif
 }
 
@@ -424,6 +435,40 @@ static void timer0_init_t(void)
 }
 
 
+#if defined MM32F031K6
+static void Tim2_Init(u16 Prescaler,u16 Period)
+{
+    TIM_TimeBaseInitTypeDef TIM_StructInit;
+    NVIC_InitTypeDef NVIC_StructInit;
+    
+    /*Ê¹ÄÜTIM1Ê±ÖÓ,Ä¬ÈÏÊ±ÖÓÔ´ÎªPCLK1(PCLK1Î´·ÖÆµÊ±²»±¶Æµ,·ñÔòÓÉPCLK1±¶ÆµÊä³ö),¿ÉÑ¡ÆäËüÊ±ÖÓÔ´*/
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+       
+    TIM_StructInit.TIM_Period=Period;                                                                      //ARR¼Ä´æÆ÷Öµ
+    TIM_StructInit.TIM_Prescaler=Prescaler;                                                                //Ô¤·ÖÆµÖµ
+    /*Êý×ÖÂË²¨Æ÷²ÉÑùÆµÂÊ,²»Ó°Ïì¶¨Ê±Æ÷Ê±ÖÓ*/
+    TIM_StructInit.TIM_ClockDivision=TIM_CKD_DIV1;                                                         //²ÉÑù·ÖÆµÖµ
+    TIM_StructInit.TIM_CounterMode=TIM_CounterMode_Up;                                                     //¼ÆÊýÄ£Ê½
+    TIM_StructInit.TIM_RepetitionCounter=0;
+    
+    TIM_TimeBaseInit(TIM2, &TIM_StructInit);
+    
+    /* ÅäÖÃ¶¨Ê±Æ÷3ÖÐ¶ÏÍ¨µÀ¼°ÓÅÏÈ¼¶ */
+    NVIC_StructInit.NVIC_IRQChannel=TIM2_IRQn;
+    NVIC_StructInit.NVIC_IRQChannelPriority=3;
+    NVIC_StructInit.NVIC_IRQChannelCmd=ENABLE;
+    NVIC_Init(&NVIC_StructInit);
+    
+    /*¸üÐÂ¶¨Ê±Æ÷Ê±»á²úÉú¸üÐÂÊ±¼ä,Çå³ý±êÖ¾Î»*/
+    TIM_ClearFlag(TIM2, TIM_FLAG_Update);
+    /*ÔÊÐí¶¨Ê±Æ÷2¸üÐÂÖÐ¶Ï*/
+    TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+    
+   //TIM_Cmd(TIM2, ENABLE);	
+		
+}
+#endif
+
 static void timer1_init_t_PWM(void)
 {
 #if defined C32F0
@@ -435,6 +480,8 @@ static void timer1_init_t_PWM(void)
 	NVIC_SetPriority(CT16B1_IRQn,3);
 	NVIC_EnableIRQ(CT16B1_IRQn);
 	CT16B1_STOP;
+#elif defined MM32F031K6
+	Tim2_Init(47,99);	// 100us one cycle
 #endif
 }
 
@@ -547,6 +594,7 @@ void sys_init(void)
 	gpio_init_t();
 	timer0_init_t();
 	pwm_init_t();
+	timer1_init_t_PWM();
 	exit_irq_init();
 	UART2_Init();
 	adc_init_t();

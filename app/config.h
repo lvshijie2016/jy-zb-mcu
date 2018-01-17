@@ -169,6 +169,7 @@ extern u32 SystemCoreClock;
 MOTO GPIO
 ==============================================================================================*/
 
+#if defined C32F0
 #define MOTO1_HIGH_PH 												GPIO_SetPin(GPIOA,PIN13)
 #define MOTO1_LOW_PH  												GPIO_ResetPin(GPIOA,PIN13)
 
@@ -201,6 +202,18 @@ MOTO GPIO
 
 #endif
 
+#elif defined MM32F031K6
+
+#define MOTO1_HIGH_PH 												GPIO_SetBits(GPIOA,GPIO_Pin_13)
+#define MOTO1_LOW_PH  												GPIO_ResetBits(GPIOA,GPIO_Pin_13)
+#define PWM_1_HIGH 													GPIO_SetBits(GPIOB,GPIO_Pin_1)
+#define PWM_1_LOW  													GPIO_ResetBits(GPIOB,GPIO_Pin_1)
+
+#define MOTO2_HIGH_PH 												GPIO_SetBits(GPIOB,GPIO_Pin_3)
+#define MOTO2_LOW_PH  				 								GPIO_ResetBits(GPIOB,GPIO_Pin_3)
+#define PWM_2_HIGH 												GPIO_SetBits(GPIOA,GPIO_Pin_10)
+#define PWM_2_LOW  				 								GPIO_ResetBits(GPIOA,GPIO_Pin_10)
+#endif
 
 
 
