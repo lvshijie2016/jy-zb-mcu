@@ -700,7 +700,7 @@ static void Handler_event(void)
 		
 		#if defined C32F0
 			if(kar_state == KAR_RUN && GPIO_GetPinState(GPIOA,USB_DET))
-		#elif MM32F031K6
+		#elif defined MM32F031K6
 			if(kar_state == KAR_RUN && GPIO_ReadInputDataBit(GPIOA,USB_DET))
 		#endif
 		{
@@ -1058,18 +1058,18 @@ static void kar_connect(void)
 				#endif
 
 			break;
-//			case ALARM_COMMAND:
-//				#if defined( DeBug )
-//					LOG(LOG_DEBUG,"Set_Alarm_Clock(get_Com) \r\n");
-//				#endif
-//				Set_Alarm_Clock(get_Com);
-//				
-//			break;
+			case ALARM_COMMAND:
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"Set_Alarm_Clock(get_Com) \r\n");
+				#endif
+				Set_Alarm_Clock(get_Com);
+				
+			break;
 //			case MOTO_COMMAND:
 //				#if defined( DeBug )
 //					LOG(LOG_DEBUG,"GetMotoCom(get_Com)\r\n");
 //				#endif
-//				GetMotoCom(get_Com);
+////				GetMotoCom(get_Com);
 //			break;
 //			case TIMER_DATA_COMMAND:
 //				#if defined( DeBug )
@@ -1177,8 +1177,9 @@ int main(void)
 		IAP_FlashProgram(0x7800,0);
 	}
 	
-	dly1us(5000000);
 	#elif defined MM32F031K6
+	
+	Rtc_Check();
 	kar_off();
 	
 	#endif

@@ -44,7 +44,7 @@ void UART2_Init(void)
 	NVIC_SetPriority(UART0_IRQn,0);
 	NVIC_EnableIRQ(UART0_IRQn); 
 	
-#elif MM32F031K6
+#elif defined MM32F031K6
     GPIO_InitTypeDef GPIO_InitStructure;
     UART_InitTypeDef UART_InitStructure;
     NVIC_InitTypeDef NVIC_InitStructure;

@@ -550,6 +550,8 @@ void sys_init(void)
 	exit_irq_init();
 	UART2_Init();
 	adc_init_t();
+	IIC_Init(1,400,0xA0);
+	RTC_Start();
 	//UART0_Init();
 	#if defined MM32F031K8
 		UART1_Init();

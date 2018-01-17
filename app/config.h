@@ -6,6 +6,8 @@
 //#include "stdint.h"
 //#include "stdbool.h"
 
+
+
 #if defined C32F0
 #include "stdbool.h"
 #endif
@@ -97,7 +99,7 @@
 #include "HAL_device.h"
 #include "MM32F031x8.h"
 #include "HAL_pwr.h"
-
+#include "i2c.h"
 extern u32 SystemCoreClock;	
 #endif
 
@@ -111,6 +113,7 @@ extern u32 SystemCoreClock;
 #include "rtc.h"
 #include "moto.h" 
 #include "Abnormal_Monitoring.h"
+
 
 
 #define USING_V50
