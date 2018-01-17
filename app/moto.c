@@ -137,7 +137,9 @@ static void moto_L_H(void)
 	MOTO_t.R_duty = 0;
 #if defined C32F0
 	CT16B1_START;
-
+#elif defined MM32F031K6
+	TIM_Cmd(TIM2,ENABLE);
+#endif
 }
 
 
@@ -149,7 +151,11 @@ static void moto_H(void)
 	MOTO2_HIGH_PH;
 	//MOTO1_HIGH_PH;
 	MOTO1_LOW_PH;
+#if defined C32F0
 	CT16B1_START;
+#elif defined MM32F031K6
+	TIM_Cmd(TIM2,ENABLE);
+#endif
 	
 }
 
