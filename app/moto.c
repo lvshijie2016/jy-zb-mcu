@@ -1,5 +1,11 @@
 #include "moto.h" 
 
+#ifndef true
+#define true 1
+#endif
+#ifndef false
+#define false 0
+#endif
 
 static unsigned char moto_flag = 0;
 static bool 		 moto_R_current_state;
@@ -12,7 +18,13 @@ _MOTO_Typedef_t   MOTO_t;
 /*停止*/
 void moto_P(void)
 {
+	
+#if defined C32F0
 	CT16B1_STOP;
+#elif defined MM32F031K6
+	TIM_Cmd(TIM2,DISABLE);
+#endif
+
 	PWM_2_LOW;
 	PWM_1_LOW;
 	MOTO1_HIGH_PH;
@@ -31,7 +43,11 @@ void moto_P(void)
 /*停止*/
 void moto_dealy_P(void)
 {
+#if defined C32F0
 	CT16B1_STOP;
+#elif defined MM32F031K6
+	TIM_Cmd(TIM2,DISABLE);
+#endif
 	PWM_2_LOW;
 	PWM_1_LOW;
 	MOTO1_HIGH_PH;
@@ -54,7 +70,12 @@ void moto_D(void)
 	//MOTO1_LOW_PH;
 	//MOTO_t.L_duty  = 100;
 	//MOTO_t.R_duty  = 100;
+
+#if defined C32F0
 	CT16B1_START;
+#elif defined MM32F031K6
+	TIM_Cmd(TIM2,ENABLE);
+#endif
 }
 
 /*右前转*/
@@ -66,7 +87,11 @@ static void moto_R_D(void)
 	//MOTO1_HIGH_PH;
 	MOTO1_LOW_PH;
 	MOTO_t.L_duty = 0; 
+#if defined C32F0
 	CT16B1_START;
+#elif defined MM32F031K6
+	TIM_Cmd(TIM2,ENABLE);
+#endif
 }
 
 /*左前转*/
@@ -77,7 +102,11 @@ static void moto_L_D(void)
 	MOTO1_LOW_PH;
 	//MOTO1_HIGH_PH;
 	MOTO_t.L_duty  = 0;
+#if defined C32F0
 	CT16B1_START;
+#elif defined MM32F031K6
+	TIM_Cmd(TIM2,ENABLE);
+#endif
 
 }
 
@@ -90,7 +119,11 @@ static void moto_R_H(void)
 	MOTO1_HIGH_PH;
 	//MOTO1_LOW_PH;
 	MOTO_t.L_duty = 0;
+#if defined C32F0
 	CT16B1_START;
+#elif defined MM32F031K6
+	TIM_Cmd(TIM2,ENABLE);
+#endif
 
 }
 
@@ -102,8 +135,11 @@ static void moto_L_H(void)
 	MOTO1_LOW_PH;
 	//MOTO1_HIGH_PH;
 	MOTO_t.R_duty = 0;
+#if defined C32F0
 	CT16B1_START;
-
+#elif defined MM32F031K6
+	TIM_Cmd(TIM2,ENABLE);
+#endif
 }
 
 
@@ -115,7 +151,11 @@ static void moto_H(void)
 	MOTO2_HIGH_PH;
 	//MOTO1_HIGH_PH;
 	MOTO1_LOW_PH;
+#if defined C32F0
 	CT16B1_START;
+#elif defined MM32F031K6
+	TIM_Cmd(TIM2,ENABLE);
+#endif
 	
 }
 
@@ -129,7 +169,11 @@ void moto_D(void)
 	MOTO2_HIGH_PH;
 	//MOTO1_HIGH_PH;
 	MOTO1_LOW_PH;
+#if defined C32F0
 	CT16B1_START;
+#elif defined MM32F031K6
+	TIM_Cmd(TIM2,ENABLE);
+#endif
 }
 
 /*右前转*/
@@ -141,7 +185,11 @@ static void moto_R_D(void)
 	MOTO1_LOW_PH;
 	//MOTO1_HIGH_PH;
 	MOTO_t.L_duty  = 0;
+#if defined C32F0
 	CT16B1_START;
+#elif defined MM32F031K6
+	TIM_Cmd(TIM2,ENABLE);
+#endif
 }
 
 /*左前转*/
@@ -152,7 +200,11 @@ static void moto_L_D(void)
 	//MOTO1_HIGH_PH;
 	MOTO1_LOW_PH;
 	MOTO_t.L_duty = 0; 
+#if defined C32F0
 	CT16B1_START;
+#elif defined MM32F031K6
+	TIM_Cmd(TIM2,ENABLE);
+#endif
 
 }
 
@@ -165,7 +217,11 @@ static void moto_R_H(void)
 	MOTO1_HIGH_PH;
 	//MOTO1_LOW_PH;
 	MOTO_t.L_duty = 0;
+#if defined C32F0
 	CT16B1_START;
+#elif defined MM32F031K6
+	TIM_Cmd(TIM2,ENABLE);
+#endif
 
 }
 
@@ -177,7 +233,11 @@ static void moto_L_H(void)
 	MOTO1_LOW_PH;
 	//MOTO1_HIGH_PH;
 	MOTO_t.R_duty = 0;
+#if defined C32F0
 	CT16B1_START;
+#elif defined MM32F031K6
+	TIM_Cmd(TIM2,ENABLE);
+#endif
 
 }
 
@@ -195,7 +255,11 @@ static void moto_H(void)
 	//MOTO1_LOW_PH;
 	//MOTO_t.L_duty  = 100;
 	//MOTO_t.R_duty  = 100;
+#if defined C32F0
 	CT16B1_START;
+#elif defined MM32F031K6
+	TIM_Cmd(TIM2,ENABLE);
+#endif
 	
 }
 
@@ -210,7 +274,11 @@ static void moto_L_T(void)
 	//MOTO1_HIGH_PH;
 	//MOTO2_HIGH_PH;
 	MOTO2_LOW_PH;
+#if defined C32F0
 	CT16B1_START;
+#elif defined MM32F031K6
+	TIM_Cmd(TIM2,ENABLE);
+#endif
 
 }
 
@@ -222,7 +290,11 @@ static void moto_R_T(void)
 	//MOTO1_LOW_PH;
 	//MOTO2_LOW_PH;
 	MOTO2_HIGH_PH;
+#if defined C32F0
 	CT16B1_START;
+#elif defined MM32F031K6
+	TIM_Cmd(TIM2,ENABLE);
+#endif
 }
 
 
@@ -382,10 +454,15 @@ void moto_run_task(void)
 }
 
 
+#if defined C32F0
 void TIMER16_1_IRQHandler(void)
+#elif defined MM32F031K6
+void TIM2_IRQHandler(void)
+#endif
 {
 	float  i;
 	static uint16_t pwm_flag=0;
+
 	pwm_flag = (pwm_flag+1) == DUTY ? 0 : pwm_flag+1;
 	i = pwm_flag;
 	i = (i/DUTY)*100;
@@ -394,9 +471,11 @@ void TIMER16_1_IRQHandler(void)
 	if(i < MOTO_t.R_duty && moto_L_current_state) PWM_2_HIGH;	
 	else PWM_2_LOW;
 
+#if defined C32F0
 	CT16B0_ClearIntFlag(TMR1);
+#elif defined MM32F031K6
+	TIM_ClearITPendingBit(TIM2,TIM_IT_Update);
+#endif
 }
-
-
 
 
