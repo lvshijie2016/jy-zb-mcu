@@ -11,6 +11,8 @@ void get_packet(void);
 
 void UART0_Init(void)
 {
+	
+	#if defined C32F0
 	GPIO_InitTypeDef uart0_gpio;
 	SYS_EnablePhrClk(AHB_IOCON);
 	SYS_EnablePhrClk(AHB_GPIOA);    
@@ -39,8 +41,89 @@ void UART0_Init(void)
 	NVIC_EnableIRQ(UART0_IRQn); 
 	
 //	memset(&Buffer_t,0,sizeof(Buffer));
+	#elif defined MM32F031K6
+	
+		GPIO_InitTypeDef GPIO_InitStructure;
+    UART_InitTypeDef UART_InitStructure;
+    NVIC_InitTypeDef NVIC_InitStructure;
+		
+		RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART2, ENABLE);	
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);  
+    
+
+    NVIC_InitStructure.NVIC_IRQChannel = UART2_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPriority = 3;		
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;		
+    NVIC_Init(&NVIC_InitStructure);	
+    
+  
+    GPIO_PinAFConfig(GPIOA,GPIO_PinSource2,GPIO_AF_1);
+    GPIO_PinAFConfig(GPIOA,GPIO_PinSource3,GPIO_AF_1);
+    
+    UART_InitStructure.UART_BaudRate = 115200;
+    UART_InitStructure.UART_WordLength = UART_WordLength_8b;
+    UART_InitStructure.UART_StopBits = UART_StopBits_1;
+    UART_InitStructure.UART_Parity = UART_Parity_No;
+    UART_InitStructure.UART_HardwareFlowControl = UART_HardwareFlowControl_None;
+    UART_InitStructure.UART_Mode = UART_Mode_Rx | UART_Mode_Tx;	
+    
+    UART_Init(UART2, &UART_InitStructure); 
+    UART_ITConfig(UART2, UART_IT_RXIEN, ENABLE);
+    UART_Cmd(UART2, ENABLE);                    
+    
+    //UART2_TX   GPIOA.2
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2; 
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    
+    
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+	
+	#endif
 
 }
+
+
+#if defined MM32F031K6 
+
+void UART2_Send_BUFF( uint8_t *Str,uint8_t len)
+{
+	uint8_t index;
+	for(index=0;index<len;index++)
+	{
+		
+		UART_SendData(UART2, Str[index]);
+		while(UART_GetFlagStatus(UART2, UART_FLAG_TXEMPTY) == RESET)   // µÈ´ý·¢ËÍ»º³åÎª¿Õ
+		{
+		}
+		
+	}	
+}
+
+
+void Boot_MAL_Erase_app()     // 
+{
+   uint32_t Address;
+   uint8_t index,temp;
+//   UART_Send_Buffer[0] = UART_Receive_Buffer[0] | 0xC0;
+	 temp = 26;  //100 K
+   Address = 0x08001800;         			// APP flash   0x08004000 -- 0x08020000  0x1C000  APP起始地址
+	 FLASH_Unlock();  
+	 FLASH_ClearFlag(FLASH_FLAG_BSY | FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);
+   for(index=0;index<temp;index++ )   //把需要使用到的APP空间擦除
+   	{   	
+     FLASH_ErasePage(Address);
+	   Address = Address + 0x400;   
+   	}
+   FLASH_Lock();
+//   UART2_Send_BUFF(UART_Send_Buffer,LEN);
+}
+
+#endif
+
 
 
 static void UART1_Init(void)
@@ -53,14 +136,14 @@ static void UART1_Init(void)
 }
 
 
-
+#if defined C32F0
 int fputc(int ch, FILE *f) 
 {
     while (UART1->STAT.bit.TXF);	
     UART1->DAT.all = ch;
     return ch;
 }
-
+#endif
 
 void WriteUartBuf(uint8_t data)
 {
@@ -86,12 +169,18 @@ void UART_Send_t(uint8_t Com)
 	Uart0_Typedef.tx_buf[4+(Uart0_Typedef.tx_buf_len++)] = TX_FT;//帧尾
 	
 	
+	#if defined C32F0
 	for(i=0; i<(4+Uart0_Typedef.tx_buf_len); i++)
 	{
 		while (UART0->STAT.bit.TXF);
 		UART0->DAT.bit.DATA = Uart0_Typedef.tx_buf[i];
 		
 	}
+	#elif defined MM32F031K6
+	
+		UART2_Send_BUFF(Uart0_Typedef.tx_buf,4+Uart0_Typedef.tx_buf_len);
+	
+	#endif
 
 	Uart0_Typedef.tx_buf_len = 0;
 	if(Uart0_Typedef.tx_sequence_pag >= 0xFF) Uart0_Typedef.tx_sequence_pag = 0;//清楚包号重新累加
@@ -419,6 +508,7 @@ void flash_write()
 	uint16_t i;
 	uint16_t j;
 	#if 0
+	
 	static uint32_t addr_offesr = 0;
 	uint32_t addr_base   = 0x1800;
 	uint32_t data        = 0;
@@ -446,6 +536,8 @@ void flash_write()
 //		 flag = 1;
 //	}
 //	RamSource = ( uint32_t)packet_data.recv_update_data;
+		
+	#if defined C32F0
 	if (flag == 0)
 	{
 		for (i=0; i<FLASH_IMAGE_SIZE; i+=512)
@@ -454,6 +546,16 @@ void flash_write()
 		}
 		flag = 1;
 	}
+	
+	#elif defined MM32F031K6
+	if (flag == 0)
+	{
+		Boot_MAL_Erase_app();
+		flag = 1;
+	}
+	
+	#endif
+	
 	if ((packet_data.recv_data_len-2)%4)
 	{
 		
@@ -465,7 +567,14 @@ void flash_write()
 		 write_data |= (uint32_t)packet_data.recv_update_data[j+1]<<8;
 		 write_data |= (uint32_t)packet_data.recv_update_data[j+2]<<16;
 		 write_data |= (uint32_t)packet_data.recv_update_data[j+3]<<24;
-		 IAP_FlashProgram(flah_offset,write_data);
+		 
+		 #if defined C32F0
+			IAP_FlashProgram(flah_offset,write_data);
+		 #elif defined MM32F031K6
+		 
+			FLASH_ProgramWord(flah_offset,write_data);
+		 
+		 #endif
      flah_offset += 4;
    }
 
@@ -603,7 +712,13 @@ void packet_handle()
 				{
 					WriteUartBuf(0x00);
 					UART_Send_t(TX_OTA_LAST_DATA_ACK);
-					IAP_FlashProgram(0x7800,0x55aaaa55);
+					
+					#if defined C32F0
+						IAP_FlashProgram(0x7800,0x55aaaa55);
+					#elif defined MM32F031K6
+					
+					
+					#endif
 				}
 			}
 			reset_config();
@@ -626,6 +741,9 @@ void packet_handle()
 	}
 }
 
+
+
+#if defined C32F0
 void UART0_IRQHandler(void)
 {
 	
@@ -649,6 +767,21 @@ void UART0_IRQHandler(void)
 	//UART_ClearIntFlag(UART0);
 	return;
 }
+
+#elif defined MM32F031K6
+
+void UART2_IRQHandler(void)                	//
+{
+
+  if(UART_GetITStatus(UART2, UART_IT_RXIEN))       
+	{
+     UART_ClearITPendingBit(UART2,UART_IT_RXIEN);
+     recv_data = UART_ReceiveData(UART2);
+		 data_handle(recv_data);
+  } 
+}
+
+#endif
 
 #endif
 

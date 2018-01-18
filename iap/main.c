@@ -3,6 +3,7 @@
 
 #include "config.h"
 #include "user_uart.h"
+#include "HAL_conf.h"
 
 extern void packet_handle();
 extern uint8_t receive_complete_flag ;
@@ -17,9 +18,11 @@ static uint32_t JumpAddress;
 
 int main(void)
 {	
+	
+	#if 0
 	uint32_t time; 
 	sys_init();    
-	ENABLE_FLASH_CLOCK;
+//	ENABLE_FLASH_CLOCK;
 //	while(1)
 //	{
 //		packet_handle();
@@ -56,11 +59,21 @@ int main(void)
 //			 }
 //		 }
 	 }
+	 
+	 
+	 #endif
+	 
+	 
     //进入app，两秒没有进入下载模式则进入到app中
-    JumpAddress = *(__IO uint32_t*) (ApplicationAddress + 4);
-    Jump_To_Application = (pFunction) JumpAddress;
-    __set_MSP(*(__IO uint32_t*) ApplicationAddress);
-    Jump_To_Application();
+				/* Jump to user application */ 
+				JumpAddress = *(__IO uint32_t*) (ApplicationAddress + 4);
+				Jump_To_Application = (pFunction) JumpAddress;
+
+				/* Initialize user application's Stack Pointer */ 
+				__set_MSP(*(__IO uint32_t*) ApplicationAddress);
+				
+				//Jump to APP
+				Jump_To_Application();	
 }
 
 

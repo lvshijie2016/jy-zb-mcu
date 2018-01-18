@@ -1,4 +1,5 @@
 #include "rtc.h"
+#include "i2c.h"
 uint8_t rtc_buf[4] = {0};
 
 
@@ -50,6 +51,7 @@ static unsigned char RTC_Bcd2ToBin(unsigned char BCDValue)
 }
 
 
+#if 0
 /**
   *****************************************************************************
   * @Name   : RTC某寄存器写入一个字节数据
@@ -84,10 +86,11 @@ static void RTC_Write_Byte(unsigned char REG_ADD, unsigned char dat)
 **/
 static unsigned char RTC_Read_Byte(unsigned char REG_ADD)
 {
+	RTC_Write_Byte(RTC_Address_Timer_VAL, Rtc_Check_Data); 	//唤醒RTC
 	return IIC_ReadByte(RTC_Write,REG_ADD);
 }
 
-
+#endif
 
 /**
   *****************************************************************************
@@ -106,6 +109,7 @@ static unsigned char RTC_Read_Byte(unsigned char REG_ADD)
 **/
 static void RTC_Write_nByte(unsigned char REG_ADD, unsigned char num, unsigned char *pBuff)
 {
+	RTC_Write_Byte(RTC_Address_Timer_VAL, Rtc_Check_Data); 	//唤醒RTC
 	IIC_WriteArray(RTC_Write,REG_ADD,pBuff,num);
 }
 
@@ -125,6 +129,7 @@ static void RTC_Write_nByte(unsigned char REG_ADD, unsigned char num, unsigned c
 **/
 static void RTC_Read_nByte(unsigned char REG_ADD, unsigned char num, unsigned char *pBuff)
 {
+	RTC_Write_Byte(RTC_Address_Timer_VAL, Rtc_Check_Data); 	//唤醒RTC
 	IIC_ReadArray(RTC_Write,REG_ADD,num,pBuff);
 }
 
@@ -145,7 +150,7 @@ static void RTC_Read_nByte(unsigned char REG_ADD, unsigned char num, unsigned ch
 void RTC_Start(void)
 {
 	unsigned char temp = 0;
-	
+	RTC_Write_Byte(0x0F, 0x55);
 	temp = RTC_Read_Byte(RTC_Address_Control_Status_1);  //读取控制/状态寄存器1
 	if (temp & PCF_Control_ChipStop)
 	{
@@ -183,7 +188,7 @@ void RTC_Start(void)
 void RTC_SetTimeDate(_RTC_Register_Typedef* PCF_DataStruct)
 {
 	
-
+//	RTC_Write_Byte(0x0F, 0x55);
 	if (PCF_DataStruct->Years > 99)    PCF_DataStruct->Years    = 0;  //恢复00年
 	if (PCF_DataStruct->Months_Century > 12)   PCF_DataStruct->Months_Century   = 1;  //恢复1月
 	if (PCF_DataStruct->Days > 31)     PCF_DataStruct->Days     = 1;  //恢复1日
@@ -245,6 +250,7 @@ void RTC_SetTimeDate(_RTC_Register_Typedef* PCF_DataStruct)
 **/
 void RTC_GetTimeDate(_RTC_Register_Typedef* PCF_DataStruct)
 {
+	RTC_Write_Byte(0x0F, 0x55);
 	//读取全部寄存器数值
 	RTC_Read_nByte(RTC_Address_Days, 4, rtc_buf);
 	//屏蔽无效位
@@ -292,6 +298,7 @@ void RTC_SetAlarm(unsigned char AlarmType_EN, _RTC_Register_Typedef* PCF_DataStr
 {
 	unsigned char Alarm_Interrupt = 0;  //控制/状态寄存器闹铃中断缓存
 	
+//	RTC_Write_Byte(0x0F, 0x55);
 	//判断数值是否在范围之内
 	//
 	if (PCF_DataStruct->Minute_Alarm > 59)  PCF_DataStruct->Minute_Alarm  = 0;  //恢复0分钟
@@ -361,6 +368,7 @@ void RTC_SetAlarm(unsigned char AlarmType_EN, _RTC_Register_Typedef* PCF_DataStr
 **/
 void RTC_GetAlarm(_RTC_Register_Typedef* PCF_DataStruct)
 {
+	RTC_Write_Byte(0x0F, 0x55);
 	//读取
 	RTC_Read_nByte(RTC_Alarm_Minutes, 4, rtc_buf);
 	//屏蔽无效位，分钟报警值全部返回
@@ -379,6 +387,8 @@ void RTC_GetAlarm(_RTC_Register_Typedef* PCF_DataStruct)
 void RTC_Clear_GetControlStatus_2(void)
 {
 	unsigned char Alarm_Interrupt = 0;  //控制/状态寄存器闹铃中断缓存
+	
+	RTC_Write_Byte(0x0F, 0x55);
 	Alarm_Interrupt = RTC_Read_Byte(RTC_Address_Control_Status_2);
 	Alarm_Interrupt &= ~(3<<2);//1111 0011 重置中断标志
 	Alarm_Interrupt |= (1<<1); //开报警中断 0000 0010
@@ -388,16 +398,20 @@ void RTC_Clear_GetControlStatus_2(void)
 bool get_Alarm_Int_state(void)
 {
 	unsigned char Alarm_Interrupt = 0;  //控制/状态寄存器闹铃中断缓存
+	
+	RTC_Write_Byte(0x0F, 0x55);
 	Alarm_Interrupt = RTC_Read_Byte(RTC_Address_Control_Status_2);
 	RTC_Close_Alarm();
-	if(Alarm_Interrupt&0x08) return true;
-	return false;
+	if(Alarm_Interrupt&0x08) return TRUE;
+	return FALSE;
 }		
 	
 	
 void RTC_Close_Alarm(void)
 {
 	unsigned char Alarm_Interrupt = 0;  //控制/状态寄存器闹铃中断缓存
+	
+	RTC_Write_Byte(0x0F, 0x55);
 	Alarm_Interrupt = RTC_Read_Byte(RTC_Address_Control_Status_2);
 	Alarm_Interrupt &= ~(3<<2);
 	Alarm_Interrupt &= ~(1<<1); //关报警中断
@@ -410,11 +424,14 @@ void Set_Alarm_Clock(uint8_t *command)
 {
 	_RTC_Register_Typedef  PCF_DataStruct;
 	
+//	RTC_Write_Byte(0x0F, 0x55);
 	RTC_Clear_GetControlStatus_2();
 	PCF_DataStruct.Minute_Alarm = command[4];
 	PCF_DataStruct.Day_Alarm = command[1];
 	PCF_DataStruct.Hour_Alarm = command[3];
 	PCF_DataStruct.WeekDays_Alarm = command[2];
+	
+	RTC_Write_Byte(0x0F, 0x55);
 	RTC_SetAlarm(AlarmType_Minutes_EN|AlarmType_Hours_EN,&PCF_DataStruct);
 	
 	RTC_GetAlarm(&PCF_DataStruct);
@@ -446,6 +463,8 @@ void Set_Alarm_Clock(uint8_t *command)
 void Set_date_timer(uint8_t *command)
 {
 	_RTC_Register_Typedef  PCF_DataStruct;
+	
+	RTC_Write_Byte(0x0F, 0x55);
 
 	PCF_DataStruct.Years = command[1];
 	PCF_DataStruct.Months_Century = command[2];
@@ -480,6 +499,8 @@ void Set_date_timer(uint8_t *command)
 void Get_date_timer(void)
 {
 	_RTC_Register_Typedef  PCF_DataStruct;
+	
+	RTC_Write_Byte(0x0F, 0x55);
 	RTC_GetTimeDate(&PCF_DataStruct);
 	WriteUartBuf (PCF_DataStruct.Years);
 	WriteUartBuf (PCF_DataStruct.Months_Century);
@@ -506,8 +527,8 @@ bool Rtc_Check(void)
 	RTC_Write_Byte(RTC_Address_Timer_VAL, Rtc_Check_Data); 	//写入检测值
 	for(test_value = 0;test_value < 50;test_value++){};  	//延时一定时间再读取
 	test_value = RTC_Read_Byte(RTC_Address_Timer_VAL);  //再读取回来
-	if(test_value != Rtc_Check_Data)  return true;  //器件错误或者损坏
-	return false;  //正常
+	if(test_value != Rtc_Check_Data)  return TRUE;  //器件错误或者损坏
+	return FALSE;  //正常
 	
 }
 

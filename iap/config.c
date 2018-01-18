@@ -1,5 +1,5 @@
 #include "config.h"
-
+#include "HAL_conf.h"
 /**
   *****************************************************************************
   * @Name   : IO…Ë÷√
@@ -18,6 +18,8 @@
   *******************************************************************************
 	**/
 
+
+#if defined C32F0
 void get_gpio(uint8_t gpio, uint16_t pin, uint8_t function,uint8_t I_O, uint8_t HL ,uint8_t edge)
 {
 
@@ -179,7 +181,7 @@ void wdt_init_t(uint8_t timer)
 	WDT_Feed();	
 }
 
-
+#endif
 
 
 static void UART1_Init(void)
@@ -192,22 +194,39 @@ static void UART1_Init(void)
 }
 
 
-
+void gpio_init_t()
+{
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA|RCC_AHBPeriph_GPIOB, ENABLE);  //ø™∆ÙGPIOA,GPIOB ±÷
+	GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_15;  //POWER C600 
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	GPIO_SetBits(GPIOA,GPIO_Pin_15);
+}
 
 
 void sys_init(void)
 {
+	#if defined C32F0
 	
 	SYS_SystemInitial();
+	
+	#endif
 //wdt_init_t(1);
 	gpio_init_t();
 	UART1_Init();
 	UART0_Init();
 	
-	
+	#if defined C32F0
 	get_gpio(IOCON_GPIOA,	PIN15,	PA15_FUNC_GPIO,	IO_Output, IO_DEFAULT, PULL_UP_EN); //KAR_POWER_ON_OF
 	
 	GPIO_SetPin(GPIOA,PIN15);
+	
+	#elif defined MM32F031K6
+	
+	
+	#endif
 }
 
 

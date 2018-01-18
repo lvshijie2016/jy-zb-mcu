@@ -152,6 +152,7 @@ static void get_adc_value(void)
 				if (bat_value >100)
 				bat_value = 100;
 			
+				bat_value = 80;
 //			if (first_get_value) {
 //				first_get_value = 0;
 //				bat_last_value = bat_value;
@@ -1065,12 +1066,12 @@ static void kar_connect(void)
 				Set_Alarm_Clock(get_Com);
 				
 			break;
-//			case MOTO_COMMAND:
-//				#if defined( DeBug )
-//					LOG(LOG_DEBUG,"GetMotoCom(get_Com)\r\n");
-//				#endif
-////				GetMotoCom(get_Com);
-//			break;
+			case MOTO_COMMAND:
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"GetMotoCom(get_Com)\r\n");
+				#endif
+				GetMotoCom(get_Com);
+			break;
 //			case TIMER_DATA_COMMAND:
 //				#if defined( DeBug )
 //					LOG(LOG_DEBUG,"Set_date_timer(get_Com)\r\n");
@@ -1182,6 +1183,12 @@ int main(void)
 	Rtc_Check();
 	kar_off();
 	
+	Set_Alarm_Clock(get_Com);
+	Set_date_timer(get_Com);
+	Get_date_timer();
+	
+	
+	
 	#endif
 	
 //	POWER_ON; 
@@ -1196,10 +1203,7 @@ int main(void)
 			Handler_event();
 			power_OFF_ON();
 			led_run_task();
-			
-			#if defined C32F0
-				moto_run_task();
-			#endif
+			moto_run_task();
 		//exceotion_management();
 			state_run_monitoring();
 		}

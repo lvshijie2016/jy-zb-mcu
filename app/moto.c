@@ -8,8 +8,8 @@
 #endif
 
 static unsigned char moto_flag = 0;
-static bool 		 moto_R_current_state;
-static bool 		 moto_L_current_state;
+static bool 		 moto_R_current_state = true;
+static bool 		 moto_L_current_state = true;
 
 
 
