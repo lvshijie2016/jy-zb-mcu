@@ -32,6 +32,13 @@ u16 ADC1_SingleChannel_Get(uint8_t ADC_Channel_x)
     return puiADData;
 }
 
+void ADC1_SoftStart(void)
+{
+    ADC_SoftwareStartConvCmd(ADC1, ENABLE); 
+    while(ADC_GetFlagStatus(ADC1,ADC_FLAG_EOC)==0);
+    ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
+}
+
 static void get_adc_value(void)
 {	
 	static	 _ADC_typedef		adc_typedef;
@@ -132,82 +139,84 @@ static void get_adc_value(void)
 	
 	if(check_soft_timeout(TIMER_BAT)) //状态运行检测时间50us
 	{	 
-		
-		adValue_t = 0;
-		adValue_t = ADC1_SingleChannel_Get(ADC_Channel_4);
-			adValue = adValue_t*1000000*3.3/4095.0/1000;
-			adValue = 1730 > adValue ? 0 : ((adValue-1730)/370*100);
 
-			adc_typedef.bat_buffer[adc_typedef.head] = (uint8_t)adValue;
-	
-			adc_typedef.data = adc_typedef.data + adc_typedef.bat_buffer[adc_typedef.head];
-			adc_typedef.head = (adc_typedef.head+1) == BAT_VALUE_BUFFER ? 0: adc_typedef.head+1;
-			adc_typedef.data = adc_typedef.data - adc_typedef.bat_buffer[adc_typedef.head];
+		ADC1_SoftStart();
+		adValue_t = 0;
+		adValue_t = ADC1->ADDR4 & 0xfff;
+		adValue = adValue_t*1000000*3.3/4095.0/1000;
+		adValue = 1730 > adValue ? 0 : ((adValue-1730)/370*100);
+
+		adc_typedef.bat_buffer[adc_typedef.head] = (uint8_t)adValue;
+
+		adc_typedef.data = adc_typedef.data + adc_typedef.bat_buffer[adc_typedef.head];
+		adc_typedef.head = (adc_typedef.head+1) == BAT_VALUE_BUFFER ? 0: adc_typedef.head+1;
+		adc_typedef.data = adc_typedef.data - adc_typedef.bat_buffer[adc_typedef.head];
+
+		if(bat_flag) {
+			bat_value = (adc_typedef.data-adc_typedef.bat_buffer[adc_typedef.head])/adc_typedef.head;
+			bat_flag  = (adc_typedef.head+1) == BAT_VALUE_BUFFER ? FALSE : TRUE;
+		}else bat_value = (adc_typedef.data-adc_typedef.bat_buffer[adc_typedef.head])/BAT_VALUE_BUFFER;
+
+		if (bat_value >100)
+			bat_value = 100;
+
+		if (first_get_value) {
+			first_get_value = 0;
+			bat_last_value = bat_value;
+		}
+		else {
+			#if defined C32F0
+			if (GPIO_GetPinState(GPIOA,USB_DET)) {                                 //充电情况下电量值限制
+			#elif defined MM32F031K6
+			if ( GPIO_ReadInputDataBit(GPIOA,USB_DET)){
+			#endif
 			
-			if(bat_flag) {
-				bat_value = (adc_typedef.data-adc_typedef.bat_buffer[adc_typedef.head])/adc_typedef.head;
-				bat_flag  = (adc_typedef.head+1) == BAT_VALUE_BUFFER ? FALSE : TRUE;
-			}else bat_value = (adc_typedef.data-adc_typedef.bat_buffer[adc_typedef.head])/BAT_VALUE_BUFFER;
-			
-				if (bat_value >100)
-				bat_value = 100;
-			
-				bat_value = 80;
-//			if (first_get_value) {
-//				first_get_value = 0;
-//				bat_last_value = bat_value;
-//			}
-//			else {
-//				if (GPIO_GetPinState(GPIOA,USB_DET)) {                                 //充电情况下电量值限制
-//					if (bat_last_value > bat_value) {
-//						bat_value = bat_last_value;
-//					} else if ((bat_value - bat_last_value) > BAT_MIN_STEP) {
-//							bat_value = bat_last_value;
-//					} else {
-//							bat_last_value = bat_value;
-//					}
-//				} else {
-//						if (bat_last_value < bat_value) {
-//							bat_value = bat_last_value;
-//						} else if ((bat_last_value - bat_value) > BAT_MIN_STEP) {
-//								bat_value = bat_last_value;
-//						} else {
-//								bat_last_value = bat_value;
-//						}
-//				}
-//			}
-		
-//		set_soft_timer(TIMER_BAT,ENERGY_SAMPLING_TIMER); 
-//		//MOTO 右电机电流检测 1s超过1200ma电流为堵转状态
-//		adValue_t = 0;
-//		adValue_t = (*ADC).DR[1].all;
-//		if(0x80000000 == (adValue_t & 0x80000000))
-//		{
-//			adValue = adValue_t*1000000*3.3/4095.0/1000;
-//			
-//			moto_R_state_flag = (uint16_t)adValue;
-//		
-//			#if defined( DeBug )
-//				//LOG(LOG_DEBUG," moto_R_state_flag = %d -> %d\r\n", (uint32_t)adValue,moto_R_state_flag);
-//			#endif
-//		}
-//		adValue_t = 0;
-//		adValue_t = (*ADC).DR[6].all;
-//		if(0x80000000 == (adValue_t & 0x80000000))
-//		{
-//			//MOTO 左电机电流检测 1s超过1200ma电流为堵转状态
-//			
-//			adValue = adValue_t*1000000*3.3/4095.0/1000;
-//			moto_L_state_flag = (uint16_t)adValue;
-//			
-//			#if defined( DeBug )
-//				//LOG(LOG_DEBUG," moto_L_state_flag = %d -> %d\r\n", (uint32_t)adValue,moto_L_state_flag);
-//			#endif
-//		}
-//		//传入电机驱动
-//		ADC_IssueSoftTrigger;
-//		get_moto_current_state(moto_R_state_flag,moto_L_state_flag,bat_value);
-		
+				if (bat_last_value > bat_value) {
+					bat_value = bat_last_value;
+				} else if ((bat_value - bat_last_value) > BAT_MIN_STEP) {
+					bat_value = bat_last_value;
+				} else {
+					bat_last_value = bat_value;
+				}
+			} else {
+				if (bat_last_value < bat_value) {
+					bat_value = bat_last_value;
+				} else if ((bat_last_value - bat_value) > BAT_MIN_STEP) {
+					bat_value = bat_last_value;
+				} else {
+					bat_last_value = bat_value;
+				}
+			}
+		}
+
+		set_soft_timer(TIMER_BAT,ENERGY_SAMPLING_TIMER); 
+		//MOTO 右电机电流检测 1s超过1200ma电流为堵转状态
+		adValue_t = 0;
+		adValue_t = ADC1->ADDR1 & 0xfff;
+		{
+			adValue = adValue_t*1000000*3.3/4095.0/1000;
+
+			moto_R_state_flag = (uint16_t)adValue;
+
+#if defined( DeBug )
+			//LOG(LOG_DEBUG," moto_R_state_flag = %d -> %d\r\n", (uint32_t)adValue,moto_R_state_flag);
+#endif
+		}
+		adValue_t = 0;
+		adValue_t = ADC1->ADDR6 & 0xfff;
+		{
+			//MOTO 左电机电流检测 1s超过1200ma电流为堵转状态
+
+			adValue = adValue_t*1000000*3.3/4095.0/1000;
+			moto_L_state_flag = (uint16_t)adValue;
+
+#if defined( DeBug )
+			//LOG(LOG_DEBUG," moto_L_state_flag = %d -> %d\r\n", (uint32_t)adValue,moto_L_state_flag);
+#endif
+		}
+		//传入电机驱动
+		get_moto_current_state(moto_R_state_flag,moto_L_state_flag,bat_value);
+
 	}
 	
 	#endif
@@ -308,9 +317,9 @@ void LowPowerConsumptionConfig(void)
 	
 	#elif defined MM32F031K6
 	
-//	  Sys_Stop();    //进入停机模式
+	  //Sys_Stop();    //进入停机模式
 		 
-//		SystemInit();  //唤醒后重新初始化一下时钟
+		//SystemInit();  //唤醒后重新初始化一下时钟
 	
 	
 	#endif

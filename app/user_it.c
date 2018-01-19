@@ -96,9 +96,20 @@ void EXTI4_15_IRQHandler(void)
 	if(EXTI_GetITStatus(EXTI_Line5)!=RESET)
 	{
 		Information_events |=  RTC_INT_EVENTS;
+		EXTI_ClearITPendingBit(EXTI_Line5); 	
 	}
-	EXTI_ClearITPendingBit(EXTI_Line5); 	
 	
+	if(EXTI_GetITStatus(EXTI_Line11)!=RESET)
+	{
+		Information_events |= USB_DET_EVENTS;
+		EXTI_ClearITPendingBit(EXTI_Line11); 	
+	}
+
+	if(EXTI_GetITStatus(EXTI_Line12)!=RESET)
+	{
+		Information_events |= DRV_EVENTS;
+		EXTI_ClearITPendingBit(EXTI_Line12); 	
+	}
 }
 
 #endif

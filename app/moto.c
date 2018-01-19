@@ -374,7 +374,7 @@ void GetMotoCom(unsigned char *com)
 	}
 }
 
-
+#if 0
 void get_moto_current_state(uint16_t R_state, uint16_t L_state,uint8_t bat_state)
 {
 	double R_vref;
@@ -403,6 +403,56 @@ void get_moto_current_state(uint16_t R_state, uint16_t L_state,uint8_t bat_state
 	//moto_L_current_state = L_state > L_vref  ?  false : true ;
 	
 }
+#endif
+void get_moto_current_state(uint16_t R_state, uint16_t L_state,uint8_t bat_state)
+{
+	double R_vref;
+	double L_vref;
+	static unsigned int R_count = 0;
+	static unsigned int L_count = 0;
+	L_vref = (MOTO_t.L_duty*(23+(MOTO_t.L_duty-50)*0.08) + bat_state);
+	R_vref = (MOTO_t.R_duty*(23+(MOTO_t.R_duty-50)*0.08) + bat_state);
+
+	
+	if(R_state > R_vref )
+	{
+		//moto_R_current_state = false;
+		//t_soft_timer(TIMER_MOTO_R,1000);
+		R_count++;
+		if( R_count > 20) {
+       moto_R_current_state = false;
+		}
+		
+	}else //if(check_soft_timeout(TIMER_MOTO_R)) moto_R_current_state = true;
+	{
+	  R_count = 0;
+		moto_R_current_state = true;	
+	}
+	
+	if(L_state > L_vref )
+	{
+		//moto_L_current_state = false;
+		//t_soft_timer(TIMER_MOTO_L,1000);
+		L_count++;
+		if( L_count > 20) {
+       moto_L_current_state = false;
+		}
+		
+	}else //if(check_soft_timeout(TIMER_MOTO_L))moto_L_current_state = true;
+	{
+	  L_count = 0;
+		moto_L_current_state = true;	
+	}
+	
+	if (moto_L_current_state == false)
+		 moto_R_current_state = false;
+	if (moto_R_current_state == false)
+		 moto_L_current_state = false;
+	//moto_R_current_state = R_state > R_vref  ?  false : true ;
+	//moto_L_current_state = L_state > L_vref  ?  false : true ;
+	
+}
+
 
 
 void moto_run_task(void)

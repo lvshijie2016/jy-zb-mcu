@@ -225,7 +225,7 @@ void gpio_init_t(void)
 
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB | RCC_AHBPeriph_GPIOA, ENABLE);  
 
-	GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_4;      //VBT_MCU_INT
+	GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_4|GPIO_Pin_1|GPIO_Pin_6;      //VBT_MCU_INT
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	/*将PA4配置为模拟输入*/
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
@@ -241,7 +241,7 @@ void gpio_init_t(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-	GPIO_PinAFConfig(GPIOB,GPIO_PinSource13,GPIO_AF_7);
+	GPIO_PinAFConfig(GPIOA,GPIO_PinSource13,GPIO_AF_7);
 #endif	
 }
 
@@ -359,16 +359,15 @@ static void adc_init_t(void)
 	ADC_IssueSoftTrigger;
 #elif defined MM32F031K6
 	
-	    ADC_InitTypeDef  ADC_InitStructure;
-    
+	ADC_InitTypeDef  ADC_InitStructure;
  // GPIO_Configuration();
-	
+ 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
     
     /* Initialize the ADC_PRESCARE values */
     ADC_InitStructure.ADC_PRESCARE = ADC_PCLK2_PRESCARE_16;   //48M / 16= 3M
     /* Initialize the ADC_Mode member */
-    ADC_InitStructure.ADC_Mode = ADC_Mode_Single;
+    ADC_InitStructure.ADC_Mode = ADC_Mode_Single_Period;
     /* Initialize the ADC_ContinuousConvMode member */
     ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;
     /* Initialize the ADC_DataAlign member */
@@ -382,6 +381,8 @@ static void adc_init_t(void)
     ADC_RegularChannelConfig(ADC1, DISABLE_ALL_CHANNEL , 0, 0); 
     /*使能选中通道,后面参数保留*/
     ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 1, ADC_SampleTime_13_5Cycles); 
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 2, ADC_SampleTime_13_5Cycles); 
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 3, ADC_SampleTime_13_5Cycles); 
     
     ADC_Cmd(ADC1, ENABLE); 
 #endif
@@ -528,7 +529,7 @@ void exit_irq_init()
 {
 	#if defined MM32F031K6
 	
-	  GPIO_InitTypeDef GPIO_InitStructure;  		  
+	GPIO_InitTypeDef GPIO_InitStructure;  		  
     NVIC_InitTypeDef NVIC_InitStructure;
     EXTI_InitTypeDef EXTI_InitStructure;
     
@@ -539,14 +540,21 @@ void exit_irq_init()
     GPIO_InitStructure.GPIO_Mode =GPIO_Mode_IPU;//上拉输入
     GPIO_Init(GPIOA, &GPIO_InitStructure);	//初始化IO
 	
+    GPIO_InitStructure.GPIO_Pin =GPIO_Pin_11|GPIO_Pin_12;	 //PA.11:USB_DET     PA.12: TOUCH2     
+    GPIO_InitStructure.GPIO_Mode =GPIO_Mode_IN_FLOATING;//上拉输入
+    GPIO_Init(GPIOA, &GPIO_InitStructure);	//初始化IO
 	
     //使用外部中断方式
-    SYSCFG_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0|GPIO_PinSource5);	//中断线0连接GPIOA.0  GPIOA.5  
+    SYSCFG_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0|GPIO_PinSource5|GPIO_PinSource11|GPIO_PinSource12);	//中断线0连接GPIOA.0  GPIOA.5  
 
-    EXTI_InitStructure.EXTI_Line = EXTI_Line0|EXTI_Line5;	//设置按键所有的外部线路   
+    EXTI_InitStructure.EXTI_Line = EXTI_Line0|EXTI_Line5|EXTI_Line11;	//设置按键所有的外部线路   
     EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;			//设外外部中断模式:EXTI线路为中断请求
     EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;  //上升/下降沿触发
     EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+    EXTI_Init(&EXTI_InitStructure);	// 初始化外部中断
+
+    EXTI_InitStructure.EXTI_Line = EXTI_Line12;	//设置按键所有的外部线路   
+    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;  //上升/下降沿触发
     EXTI_Init(&EXTI_InitStructure);	// 初始化外部中断
     
     NVIC_InitStructure.NVIC_IRQChannel = EXTI0_1_IRQn; //使能按键所在的外部中断通道  POWER KEY
