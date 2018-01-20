@@ -265,9 +265,20 @@ void configpad(uint32_t pinstat)
 #if defined MM32F031K6
 void Sys_Stop(void)
 {  
+    GPIO_InitTypeDef GPIO_InitStructure;
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_UART1,DISABLE);	
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2; 
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode =  GPIO_Mode_IN_FLOATING;	
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+	
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);	//使能PWR外设时钟
   //  PWR_WakeUpPinCmd(ENABLE);  //使能唤醒管脚功能
-		RCC_SYSCLKConfig(RCC_SYSCLKSource_HSI); 
+	RCC_SYSCLKConfig(RCC_SYSCLKSource_HSI); 
+
+    
+
+
     PWR_EnterSTOPMode(PWR_Regulator_ON,PWR_STOPEntry_WFI);	  //进入停机（STOP）模式 
     
 }
@@ -321,6 +332,7 @@ void LowPowerConsumptionConfig(void)
 	Sys_Stop();    //进入停机模式
 		 
 	SystemInit();  //唤醒后重新初始化一下时钟
+	UART2_Init();
 	
 	
 	#endif
