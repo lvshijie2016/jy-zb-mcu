@@ -41,21 +41,6 @@ static void led_set_x(unsigned char num)
 	GPIO_ConfigPinsAsOutput(GPIOA,PIN9 | PIN8 | PIN7);
 	GPIO_ConfigPinsAsOutput(GPIOB,PIN0);
 
-#elif defined MM32F031K6
-
-    GPIO_InitTypeDef  GPIO_InitStructure;
-    
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA|RCC_AHBPeriph_GPIOB, ENABLE);
-    
-    GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_7|GPIO_Pin_8|GPIO_Pin_9;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-    
-    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_0;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-    GPIO_Init(GPIOB, &GPIO_InitStructure);
 #endif
 
 	switch(num&0x0f) {
@@ -177,27 +162,6 @@ static void led_set_x_pwm(unsigned char value)
 
 static void led_set_y(unsigned char num)
 {
-#ifdef MM32F031K6
-	GPIO_InitTypeDef  GPIO_InitStructure;
-    
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOD|RCC_AHBPeriph_GPIOB, ENABLE);  
-	
-    GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_4|GPIO_Pin_5;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-    GPIO_Init(GPIOB, &GPIO_InitStructure);
-    
-		//PD0,PD1/OSC REMAP TO GPIO
-		GPIOD->AFRL = 0x00000011;
-	
-	
-	
-    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_0|GPIO_Pin_1;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-    GPIO_Init(GPIOD, &GPIO_InitStructure);
-#endif
-	
 	switch(num&0x0f) {
 
 	case 0x01:

@@ -267,6 +267,7 @@ void Sys_Stop(void)
 {  
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);	//使能PWR外设时钟
   //  PWR_WakeUpPinCmd(ENABLE);  //使能唤醒管脚功能
+		RCC_SYSCLKConfig(RCC_SYSCLKSource_HSI); 
     PWR_EnterSTOPMode(PWR_Regulator_ON,PWR_STOPEntry_WFI);	  //进入停机（STOP）模式 
     
 }
@@ -317,9 +318,9 @@ void LowPowerConsumptionConfig(void)
 	
 	#elif defined MM32F031K6
 	
-	  //Sys_Stop();    //进入停机模式
+	Sys_Stop();    //进入停机模式
 		 
-		//SystemInit();  //唤醒后重新初始化一下时钟
+	SystemInit();  //唤醒后重新初始化一下时钟
 	
 	
 	#endif
@@ -1081,44 +1082,44 @@ static void kar_connect(void)
 				#endif
 				GetMotoCom(get_Com);
 			break;
-//			case TIMER_DATA_COMMAND:
-//				#if defined( DeBug )
-//					LOG(LOG_DEBUG,"Set_date_timer(get_Com)\r\n");
-//				#endif
-//				Set_date_timer(get_Com);
-//			
-//			break;
-//			
-//			case GET_TIMER_COMMAND:
-//				#if defined( DeBug )
-//					LOG(LOG_DEBUG,"Get_date_timer()\r\n");
-//				#endif
-//				Get_date_timer();
-//			break;
-//			case BAT_COMMAN:
-//				#if defined( DeBug )
-//					LOG(LOG_DEBUG,"BAT_COMMAN\r\n");
-//				#endif
-//				WriteUartBuf(0x00);
-//				WriteUartBuf(bat_value);
-//				UART_Send_t(BAT_COMMAN);
-//			break;
-//			case SLEEP_OFF_TIMER_SEY_COMMAN:  //kar睡眠关机时间设置
-//				#if defined( DeBug )
-//					LOG(LOG_DEBUG,"Set Sleep off timer ......");
-//				#endif
-//				sleep_off_timer  = get_Com[1];
-//				WriteUartBuf(0x01);
-//				UART_Send_t(SLEEP_OFF_TIMER_SEY_COMMAN);
-//			break;
-//			case SYSTEM_UPDATE_COMMAN:      //升级命令
-//				#if defined( DeBug )
-//					LOG(LOG_DEBUG,"receive SYSTEM_UPDATE_COMMAN\r\n");
-//				#endif
-//				WriteUartBuf(0x00);
-//				UART_Send_t(0xF0);
-//				NVIC_SystemReset();
-//				break;
+			case TIMER_DATA_COMMAND:
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"Set_date_timer(get_Com)\r\n");
+				#endif
+				Set_date_timer(get_Com);
+			
+			break;
+			
+			case GET_TIMER_COMMAND:
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"Get_date_timer()\r\n");
+				#endif
+				Get_date_timer();
+			break;
+			case BAT_COMMAN:
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"BAT_COMMAN\r\n");
+				#endif
+				WriteUartBuf(0x00);
+				WriteUartBuf(bat_value);
+				UART_Send_t(BAT_COMMAN);
+			break;
+			case SLEEP_OFF_TIMER_SEY_COMMAN:  //kar睡眠关机时间设置
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"Set Sleep off timer ......");
+				#endif
+				sleep_off_timer  = get_Com[1];
+				WriteUartBuf(0x01);
+				UART_Send_t(SLEEP_OFF_TIMER_SEY_COMMAN);
+			break;
+			case SYSTEM_UPDATE_COMMAN:      //升级命令
+				#if defined( DeBug )
+					LOG(LOG_DEBUG,"receive SYSTEM_UPDATE_COMMAN\r\n");
+				#endif
+				WriteUartBuf(0x00);
+				UART_Send_t(0xF0);
+				NVIC_SystemReset();
+				break;
 			default:break;
 		}
 		

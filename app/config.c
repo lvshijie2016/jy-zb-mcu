@@ -158,10 +158,9 @@ void get_adc_gpio(uint8_t gpio, uint16_t pin, uint8_t function, uint8_t edge)
 
 }	
 	
-
-void gpio_init_t(void)
-{
 #if defined C32F0	
+void c32_gpio_init_t(void)
+{
 	NVIC_SetPriority(GPIOA_IRQn,1);
 	/***************TOUCH2_DRV****************************/
 	get_gpio(IOCON_GPIOA,	PIN12,	PA12_FUNC_GPIO,	IO_Input,	IO_HIGH, PULL_UP_EN);  //->MOTO ADC 1
@@ -214,8 +213,44 @@ void gpio_init_t(void)
 
 	/***************************VBAT_ADC******************************/
 	get_adc_gpio(IOCON_GPIOA,	PIN4,	PA4_FUNC_ADC_IN4, DISABLE_ALL_PULL);
+}
+#endif
 
-#elif defined MM32F031K6
+#if defined MM32F031K6
+
+static void mm32_led_gpio_init(void)
+{
+	GPIO_InitTypeDef  GPIO_InitStructure;
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA | RCC_AHBPeriph_GPIOD | RCC_AHBPeriph_GPIOB, ENABLE);  
+
+    GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_4|GPIO_Pin_5;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+    
+	//PD0,PD1/OSC REMAP TO GPIO
+	//GPIOD->AFRL = 0x00000011;
+	
+	
+	
+    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_0|GPIO_Pin_1;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+    GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_7|GPIO_Pin_8|GPIO_Pin_9;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    
+    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_0;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+}
+
+static void mm32_gpio_init_t(void)
+{
 	GPIO_InitTypeDef  GPIO_InitStructure;
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA|RCC_AHBPeriph_GPIOB, ENABLE);  //ø™∆ÙGPIOA,GPIOB ±÷
 	GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_15| GPIO_Pin_14;  //POWER C600 
@@ -225,7 +260,7 @@ void gpio_init_t(void)
 
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB | RCC_AHBPeriph_GPIOA, ENABLE);  
 
-	GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_4|GPIO_Pin_1|GPIO_Pin_6;      //VBT_MCU_INT
+	GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_4|GPIO_Pin_1|GPIO_Pin_6;      //VBT_MCU_INT, motor check
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	/*Ω´PA4≈‰÷√Œ™ƒ£ƒ‚ ‰»Î*/
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
@@ -236,15 +271,26 @@ void gpio_init_t(void)
 	GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_10 | GPIO_Pin_13;      //motor_4, motor_1
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	GPIO_PinAFConfig(GPIOA,GPIO_PinSource13,GPIO_AF_7);
 
 	GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_1| GPIO_Pin_3;      //motor_2, motor_3
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-	GPIO_PinAFConfig(GPIOA,GPIO_PinSource13,GPIO_AF_7);
-#endif	
-}
+	mm32_led_gpio_init();	
 
+}
+#endif	
+
+void gpio_init_t(void)
+{
+#if defined C32F0	
+	c32_gpio_init_t();
+#elif MM32F031K6
+	mm32_gpio_init_t();
+#endif
+
+}
 
 static void pwm_init_t(void)
 {
