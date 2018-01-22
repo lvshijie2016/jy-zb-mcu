@@ -9,7 +9,7 @@ void udly1us(uint32_t dlytime) {while(dlytime--);}
 
 void get_packet(void);
 
-void UART0_Init(void)
+void UART2_Init(void)
 {
 	
 	#if defined C32F0
@@ -104,7 +104,7 @@ void UART2_Send_BUFF( uint8_t *Str,uint8_t len)
 }
 
 
-void Boot_MAL_Erase_app()     // 
+void Boot_MAL_Erase_app()      
 {
    uint32_t Address;
    uint8_t index,temp;
@@ -571,8 +571,11 @@ void flash_write()
 		 #if defined C32F0
 			IAP_FlashProgram(flah_offset,write_data);
 		 #elif defined MM32F031K6
-		 
+			
+		  FLASH_Unlock();
+			FLASH_ClearFlag(FLASH_FLAG_BSY | FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);
 			FLASH_ProgramWord(flah_offset,write_data);
+			FLASH_Lock();   //
 		 
 		 #endif
      flah_offset += 4;
@@ -717,6 +720,10 @@ void packet_handle()
 						IAP_FlashProgram(0x7800,0x55aaaa55);
 					#elif defined MM32F031K6
 					
+						FLASH_Unlock();
+						FLASH_ClearFlag(FLASH_FLAG_BSY | FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);
+						FLASH_ProgramWord(0x8007800,0x55aaaa55);
+						FLASH_Lock();   //
 					
 					#endif
 				}

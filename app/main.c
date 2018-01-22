@@ -13,7 +13,7 @@ static uint8_t 	bat_value = 100;
 static uint8_t  bat_last_value = 50;
 static uint8_t  get_Com[10] = {0};
 static uint16_t sleep_off_timer = SLEEP_DEFAULT_OFF_TIMER; //睡眠关机时间
-static uint8_t FIRMWARE_VERSION[3]= {2,7,6};
+static uint8_t FIRMWARE_VERSION[3]= {3,0,2};
 
 extern _GetLedComData_t GetLedComData_t;
 static void LowPowerConsumptionConfig(void);
@@ -379,9 +379,7 @@ static void kar_off(void)
 	
 	POWER_OFF;
 	aperture_all_off();
-	#if defined C32F0
-		moto_P();
-	#endif
+	moto_P();
 	LowPowerConsumptionConfig();//进入睡眠
 }
 /**
@@ -1141,7 +1139,10 @@ static void kar_connect(void)
 	memset(get_Com,0,sizeof(get_Com));
 }
 
-#define APPLICATION_ADDRESS 0x1800
+//#define APPLICATION_ADDRESS 0x1800
+//#define  VECTOR_SIZE (48*4)
+
+#define ApplicationAddress 0x8001800
 #define  VECTOR_SIZE (48*4)
 
 void app_iap_init(void)
@@ -1151,7 +1152,33 @@ void app_iap_init(void)
  	memcpy((void*)0x10000000, (void*)APPLICATION_ADDRESS, VECTOR_SIZE); 
 	SYS_MemRemaptoSRAM; 
 	#endif
+	
+	memcpy((void*)0x20000000, (void*)ApplicationAddress, VECTOR_SIZE);  //把中断向量表映射到RAM里面跑
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+	
+//SYSCFG_MemoryRemapConfig(SYSCFG_MemoryRemap_SRAM);
+	SYSCFG->CFGR |= 0x03;
 }
+
+void app_MAL_Erase()      
+{
+   uint32_t Address;
+   uint8_t index,temp;
+//   UART_Send_Buffer[0] = UART_Receive_Buffer[0] | 0xC0;
+	 temp = 2;  //100 K
+   Address = 0x08007800;         			// APP flash   0x08004000 -- 0x08020000  0x1C000  APP????
+	 FLASH_Unlock();  
+	 FLASH_ClearFlag(FLASH_FLAG_BSY | FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);
+   for(index=0;index<temp;index++ )   //???????APP????
+   	{   	
+     FLASH_ErasePage(Address);
+	   Address = Address + 0x400;   
+   	}
+   FLASH_Lock();
+//   UART2_Send_BUFF(UART_Send_Buffer,LEN);
+}
+
+
 
 int main(void)
 {
@@ -1202,19 +1229,28 @@ int main(void)
 	
 	#elif defined MM32F031K6
 	
+	if ((*((uint32_t *)(0x8007800))) != 0x55aaaa55)
+	{
+		kar_off();//进入睡眠
+	}
+	else
+	{
+		kar_state_t =  KAR_RUN;
+		kar_state   =  KAR_RUN;
+		POWER_ON;
+		GetLedComData_t.com = LED_MODE_APERTURE_ALL_ON;
+		
+		app_MAL_Erase();
+		FLASH_Unlock();
+		FLASH_ClearFlag(FLASH_FLAG_BSY | FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);
+		FLASH_ProgramWord(0x8007800,0);
+		FLASH_Lock();   //
+	}
+	
 	Rtc_Check();
-	kar_off();
-	
-	Set_Alarm_Clock(get_Com);
-	Set_date_timer(get_Com);
-	Get_date_timer();
-	
-	
-	
+
 	#endif
 	
-//	POWER_ON; 
-	//moto_D();
 	
 	while(1)
 	{

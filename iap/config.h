@@ -10,11 +10,9 @@
 #include "HAL_conf.h"
 
 
-#define MM32F031K6
-
+#define MM32F031K6 
 
 #if 0
-
 /*==========================================================
 	gpio 
 ===========================================================*/
@@ -171,7 +169,7 @@ LED GPIO
 #define  VECTOR_SIZE (48*4)
 
 
-#define ApplicationAddress    (0x8001800)    //KB
+#define ApplicationAddress    (0x1800)    //KB
 #define FLASH_SIZE            (0x8000)   /* 32 KBytes */
 #define FLASH_IMAGE_SIZE      (uint32_t) (FLASH_SIZE - ApplicationAddress)
 
@@ -243,6 +241,21 @@ typedef struct
 
 
 extern _KEY_EVENT  KEY_EVENT;
+
+#endif
+
+
+/*OTA -----------------------------------------------------*/
+#define APPLICATION_ADDRESS 0x8001800
+#define  VECTOR_SIZE (48*4)
+
+
+#define ApplicationAddress    (0x8001800)    //KB
+#define FLASH_SIZE            (0x8008000)   /* 32 KBytes */
+#define FLASH_IMAGE_SIZE      (uint32_t) (FLASH_SIZE - ApplicationAddress)
+
+
+
 /* Public function declaration ------------------------------------------*/
 void get_gpio(uint8_t gpio, uint16_t pin, uint8_t function,uint8_t I_O, uint8_t HL ,uint8_t edge);
 void sys_init(void);
@@ -251,35 +264,7 @@ void gpio_init_t(void);
 void wdt_init_t(uint8_t timer);
 void DisablePhrClk_t(void);	
 void get_adc_gpio(uint8_t gpio, uint16_t pin, uint8_t function, uint8_t edge);
-
-
-
-#endif
-
-#if 1
-
-/*OTA -----------------------------------------------------*/
-#define APPLICATION_ADDRESS (0x8000000+0x1800)
-#define  VECTOR_SIZE (48*4)
-
-
-#define ApplicationAddress    (0x8000000+0x1800)    //KB
-#define FLASH_SIZE            (0x8000000+0x8000)   /* 32 KBytes */
-#define FLASH_IMAGE_SIZE      (uint32_t) (FLASH_SIZE - ApplicationAddress)
-
-
-void get_gpio(uint8_t gpio, uint16_t pin, uint8_t function,uint8_t I_O, uint8_t HL ,uint8_t edge);
-void sys_init(void);
-void sys_init_t(void);
-void gpio_init_t(void);
-void wdt_init_t(uint8_t timer);
-void UART0_Init(void);
-
-#endif
-
-
-
-
+void UART2_Init(void);
 #endif
 
 

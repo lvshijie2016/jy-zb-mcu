@@ -216,7 +216,7 @@ void sys_init(void)
 //wdt_init_t(1);
 	gpio_init_t();
 	UART1_Init();
-	UART0_Init();
+	UART2_Init();
 	
 	#if defined C32F0
 	get_gpio(IOCON_GPIOA,	PIN15,	PA15_FUNC_GPIO,	IO_Output, IO_DEFAULT, PULL_UP_EN); //KAR_POWER_ON_OF
