@@ -266,6 +266,11 @@ static void mm32_gpio_init_t(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
+	/*	5V_DRV_EN	*/
+	GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_8;      //
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+	
 
 	/*	motor gpio init	*/
 	GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_10 | GPIO_Pin_13;      //motor_4, motor_1

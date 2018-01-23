@@ -154,12 +154,13 @@ extern u32 SystemCoreClock;
 
 #elif MM32F031K6
 
-	#define DRV_Enable   												GPIO_SetBits(GPIOC,GPIO_Pin_3)
-	#define DRV_Disable    				  						GPIO_ResetBits(GPIOC,GPIO_Pin_3)
+	#define DRV_Enable   										GPIO_SetBits(GPIOB,GPIO_Pin_8)
+	#define DRV_Disable    				  						GPIO_ResetBits(GPIOB,GPIO_Pin_8)
+	//#define DRV_Disable											GPIO_SetBits(GPIOB,GPIO_Pin_8)
 	/*==========================================================================
 	POWER_ON _OFF
 	============================================================================*/
-	#define POWER_ON   													GPIO_SetBits(GPIOA,GPIO_Pin_15)
+	#define POWER_ON   												GPIO_SetBits(GPIOA,GPIO_Pin_15)
 	#define POWER_OFF   				  							GPIO_ResetBits(GPIOA,GPIO_Pin_15)
 
 	#define KAR_DORMANCY_Enable   						  GPIO_SetBits(GPIOA,GPIO_Pin_14)
