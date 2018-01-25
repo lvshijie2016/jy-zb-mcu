@@ -242,7 +242,8 @@ static void aperture_all_breathe(void)
 				led_flag++;
 			}
 		} else {
-			pwm_duty -= 1;
+			if(pwm_duty > 0)
+				pwm_duty -= 1;
 			if (pwm_duty <= 1) {
 				PWM_flag = 1;
 			}
