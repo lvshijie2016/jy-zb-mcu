@@ -165,7 +165,8 @@ void I2CMasterWrite(I2C_TypeDef *I2Cx,unsigned char device_id, unsigned short me
     }	
     
     for(j=0;j<0x5000;j++); 
-    
+
+	I2C_GenerateSTOP(I2Cx,ENABLE);   
 }
 
 /********************************************************************************************************
@@ -196,6 +197,7 @@ void I2CMasterRead(I2C_TypeDef *I2Cx,unsigned char device_id, unsigned short mem
 //        printf("RX data%d is  : %x \r\n",i,rx_data[i]);
         
     }
+	I2C_GenerateSTOP(I2Cx,ENABLE);   
     
 }
 
@@ -323,6 +325,7 @@ void IIC_WriteArray(uint8_t SlaveAddress, uint8_t SubAddr, uint8_t *Buff, uint8_
     }	
     
     for(j=0;j<0x5000;j++); 
+	I2C_GenerateSTOP(I2C1,ENABLE);   
 		
 }
 
@@ -376,6 +379,7 @@ void IIC_ReadArray(uint8_t SlaveAddress, uint8_t SubAddr, uint8_t Lenth, uint8_t
 
     i = 0xFF;
     while(i--);	
+	I2C_GenerateSTOP(I2C1,ENABLE);   
 	
 	
 	
