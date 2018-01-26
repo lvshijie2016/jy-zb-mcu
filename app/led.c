@@ -41,6 +41,18 @@ static void led_set_x(unsigned char num)
 	GPIO_ConfigPinsAsOutput(GPIOA,PIN9 | PIN8 | PIN7);
 	GPIO_ConfigPinsAsOutput(GPIOB,PIN0);
 
+#elif defined MM32F031K6
+	GPIO_InitTypeDef  GPIO_InitStructure;
+    GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_7|GPIO_Pin_8|GPIO_Pin_9;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    
+    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_0;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+
 #endif
 
 	switch(num&0x0f) {
@@ -149,6 +161,20 @@ static void led_set_x_pwm(unsigned char value)
 	PWM_SetDuty(PWM1 | PWM2 |PWM3 | PWM0, value);
 	
 	#elif defined MM32F031K6
+	GPIO_InitTypeDef  GPIO_InitStructure;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0; //TIM3_CH3
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; 
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+    
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9; //TIM3_CH2
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; 
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource0, GPIO_AF_1);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource7, GPIO_AF_1);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource8, GPIO_AF_2);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_2);
 	
 	TIM_SetCompare2(TIM3,value);	
 	TIM_SetCompare3(TIM3,value);
@@ -162,6 +188,18 @@ static void led_set_x_pwm(unsigned char value)
 
 static void led_set_y(unsigned char num)
 {
+#if defined MM32F031K6
+	GPIO_InitTypeDef  GPIO_InitStructure;
+    GPIO_InitStructure.GPIO_Pin  =  GPIO_Pin_4|GPIO_Pin_5;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+    
+    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_0|GPIO_Pin_1;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_Init(GPIOD, &GPIO_InitStructure);
+#endif
 	switch(num&0x0f) {
 
 	case 0x01:
