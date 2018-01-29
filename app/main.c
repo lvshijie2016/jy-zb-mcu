@@ -13,7 +13,7 @@ static uint8_t 	bat_value = 100;
 static uint8_t  bat_last_value = 50;
 static uint8_t  get_Com[10] = {0};
 static uint16_t sleep_off_timer = SLEEP_DEFAULT_OFF_TIMER; //睡眠关机时间
-static uint8_t FIRMWARE_VERSION[3]= {3,0,5};
+static uint8_t FIRMWARE_VERSION[3]= {3,0,6};
 
 extern _GetLedComData_t GetLedComData_t;
 static void LowPowerConsumptionConfig(void);
