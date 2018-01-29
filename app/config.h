@@ -329,6 +329,7 @@ void sys_init_t(void);
 void gpio_init_t(void);
 void wdt_init_t(uint8_t timer);
 void DisablePhrClk_t(void);	
+void Write_Iwdg_ON(unsigned short int IWDG_Prescaler,unsigned short int Reload);
 #endif
 
 

@@ -659,6 +659,7 @@ void sys_init(void)
 	adc_init_t();
 	IIC_Init(1,400,0xA0);
 	RTC_Start();
+	Write_Iwdg_ON(IWDG_Prescaler_32,0xf);
 	//UART0_Init();
 	#if defined MM32F031K8
 		UART1_Init();
