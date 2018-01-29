@@ -404,12 +404,20 @@ void get_moto_current_state(uint16_t R_state, uint16_t L_state,uint8_t bat_state
 	
 }
 #endif
+
+//#define MOTOR_BLOCK
 void get_moto_current_state(uint16_t R_state, uint16_t L_state,uint8_t bat_state)
 {
 	double R_vref;
 	double L_vref;
 	static unsigned int R_count = 0;
 	static unsigned int L_count = 0;
+	
+	#ifdef MOTOR_BLOCK
+	uint8_t motor_asp[2] ={MOTO_H,MOTO_R_T};
+	uint8_t i;
+	#endif
+	
 	L_vref = (MOTO_t.L_duty*(23+(MOTO_t.L_duty-50)*0.08) + bat_state);
 	R_vref = (MOTO_t.R_duty*(23+(MOTO_t.R_duty-50)*0.08) + bat_state);
 
@@ -450,6 +458,22 @@ void get_moto_current_state(uint16_t R_state, uint16_t L_state,uint8_t bat_state
 		 moto_L_current_state = false;
 	//moto_R_current_state = R_state > R_vref  ?  false : true ;
 	//moto_L_current_state = L_state > L_vref  ?  false : true ;
+	
+	#ifdef MOTOR_BLOCK
+
+		if (!moto_L_current_state&&!moto_L_current_state)
+		{		
+				moto_flag = MOTO_TW ;
+				MOTO_t.num 	= 2;
+				for(i=0;i<2;i++)
+				 {
+						MOTO_t.DancingPag[i][0] = motor_asp[i];
+						MOTO_t.DancingPag[i][1] = 100;
+						MOTO_t.DancingPag[i][2] = 50;
+						MOTO_t.DancingPag[i][3] = 50;
+				 }
+		}
+	#endif
 	
 }
 
