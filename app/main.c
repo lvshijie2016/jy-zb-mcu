@@ -13,7 +13,7 @@ static uint8_t 	bat_value = 100;
 static uint8_t  bat_last_value = 50;
 static uint8_t  get_Com[10] = {0};
 static uint16_t sleep_off_timer = SLEEP_DEFAULT_OFF_TIMER; //睡眠关机时间
-static uint8_t FIRMWARE_VERSION[3]= {3,0,6};
+static uint8_t FIRMWARE_VERSION[3]= {3,0,7};
 
 extern _GetLedComData_t GetLedComData_t;
 static void LowPowerConsumptionConfig(void);
@@ -329,9 +329,12 @@ void LowPowerConsumptionConfig(void)
 	
 	#elif defined MM32F031K6
 	
+
+    RCC_LSICmd(DISABLE);
 	Sys_Stop();    //进入停机模式
 		 
 	SystemInit();  //唤醒后重新初始化一下时钟
+	Write_Iwdg_ON(IWDG_Prescaler_32,0x7ff);
 	UART2_Init();
 	
 	
@@ -479,6 +482,8 @@ static void power_key_event(void)
 			if(key_timer == 30) 	
 			{
 				key_event = LONG_PRESS; //长按
+				key_timer = 0;
+				Information_events	 &= 	(~POWER_KEY_EVENTS);
 				#if defined( DeBug )
 					LOG(LOG_DEBUG,"LONG_PRESS event ....\r\n");
 				#endif
@@ -488,6 +493,7 @@ static void power_key_event(void)
 				#endif
 				
 			}
+			#if 0
 			else if(key_timer > 1200) 
 			{
 				key_event = RESET_PRESS; //复位
@@ -497,6 +503,7 @@ static void power_key_event(void)
 					LOG(LOG_DEBUG,"MCU START_RESET event ..... ");
 				#endif
 			}
+			#endif
 			
 			
 			set_soft_timer(TIMER_KEY, 1);
@@ -545,6 +552,7 @@ static void power_OFF_ON(void)
 		case LONG_PRESS:		//长按事件
 			switch(kar_state) {
 				case KAR_STOP:
+					kar_state = KAR_STARTING;
 					kar_on();	
 					key_event = MAX_KEYS_EVENT;
 				break;
@@ -552,6 +560,7 @@ static void power_OFF_ON(void)
 						led_mode_get_t(0x01,0xff,15 );		//关机灯效
 						WriteUartBuf(KAR_POWER__OFF);
 						UART_Send_t(KAR_POWER_OFF_COMMAND); //发送关机指令
+						kar_state = KAR_STOPING;
 				
 						#if defined C32F0
 							moto_P();
@@ -575,6 +584,11 @@ static void power_OFF_ON(void)
 					#if defined( V50_DeBug )
 						LOG(LOG_DEBUG," state KAR_DORMANCY,Triggering SHORT_PRESS event ...... \r\n");
 					#endif
+				break;
+				case KAR_STARTING:
+				case KAR_STOPING:
+					key_event = MAX_KEYS_EVENT;
+					kar_off();
 				break;
 
 				default:break;
