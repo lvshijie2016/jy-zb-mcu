@@ -8,143 +8,22 @@ static Buffer Buffer_t;
 void udly1us(uint32_t dlytime) {while(dlytime--);}
 
 
-//com for c600
-#if defined C32F0
-void UART0_Init(void)
-#elif defined MM32F031K6
-void UART2_Init(void)
-#endif
+void uni_UART_Init(void)
 {
-#if defined C32F0
-	
-	GPIO_InitTypeDef uart0_gpio;
-	SYS_EnablePhrClk(AHB_IOCON);
-	SYS_EnablePhrClk(AHB_GPIOA);    
-	SYS_EnablePhrClk(AHB_UART0);  
-
-	uart0_gpio.bit.PDE    = PULL_DOWN_DISABLE;
-	uart0_gpio.bit.PUE    = PULL_UP_ENABLE;
-	
-	uart0_gpio.bit.CSE    = SCHMITT_ENABLE;
-	uart0_gpio.bit.INV    = INPUT_INVERT_DISABLE;
-	uart0_gpio.bit.SRM    = FAST_SLEW_RATE_MODE;
-	uart0_gpio.bit.ADM    = DIGIT_ENABLE;
-	uart0_gpio.bit.DRV    = LOW_DRIVE;
-	uart0_gpio.bit.OD     = OPEN_DRAIN_DISABLE;
-	uart0_gpio.bit.S_MODE = INPUT_FILTER_DISABLE;
-	uart0_gpio.bit.IEN    = INPUT_DISABLE;
-	
-	uart0_gpio.bit.FUNC   = PA2_FUNC_TXD0;
-	SYS_IOCONInit(IOCON_GPIOA, PIN2, uart0_gpio);
-	
-	uart0_gpio.bit.FUNC   = PA3_FUNC_RXD0;
-	SYS_IOCONInit(IOCON_GPIOA,PIN3,uart0_gpio);
-	
-	UART_Open(UART0, 115200, UART_NO_PARITY, UART_RX_NOT_EMPTY);  
-	NVIC_SetPriority(UART0_IRQn,0);
-	NVIC_EnableIRQ(UART0_IRQn); 
-	
-#elif defined MM32F031K6
-    GPIO_InitTypeDef GPIO_InitStructure;
-    UART_InitTypeDef UART_InitStructure;
-    NVIC_InitTypeDef NVIC_InitStructure;
-	
-	
-#ifdef Debug	
-    
-    
-    GPIO_InitTypeDef GPIO_InitStructure;
-    UART_InitTypeDef UART_InitStructure;
-    NVIC_InitTypeDef NVIC_InitStructure;
-    
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_UART1, ENABLE);	
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);  
-    
-    
-    NVIC_InitStructure.NVIC_IRQChannel = UART1_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPriority = 3;		
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			
-    NVIC_Init(&NVIC_InitStructure);	
-    
-    
-    GPIO_PinAFConfig(GPIOA,GPIO_PinSource9,GPIO_AF_1);
-    GPIO_PinAFConfig(GPIOA,GPIO_PinSource10,GPIO_AF_1);
-    
-    UART_InitStructure.UART_BaudRate = bound;
-    UART_InitStructure.UART_WordLength = UART_WordLength_8b;
-    UART_InitStructure.UART_StopBits = UART_StopBits_1;
-    UART_InitStructure.UART_Parity = UART_Parity_No;
-    UART_InitStructure.UART_HardwareFlowControl = UART_HardwareFlowControl_None;
-    UART_InitStructure.UART_Mode = UART_Mode_Rx | UART_Mode_Tx;	
-    
-    UART_Init(UART1, &UART_InitStructure);      
-    UART_ITConfig(UART1, UART_IT_RXIEN|UART_IT_TXIEN, ENABLE);
-    UART_Cmd(UART1, ENABLE);                     
-    
-    //UART1_TX   GPIOA.9
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9; 
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-    
-    //UART1_RX	  
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;//PA10
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);  
-  
-#endif
-
-
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART2, ENABLE);	
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);  
-    
-
-    NVIC_InitStructure.NVIC_IRQChannel = UART2_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPriority = 3;		
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;		
-    NVIC_Init(&NVIC_InitStructure);	
-    
-  
-    GPIO_PinAFConfig(GPIOA,GPIO_PinSource2,GPIO_AF_1);
-    GPIO_PinAFConfig(GPIOA,GPIO_PinSource3,GPIO_AF_1);
-    
-    UART_InitStructure.UART_BaudRate = 115200;
-    UART_InitStructure.UART_WordLength = UART_WordLength_8b;
-    UART_InitStructure.UART_StopBits = UART_StopBits_1;
-    UART_InitStructure.UART_Parity = UART_Parity_No;
-    UART_InitStructure.UART_HardwareFlowControl = UART_HardwareFlowControl_None;
-    UART_InitStructure.UART_Mode = UART_Mode_Rx | UART_Mode_Tx;	
-    
-    UART_Init(UART2, &UART_InitStructure); 
-    UART_ITConfig(UART2, UART_IT_RXIEN, ENABLE);
-    UART_Cmd(UART2, ENABLE);                    
-    
-    //UART2_TX   GPIOA.2
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2; 
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-    
-    
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-#endif
-	
+	_uart_init();
 	memset(&Buffer_t,0,sizeof(Buffer));
 }
 
 int fputc(int ch, FILE *f) 
 {
 #if defined C32F0
-    while (UART1->STAT.bit.TXF);	
-    UART1->DAT.all = ch;
-    return ch;
+	while (UART1->STAT.bit.TXF);	
+	UART1->DAT.all = ch;
+	return ch;
 #elif defined MM32F031K6
-	
-	
-	
+	while((UART2->CSR&UART_IT_TXIEN)==0);
+	UART2->TDR = (ch & (uint16_t)0x00FF);      
+	return ch;
 #endif
 }
 

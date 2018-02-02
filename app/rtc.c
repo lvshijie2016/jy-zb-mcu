@@ -51,7 +51,7 @@ static unsigned char RTC_Bcd2ToBin(unsigned char BCDValue)
 }
 
 
-#if 0
+#if 1
 /**
   *****************************************************************************
   * @Name   : RTC某寄存器写入一个字节数据
@@ -66,7 +66,7 @@ static unsigned char RTC_Bcd2ToBin(unsigned char BCDValue)
   * @Return : none
   *****************************************************************************
 **/
-static void RTC_Write_Byte(unsigned char REG_ADD, unsigned char dat)
+void RTC_Write_Byte(unsigned char REG_ADD, unsigned char dat)
 {
 	IIC_WriteByte(RTC_Write,REG_ADD,dat);
 } 
@@ -84,7 +84,7 @@ static void RTC_Write_Byte(unsigned char REG_ADD, unsigned char dat)
   * @Return : 读取得到的寄存器的值
   *****************************************************************************
 **/
-static unsigned char RTC_Read_Byte(unsigned char REG_ADD)
+unsigned char RTC_Read_Byte(unsigned char REG_ADD)
 {
 	RTC_Write_Byte(RTC_Address_Timer_VAL, Rtc_Check_Data); 	//唤醒RTC
 	return IIC_ReadByte(RTC_Write,REG_ADD);
@@ -127,7 +127,7 @@ static void RTC_Write_nByte(unsigned char REG_ADD, unsigned char num, unsigned c
   * @Return : none
   *****************************************************************************
 **/
-static void RTC_Read_nByte(unsigned char REG_ADD, unsigned char num, unsigned char *pBuff)
+ void RTC_Read_nByte(unsigned char REG_ADD, unsigned char num, unsigned char *pBuff)
 {
 	RTC_Write_Byte(RTC_Address_Timer_VAL, Rtc_Check_Data); 	//唤醒RTC
 	IIC_ReadArray(RTC_Write,REG_ADD,num,pBuff);
@@ -347,6 +347,7 @@ void RTC_SetAlarm(unsigned char AlarmType_EN, _RTC_Register_Typedef* PCF_DataStr
 	//写入控制/状态寄存器2数值
 	//
 	RTC_Write_Byte(RTC_Address_Control_Status_2, Alarm_Interrupt);
+
 }
 
 
@@ -532,6 +533,16 @@ bool Rtc_Check(void)
 	
 }
 
+void rtc_test(void)
+{
+	int i;
+	unsigned char buf[16];
+	RTC_Read_nByte(0,16,buf);
+	for(i=0;i<16;i++){
+		printf("%02x ",buf[i]);
+	}
+	printf(" \n");
+}
 
 
 

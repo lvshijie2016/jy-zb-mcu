@@ -13,7 +13,7 @@ static uint8_t 	bat_value = 100;
 static uint8_t  bat_last_value = 50;
 static uint8_t  get_Com[10] = {0};
 static uint16_t sleep_off_timer = SLEEP_DEFAULT_OFF_TIMER; //睡眠关机时间
-static uint8_t FIRMWARE_VERSION[3]= {3,0,7};
+static uint8_t FIRMWARE_VERSION[3]= {3,0,4};
 
 extern _GetLedComData_t GetLedComData_t;
 static void dly1us(uint32_t dlytime) {while(dlytime--);}
@@ -52,6 +52,7 @@ static void get_adc_value(void)
 			
 				if (bat_value >100)
 				bat_value = 100;
+
 		}
 		set_soft_timer(TIMER_BAT,ENERGY_SAMPLING_TIMER); 
 
@@ -102,9 +103,9 @@ void kar_off(void)
 	
 	dly1us(50000);
 	
-	POWER_OFF;					// 关闭C600电源
-	aperture_all_off();			// 关闭灯光
-	moto_P();					// 关闭电机
+	POWER_OFF;
+	aperture_all_off();
+	moto_P();
 	LowPowerConsumptionConfig();//进入睡眠
 }
 /**
@@ -256,6 +257,7 @@ static void power_key_event(void)
 **/
 static void power_OFF_ON(void)
 {
+	static int flag = 0;
 	switch(key_event) {
 		
 		case LONG_PRESS:		//长按事件
@@ -295,7 +297,9 @@ static void power_OFF_ON(void)
 				case KAR_STARTING:
 				case KAR_STOPING:
 					key_event = MAX_KEYS_EVENT;
+					printf("goto sleep\n");
 					kar_off();
+					printf("wakeup\n");
 				break;
 
 				default:break;
@@ -303,22 +307,57 @@ static void power_OFF_ON(void)
 			
 			break;
 		case SHORT_PRESS:				//短按事件  1.唤醒事件
-		
-			if(kar_state == KAR_DORMANCY)
-			{	
-				kar_state_t = KAR_RUN; //退出KAR睡眠开始接收串口数据
-				KAR_DORMANCY_Enable;
-				set_soft_timer(TIMER_POWER, 500);	
-				key_event = KEYS_DORMANCY_STATE;  //跳转到执行唤醒事件
+			printf("short press,flag:%d\n",flag);
+			switch(flag){
+				case 0:
+					led_mode_get_t(LED_MODE_APERTURE_ALL_BREATHE,0Xff,20 );
+					motor_test(1);
+					break;
+				case 1:
+					led_mode_get_t(LED_MODE_APERTURE_ALL_BLINK,0Xff,30 );
+					motor_test(2);
+					break;
+				case 2:
+					led_mode_get_t(LED_MODE_APERTURE_DOUBLE_RUN,0xff,20 );
+					motor_test(3);
+					break;
+				case 3:
+					led_mode_get_t(LED_MODE_APERTURE_CLOCKWISE_RUN,3,30 );
+					motor_test(4);
+					break;
+				case 4:
+					led_mode_get_t(LED_MODE_APERTURE_ALL_ON,0xFE,30 );
+					motor_test(5);
+					break;
+				case 5:
+					led_mode_get_t(LED_MODE_APERTURE_ALL_OFF,3,30 );		
+					rtc_test();	
+					break;
+				case 6:
+					
+					break;
+				case 7:
+					
+					break;
+				case 8:
+					
+					break;
+				case 9:
+					
+					break;
+				case 10:
+					
+					break;
+				case 11:
 				
-				#if defined( DeBug )
-						LOG(LOG_DEBUG,"wakes up start ...... \r\n");
-				#endif
+					break;
 				
-				#if defined( V50_DeBug )
-						LOG(LOG_DEBUG,"wakes up start ...... \r\n");
-				#endif
+				
 			}
+			flag++;
+			if(flag > 11)
+				flag = 0;
+			key_event = MAX_KEYS_EVENT;
 			break;
 			
 		case KEYS_DORMANCY_STATE:		//执行唤醒事件
@@ -707,6 +746,16 @@ static void kar_connect(void)
 				LOG(LOG_DEBUG,"Get_date_timer()\r\n");
 #endif
 				Get_date_timer();
+				{
+					char rt_buf[16];
+					int i;
+					printf("  \n");
+					RTC_Read_nByte(0,16,rt_buf);
+					for(i=0;i<16;i++){
+							printf("%02x ",rt_buf[i]);
+					}
+					printf("\n");
+				}
 				break;
 			case BAT_COMMAN:
 #if defined( DeBug )
@@ -759,7 +808,7 @@ int main(void)
 		//exceotion_management();
 		state_run_monitoring();
 		uni_wdt_reload();
-
+		//printf("aaa\n");
 		dly1us(100000);
 	}
 }

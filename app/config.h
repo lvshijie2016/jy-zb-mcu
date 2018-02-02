@@ -16,92 +16,12 @@
 #include "stdio.h"
 
 
-
-
-
-/*==========================================================
-	gpio 
-===========================================================*/
-
 #if defined C32F0
-	#if true
-
-	#include "c32f0xx_gpio.h"
-
-	#endif
-	/*==========================================================
-		IIC 
-	===========================================================*/
-	#if true
-
-	#include "c32f0xx_iic.h"
-
-	#endif
-	/*==========================================================
-		PWM
-	===========================================================*/
-	#if true
-
-	#include "c32f0xx_pwm.h"
-
-	#endif
-	/*==========================================================
-		UART
-	===========================================================*/
-	#if true
-
-	#include "c32f0xx_uart.h"
-
-	#endif
-	/*==========================================================
-		IAP
-	===========================================================*/
-
-	#if true
-
-	#include "c32f0xx_iap.h"
-
-	#endif
-	/*==========================================================
-		 timer
-	===========================================================*/
-	#if true
-
-	#include "c32f0xx_timer.h"
-
-	#endif
-	/*==========================================================
-		 adc
-	===========================================================*/
-	#if true
-
-	#include "c32f0xx_adc.h"
-
-	#endif
-	/*==========================================================
-		 sys
-	===========================================================*/
-	#if true
-
-	#include "c32f0xx_sys.h"
-
-	#endif
-
-	#if true
-
-	#include "c32f0xx_wdt.h"
-
-	#endif
-
-#elif defined MM32F031K6
-
-#include "HAL_conf.h"
-#include "HAL_device.h"
-#include "MM32F031x8.h"
-#include "HAL_pwr.h"
-#include "i2c.h"
-extern u32 SystemCoreClock;	
+	#include "c32/c32_config.h"
+#elif MM32F031K6
+	#include "mm32/mm32_config.h"
 #endif
+
 
 
 /* user header files include --------------------------------------------*/
@@ -115,6 +35,18 @@ extern u32 SystemCoreClock;
 #include "Abnormal_Monitoring.h"
 
 
+#ifndef true
+#define true 1
+#endif
+#ifndef false
+#define false 0
+#endif
+#ifndef TRUE
+#define TRUE 1
+#endif
+#ifndef FALSE
+#define FALSE 0
+#endif
 
 #define USING_V50
 
@@ -136,89 +68,6 @@ extern u32 SystemCoreClock;
 
 #define DISABLE_ALL_CHANNEL     9
 
-/*==========================================================================
-5V_DRV_EN
-============================================================================*/
-#if defined C32F0
-
-	#define DRV_Enable   												GPIO_SetPin(GPIOC,PIN3)
-	#define DRV_Disable    				  								GPIO_ResetPin(GPIOC,PIN3)
-	/*==========================================================================
-	POWER_ON _OFF
-	============================================================================*/
-	#define POWER_ON   													GPIO_SetPin(GPIOA,PIN15)
-	#define POWER_OFF   				  								GPIO_ResetPin(GPIOA,PIN15)
-
-	#define KAR_DORMANCY_Enable   										GPIO_SetPin(GPIOA,PIN14)
-	#define KAR_DORMANCY_Disable   				  						GPIO_ResetPin(GPIOA,PIN14)
-
-#elif MM32F031K6
-
-	#define DRV_Enable   										GPIO_SetBits(GPIOB,GPIO_Pin_8)
-	#define DRV_Disable    				  						GPIO_ResetBits(GPIOB,GPIO_Pin_8)
-	//#define DRV_Disable											GPIO_SetBits(GPIOB,GPIO_Pin_8)
-	/*==========================================================================
-	POWER_ON _OFF
-	============================================================================*/
-	#define POWER_ON   												GPIO_SetBits(GPIOA,GPIO_Pin_15)
-	#define POWER_OFF   				  							GPIO_ResetBits(GPIOA,GPIO_Pin_15)
-
-	#define KAR_DORMANCY_Enable   						  GPIO_SetBits(GPIOA,GPIO_Pin_14)
-	#define KAR_DORMANCY_Disable   				  		GPIO_ResetBits(GPIOA,GPIO_Pin_14)
-
-#endif
-
-
-/*===============================================================================================
-MOTO GPIO
-==============================================================================================*/
-
-#if defined C32F0
-#define MOTO1_HIGH_PH 												GPIO_SetPin(GPIOA,PIN13)
-#define MOTO1_LOW_PH  												GPIO_ResetPin(GPIOA,PIN13)
-
-
-#ifndef USING_V50
-
-	#define PWM_1_HIGH 													GPIO_SetPin(GPIOB,PIN3)
-	#define PWM_1_LOW  													GPIO_ResetPin(GPIOB,PIN3)
-
-#else
-
-	#define PWM_1_HIGH 													GPIO_SetPin(GPIOB,PIN1)
-	#define PWM_1_LOW  													GPIO_ResetPin(GPIOB,PIN1)
-
-#endif 
-
-
-#define PWM_2_HIGH 													GPIO_SetPin(GPIOA,PIN10)
-#define PWM_2_LOW  													GPIO_ResetPin(GPIOA,PIN10)
-
-#ifndef USING_V50
-
-	#define MOTO2_HIGH_PH 												GPIO_SetPin(GPIOB,PIN1)
-	#define MOTO2_LOW_PH  				 								GPIO_ResetPin(GPIOB,PIN1)
-
-#else
-
-	#define MOTO2_HIGH_PH 												GPIO_SetPin(GPIOB,PIN3)
-	#define MOTO2_LOW_PH  				 								GPIO_ResetPin(GPIOB,PIN3)
-
-#endif
-
-#elif defined MM32F031K6
-
-#define MOTO1_HIGH_PH 												GPIO_SetBits(GPIOA,GPIO_Pin_13)
-#define MOTO1_LOW_PH  												GPIO_ResetBits(GPIOA,GPIO_Pin_13)
-#define PWM_1_HIGH 													GPIO_SetBits(GPIOB,GPIO_Pin_1)
-#define PWM_1_LOW  													GPIO_ResetBits(GPIOB,GPIO_Pin_1)
-
-#define MOTO2_HIGH_PH 												GPIO_SetBits(GPIOB,GPIO_Pin_3)
-#define MOTO2_LOW_PH  				 								GPIO_ResetBits(GPIOB,GPIO_Pin_3)
-#define PWM_2_HIGH 												GPIO_SetBits(GPIOA,GPIO_Pin_10)
-#define PWM_2_LOW  				 								GPIO_ResetBits(GPIOA,GPIO_Pin_10)
-#endif
-
 
 
 #define BAT_VALUE_LOW												(unsigned char)5
@@ -226,40 +75,6 @@ MOTO GPIO
 	
 #define  BAT_MIN_STEP                       (unsigned char)5
 
-
-/*===============================================================================================
-USB_DET GPIO
-==============================================================================================*/
-#define USB_DET														GPIO_Pin_11
-/*===============================================================================================
-LED GPIO
-==============================================================================================*/
-#if defined C32F0
-	#define GPIO_1_HIGH  													GPIO_SetPin(GPIOB,PIN5)
-	#define GPIO_1_LOW   				  									GPIO_ResetPin(GPIOB,PIN5)
-
-	#define GPIO_2_HIGH  													GPIO_SetPin(GPIOC,PIN0)
-	#define GPIO_2_LOW   				  									GPIO_ResetPin(GPIOC,PIN0)
-
-	#define GPIO_3_HIGH  													GPIO_SetPin(GPIOC,PIN1)
-	#define GPIO_3_LOW   				  									GPIO_ResetPin(GPIOC,PIN1)
-
-	#define GPIO_4_HIGH  													GPIO_SetPin(GPIOB,PIN4)
-	#define GPIO_4_LOW   				  									GPIO_ResetPin(GPIOB,PIN4)
-
-#elif defined MM32F031K6
-	#define GPIO_1_HIGH  													GPIO_SetBits(GPIOB,GPIO_Pin_5)
-	#define GPIO_1_LOW   				  									GPIO_ResetBits(GPIOB,GPIO_Pin_5)
-
-	#define GPIO_2_HIGH  													GPIO_SetBits(GPIOD,GPIO_Pin_0)
-	#define GPIO_2_LOW   				  									GPIO_ResetBits(GPIOD,GPIO_Pin_0)
-
-	#define GPIO_3_HIGH  													GPIO_SetBits(GPIOD,GPIO_Pin_1)
-	#define GPIO_3_LOW   				  									GPIO_ResetBits(GPIOD,GPIO_Pin_1)
-
-	#define GPIO_4_HIGH  													GPIO_SetBits(GPIOB,GPIO_Pin_4)
-	#define GPIO_4_LOW   				  									GPIO_ResetBits(GPIOB,GPIO_Pin_4)
-#endif
 
 #define ENERGY_SAMPLING_TIMER 											50 //ms
 	

@@ -14,7 +14,7 @@
 /*
  * Define the Device Header File: 
  */
-#define CMSIS_device_header "HAL_device.h"
+#define CMSIS_device_header "MM32x031.h"
 
 
 #endif /* RTE_COMPONENTS_H */
