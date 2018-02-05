@@ -53,17 +53,23 @@ static void app_MAL_Erase()
 extern _GetLedComData_t GetLedComData_t;
 extern _KAR_STATE kar_state;
 extern _KAR_STATE kar_state_t;
+extern _KAR_STATE *r_kar_state;
+extern _KAR_STATE *r_kar_state_t;
 void sys_start(void)
 {
 	if ((*((uint32_t *)(0x8007800))) != 0x55aaaa55)
 	{
 		if (RCC_GetFlagStatus(RCC_FLAG_SFTRST) == SET||RCC_GetFlagStatus(RCC_FLAG_IWDGRST) == SET)
 		{
-			kar_state_t =  KAR_RUN;
-			kar_state   =  KAR_RUN;
-			POWER_ON;
+			kar_state_t =  *r_kar_state_t;
+			kar_state   =  *r_kar_state;			
 			GetLedComData_t.com = LED_MODE_APERTURE_ALL_ON;
 			RCC_ClearFlag();
+			if(kar_state == KAR_RUN || kar_state == KAR_DORMANCY){
+				POWER_ON;
+			}else{
+				kar_off();
+			}
 		}
 		else
 		{
@@ -74,6 +80,8 @@ void sys_start(void)
 	{
 		kar_state_t =  KAR_RUN;
 		kar_state   =  KAR_RUN;
+		*r_kar_state_t =  KAR_RUN;
+		*r_kar_state   =  KAR_RUN;
 		POWER_ON;
 		GetLedComData_t.com = LED_MODE_APERTURE_ALL_ON;
 		
@@ -83,7 +91,6 @@ void sys_start(void)
 		FLASH_ProgramWord(0x8007800,0);
 		FLASH_Lock();   //
 	}
-	
 	Rtc_Check();
 }
 

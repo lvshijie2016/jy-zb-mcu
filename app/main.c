@@ -8,6 +8,9 @@ _KAR_STATE	 	kar_state 	= KAR_STOP;
 _KAR_STATE	 	kar_state_t = MAX_KAR_STATE;
 static _KEY_EVENT  		key_event 	= MAX_KEYS_EVENT;
 
+_KAR_STATE *r_kar_state = (_KAR_STATE*)0x20000ff8;
+_KAR_STATE *r_kar_state_t = (_KAR_STATE*)0x20000ff4;
+
 static uint16_t key_timer = 0;
 static uint8_t 	bat_value = 100;
 static uint8_t  bat_last_value = 50;
@@ -95,6 +98,8 @@ void kar_off(void)
 {
 	kar_state_t =  KAR_STOP;
 	kar_state   =  KAR_STOP;
+	*r_kar_state_t =  KAR_STOP;
+	*r_kar_state   =  KAR_STOP;
 	dly1us(50000);
 	
 	dly1us(50000);
@@ -144,6 +149,7 @@ static void kar_on(void)
 			
 		#endif
 		kar_state_t = KAR_RUN;  //开始接收串口数据
+		*r_kar_state_t = KAR_RUN;
 	}else 
 	{
 		led_mode_get_t(0x01,0x03,8 );	
@@ -307,6 +313,7 @@ static void power_OFF_ON(void)
 			if(kar_state == KAR_DORMANCY)
 			{	
 				kar_state_t = KAR_RUN; //退出KAR睡眠开始接收串口数据
+				*r_kar_state_t = KAR_RUN;
 				KAR_DORMANCY_Enable;
 				set_soft_timer(TIMER_POWER, 500);	
 				key_event = KEYS_DORMANCY_STATE;  //跳转到执行唤醒事件
@@ -469,6 +476,8 @@ static void get_kar_run_state(uint8_t *Com)
 		case KAR_RUN:  //开机状态
 			kar_state = KAR_RUN;
 			kar_state_t = KAR_RUN;
+			*r_kar_state = KAR_RUN;
+			*r_kar_state_t = KAR_RUN;
 			#if defined( DeBug )
 				LOG(LOG_DEBUG,"kar_state&kar_state_t =  KAR_RUN");
 			#endif
@@ -479,6 +488,8 @@ static void get_kar_run_state(uint8_t *Com)
 		case KAR_DORMANCY://睡眠状态
 			kar_state = KAR_DORMANCY;	
 			kar_state_t = KAR_DORMANCY;
+			*r_kar_state = KAR_DORMANCY;	
+			*r_kar_state_t = KAR_DORMANCY;
 			aperture_all_off(); //关闭灯光
 			//led_mode_get_t(LED_MODE_APERTURE_ALL_BREATHE,0xff,50);
 			
