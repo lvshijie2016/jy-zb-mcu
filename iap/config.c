@@ -202,7 +202,7 @@ void gpio_init_t()
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
-	GPIO_SetBits(GPIOA,GPIO_Pin_15);
+	//GPIO_SetBits(GPIOA,GPIO_Pin_15);
 }
 
 

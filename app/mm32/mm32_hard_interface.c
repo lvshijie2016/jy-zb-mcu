@@ -87,6 +87,15 @@ void sys_start(void)
 	Rtc_Check();
 }
 
+void update_flash_flag_set(void)
+{
+	app_MAL_Erase();
+	FLASH_Unlock();
+	FLASH_ClearFlag(FLASH_FLAG_BSY | FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);
+	FLASH_ProgramWord(0x8007800,0xaa5555aa);
+	FLASH_Lock();   //
+}
+
 
 
 /********************************************************************************************************

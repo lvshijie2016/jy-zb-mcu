@@ -334,10 +334,11 @@ static void power_OFF_ON(void)
 					rtc_test();	
 					break;
 				case 6:
+					NVIC_SystemReset();
 					
 					break;
 				case 7:
-					
+					led_mode_get_t(LED_MODE_APERTURE_ALL_ON,0xFE,30 );
 					break;
 				case 8:
 					
@@ -779,6 +780,7 @@ static void kar_connect(void)
 #endif
 				WriteUartBuf(0x00);
 				UART_Send_t(0xF0);
+				update_flash_flag_set();
 				NVIC_SystemReset();
 				break;
 			default:break;
