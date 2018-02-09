@@ -82,16 +82,8 @@ typedef struct{
 	
 }_uart_data_typedef;
 
-typedef struct{
-	
-	uint8_t 	data_buffer[BUFFER_LEN];
-	bool		flag;
-	
-}_get_command_data;
 
 
-extern _Uart0_Typedef  Uart0_Typedef;
-extern uint8_t 	data_buffer[BUFFER_LEN];
 
 
 void UART0_Init(void);
@@ -99,7 +91,7 @@ void UART_Send_t(unsigned char Com);
 void WriteUartBuf(unsigned char data);
 void uart0_get_cmd(uint8_t *g_com);
 void get_packet(void);
-void flash_write(void);
+void flash_write(unsigned char *buf,int len);
 
 
 

@@ -1,49 +1,18 @@
 #include "user_uart.h"
 
-_Uart0_Typedef  	Uart0_Typedef;
+//_Uart0_Typedef  	Uart0_Typedef;
 //static 				Buffer Buffer_t;
-static 				_uart_data_typedef uart_data_typedef;
+//static 				_uart_data_typedef uart_data_typedef;
 //_get_command_data 	get_command_data;
 
 void udly1us(uint32_t dlytime) {while(dlytime--);}
 
-void get_packet(void);
+
+void uart_print(char *str,int len);
 
 void UART2_Init(void)
 {
-	
-	#if defined C32F0
-	GPIO_InitTypeDef uart0_gpio;
-	SYS_EnablePhrClk(AHB_IOCON);
-	SYS_EnablePhrClk(AHB_GPIOA);    
-	SYS_EnablePhrClk(AHB_UART0);  
-
-	uart0_gpio.bit.PDE    = PULL_DOWN_DISABLE;
-	uart0_gpio.bit.PUE    = PULL_UP_ENABLE;
-	
-	uart0_gpio.bit.CSE    = SCHMITT_ENABLE;
-	uart0_gpio.bit.INV    = INPUT_INVERT_DISABLE;
-	uart0_gpio.bit.SRM    = FAST_SLEW_RATE_MODE;
-	uart0_gpio.bit.ADM    = DIGIT_ENABLE;
-	uart0_gpio.bit.DRV    = LOW_DRIVE;
-	uart0_gpio.bit.OD     = OPEN_DRAIN_DISABLE;
-	uart0_gpio.bit.S_MODE = INPUT_FILTER_DISABLE;
-	uart0_gpio.bit.IEN    = INPUT_DISABLE;
-	
-	uart0_gpio.bit.FUNC   = PA2_FUNC_TXD0;
-	SYS_IOCONInit(IOCON_GPIOA, PIN2, uart0_gpio);
-	
-	uart0_gpio.bit.FUNC   = PA3_FUNC_RXD0;
-	SYS_IOCONInit(IOCON_GPIOA,PIN3,uart0_gpio);
-	
-	UART_Open(UART0, 115200, UART_NO_PARITY, UART_RX_NOT_EMPTY);  
-	NVIC_SetPriority(UART0_IRQn,0);
-	NVIC_EnableIRQ(UART0_IRQn); 
-	
-//	memset(&Buffer_t,0,sizeof(Buffer));
-	#elif defined MM32F031K6
-	
-		GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_InitTypeDef GPIO_InitStructure;
     UART_InitTypeDef UART_InitStructure;
     NVIC_InitTypeDef NVIC_InitStructure;
 		
@@ -82,8 +51,6 @@ void UART2_Init(void)
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 	
-	#endif
-
 }
 
 
@@ -109,8 +76,9 @@ void Boot_MAL_Erase_app()
    uint32_t Address;
    uint8_t index,temp;
 //   UART_Send_Buffer[0] = UART_Receive_Buffer[0] | 0xC0;
-	 temp = 26;  //100 K
+	 temp = 24;  //100 K
    Address = 0x08001800;         			// APP flash   0x08004000 -- 0x08020000  0x1C000  APP起始地址
+	//UART_Cmd(UART2, DISABLE); 
 	 FLASH_Unlock();  
 	 FLASH_ClearFlag(FLASH_FLAG_BSY | FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);
    for(index=0;index<temp;index++ )   //把需要使用到的APP空间擦除
@@ -119,7 +87,51 @@ void Boot_MAL_Erase_app()
 	   Address = Address + 0x400;   
    	}
    FLASH_Lock();
+		//UART_Cmd(UART2, ENABLE); 
 //   UART2_Send_BUFF(UART_Send_Buffer,LEN);
+}
+
+void flash_write(unsigned char *buf, int len)
+{
+	uint32_t write_data;
+	uint16_t i;
+	uint16_t j;
+	static unsigned char flag = 0;
+	static uint32_t flash_offset = 0x08001800;
+	
+	if (flag == 0)
+	{
+		Boot_MAL_Erase_app();
+		flag = 1;
+	}
+	
+	//memset(bufs,0,sizeof(bufs));
+	//sprintf(bufs,"write flash len:%d\n",len);
+	//uart_print(bufs,strlen(bufs));
+	//UART_Cmd(UART2, DISABLE); 
+	
+	for (j=0; (j<len && (flash_offset<FLASH_SIZE)); j+=4)
+   {
+
+		write_data = 0;
+		 write_data |= (uint32_t)buf[j];
+		 write_data |= (uint32_t)buf[j+1]<<8;
+		 write_data |= (uint32_t)buf[j+2]<<16;
+		 write_data |= (uint32_t)buf[j+3]<<24;
+		 			
+		  FLASH_Unlock();
+			FLASH_ClearFlag(FLASH_FLAG_BSY | FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);
+			FLASH_ProgramWord(flash_offset,write_data);
+			FLASH_Lock();  //
+
+     flash_offset += 4;
+   }
+	  
+	 //UART_Cmd(UART2, ENABLE); 
+		//memset(bufs,0,sizeof(bufs));
+		//sprintf(bufs,"**write flash len:%d start: %02x %02x\n",len,buf[0],buf[len-1]);
+		//uart_print(bufs,strlen(bufs));
+
 }
 
 #endif
@@ -136,646 +148,276 @@ static void UART1_Init(void)
 }
 
 
-#if defined C32F0
-int fputc(int ch, FILE *f) 
-{
-    while (UART1->STAT.bit.TXF);	
-    UART1->DAT.all = ch;
-    return ch;
-}
-#endif
 
-void WriteUartBuf(uint8_t data)
-{
-	Uart0_Typedef.tx_buf[4+(Uart0_Typedef.tx_buf_len++)] = data;
-}
+enum uart_rx_status{
+	PACKET_START = 0,
+	PACKET_NUM,
+	PACKET_LEN,
+	PACKET_LEN_LOW,
+	PACKET_CMD,
+	PACKET_DATA,
+	PACKET_VERIFY,
+	PACKET_END
+};
 
 
-void UART_Send_t(uint8_t Com)
+
+static unsigned char uart_rx_buf[1300];
+static unsigned char uart_pkt[1100];
+
+int rx_start = 0;
+int rx_stop = 0;
+
+unsigned char total_pkt;
+unsigned char current_pkt = 0;
+
+void rx_start_set(len)
 {
-	unsigned char Xor_verify = 0;
-	unsigned char i = 0;
-	Uart0_Typedef.tx_buf[0] = TX_FH;//帧头
-	Uart0_Typedef.tx_buf[1] = Uart0_Typedef.tx_sequence_pag++;//包号
-	Uart0_Typedef.tx_buf[2] = Uart0_Typedef.tx_buf_len+2;//长度
-	Uart0_Typedef.tx_buf[3] = Com;
-	
-	for(i=2; i<(4+Uart0_Typedef.tx_buf_len); i++)
-	{
-		Xor_verify ^= Uart0_Typedef.tx_buf[i];
-		
+	if(rx_start+len >= sizeof(uart_rx_buf)){
+		rx_start = (rx_start+len)-sizeof(uart_rx_buf);
+	}else{
+		rx_start += len;
 	}
-	Uart0_Typedef.tx_buf[4+(Uart0_Typedef.tx_buf_len++)] = Xor_verify;//校验
-	Uart0_Typedef.tx_buf[4+(Uart0_Typedef.tx_buf_len++)] = TX_FT;//帧尾
-	
-	
-	#if defined C32F0
-	for(i=0; i<(4+Uart0_Typedef.tx_buf_len); i++)
-	{
-		while (UART0->STAT.bit.TXF);
-		UART0->DAT.bit.DATA = Uart0_Typedef.tx_buf[i];
-		
+}
+
+int rx_buf_len_get(void)
+{
+	int len;
+	if(rx_stop < rx_start){
+		len = sizeof(uart_rx_buf) - rx_start + rx_stop;
+	}else{
+		len = rx_stop - rx_start;
 	}
-	#elif defined MM32F031K6
-	
-		UART2_Send_BUFF(Uart0_Typedef.tx_buf,4+Uart0_Typedef.tx_buf_len);
-	
-	#endif
-
-	Uart0_Typedef.tx_buf_len = 0;
-	if(Uart0_Typedef.tx_sequence_pag >= 0xFF) Uart0_Typedef.tx_sequence_pag = 0;//清楚包号重新累加
-
+	return len;
 }
 
-#if 0
-
-static uint8_t get_len(uint16_t i)
-{
-
-	return (i+1)%BUFFER_LEN ;
-
-}
-
-
-static uint8_t get_buffer_data(void)
-{
-	uint8_t i;
-	
-	i = Buffer_t.buffer[Buffer_t.head];
-	Buffer_t.buffer[Buffer_t.head] = 0x00;
-	Buffer_t.head = get_len(Buffer_t.head);
-	return i;
-}
-
-
-
-
-
-
-
-//static bool Xor_verify_data(void)
-//{
-//	
-//	uint16_t 	flag_head;
-//	uint8_t		Xor_verify;
-//	uint16_t 	i;
-//	
-//	flag_head = Buffer_t.head;
-//	Buffer_t.head += 2; 
-//	
-//	for(i=0; i<Buffer_t.len; i++)//数据长度 
-//	{
-//		Xor_verify^=get_buffer_data();  //校验数据
-//		if((i+1) == Buffer_t.len)
-//		{
-//			
-//			if(Xor_verify == get_buffer_data())
-//			{
-//				Buffer_t.head = flag_head;
-//				return true;
-
-//			}else{
-//				
-//				Buffer_t.head = flag_head;
-//				return false;
-//			}	
-//		}
-//	}
-//	return false;
-//}
-
-
-
-
-//void IAP_erase_flash(void)
-//{
-//	uint8_t i;
-//	uint32_t addr_base   = 0x2000;
-//	uint32_t sector_size = 0x6000;
-//	
-//	
-//	for(i=0; i< (sector_size/512); i++)
-//	{
-//		
-//		IAP_FlashErase(addr_base);
-//		IAP_FlashErase(addr_base+0x200);
-//		addr_base += 0x200;
-//		
-//	}
-//}
-
-
-//void IAP_write_data(void)
-//{
-//	uint16_t 		i;
-//	uint32_t 		data = 0;
-//	static uint32_t addr_offesr = 0;
-//	uint32_t 		addr_base  = 0x2000;
-//	uint16_t 		flag_head;
-//	
-//	flag_head = Buffer_t.head;
-//	Buffer_t.len -= 6;
-//	Buffer_t.head = Buffer_t.head+6;
-//	
-//	for(i=0; i<Buffer_t.len;)
-//	{
-//		//i = Buffer_t.buffer[Buffer_t.head];
-//		//Buffer_t.buffer[Buffer_t.head] = 0x00;
-//		//Buffer_t.head = get_len(Buffer_t.head);
-//		data = 0;
-//		
-//		if(i<Buffer_t.len) data = get_buffer_data();
-//		i++;
-//		if(i<Buffer_t.len) data |= get_buffer_data()<<8;
-//		i++;
-//		if(i<Buffer_t.len) data |= get_buffer_data()<<16;
-//		i++;
-//		if(i<Buffer_t.len) data |= get_buffer_data()<<24;
-//		i++;
-//		IAP_FlashProgram(addr_base+addr_offesr,data);
-//		
-//		addr_offesr += 4;
-//	}
-//	if(Buffer_t.packet_num )
-//	Buffer_t.head = flag_head;
-//}
-
-
-
-void get_packet(void)  //确认是否 有效包
-{
-	uint16_t 	len;
-	if(get_command_data.flag)return;
-	if(Buffer_t.buffer[Buffer_t.head] != 0xFF  && uart_data_typedef.head != 0xFF )//查找前导码
-	{
-		//Buffer_t.buffer[Buffer_t.head] = 0;//如果不是前导码错误则丢弃执行轮寻buffer数据
-		Buffer_t.head = get_len(Buffer_t.head);//如果不是前导码错误则丢弃执行轮寻buffer数据
-		return;
+void copy_buf(void){
+	if(rx_stop < rx_start){
+		int len = sizeof(uart_rx_buf) - rx_start;
+		memcpy(uart_pkt,&uart_rx_buf[rx_start],len);
+		memcpy(uart_pkt+len,&uart_rx_buf[0],rx_stop);
+	}else{
+		memcpy(uart_pkt,&uart_rx_buf[rx_start],rx_stop-rx_start);
 	}
-	udly1us(100*1000);	
-	//计算有效数据
-	if(((Buffer_t.tail+BUFFER_LEN-Buffer_t.head)%BUFFER_LEN) < 6) return;
-
-	uart_data_typedef.head  	 	= get_buffer_data();//移去前导码
-	uart_data_typedef.packet_num 	= get_buffer_data();//取出包号
-	uart_data_typedef.len	     	= get_buffer_data();//取出数据高8位长度
-	uart_data_typedef.command = get_buffer_data();
-	if (uart_data_typedef.command == 0xF2)
-		uart_data_typedef.low_len	    = get_buffer_data();//取出数据低8位长度 
-	
-	uart_data_typedef.xor_verify	= uart_data_typedef.len^uart_data_typedef.low_len; //加入校验
-	if (uart_data_typedef.command == 0xF2)
-		uart_data_typedef.len 			= (uart_data_typedef.len <<8)|uart_data_typedef.low_len; //合成到16位数据
-	
-	if(uart_data_typedef.len > BUFFER_LEN)  //长度大于BUF有效数据错误
-	{
-		//memset(Buffer_t.buffer,0,sizeof(&Buffer_t.buffer));//BUF错误清空数据
-		memset(&uart_data_typedef,0,sizeof(uart_data_typedef));
-		WriteUartBuf(uart_data_typedef.packet_num);
-		WriteUartBuf(0x01);
-		UART_Send_t(TX_PAG_ACK); //接收失败
-		return;
-	}
-
 }
 
-uint8_t packet_num =1;
+struct uart_packet{
+	unsigned char start;
+	unsigned char packet_count;
+	unsigned char len;
+	unsigned char cmd;
+	unsigned char data;
+};
 
-void get_data(void)
+/*包头1   序列号1 长度1      功能1 数据N 校验1 帧尾1 (6+N) (2+N)*/
+//异或检验
+static char get_checkout_result(char *data,int len)
 {
-	uint16_t 	i;
-	uint8_t 	b = 1;
-	if(get_command_data.flag)	return;
-	if( uart_data_typedef.head != 0xFF)return;
-	//计算有效数据
-	//uart_data_typedef.len 长度为 指令+数据+校验  另须加+帧尾
-	if(((Buffer_t.tail+BUFFER_LEN-Buffer_t.head)%BUFFER_LEN) < uart_data_typedef.len+1)return;  //COM-FE长度
-	if( Buffer_t.buffer[(uart_data_typedef.len+Buffer_t.head)%BUFFER_LEN] != 0xFE) //指令+数据+校验+1=FE位 读取帧尾 判断是否完整包
+	char result;
+	int i;
+	if( ( data == NULL ) || (len <= 1 ) )
 	{
-		//帧尾错误
-		memset(&Buffer_t,0,sizeof(Buffer));
-		WriteUartBuf(packet_num);
-		WriteUartBuf(0x01);
-		UART_Send_t(TX_OTA_DATA_ACK);
-		memset(&uart_data_typedef,0,sizeof(uart_data_typedef));
-		return;
+		return 0;
 	}
-	get_command_data.data_buffer[0] = uart_data_typedef.command;
-	uart_data_typedef.xor_verify ^=get_command_data.data_buffer[0];
-	for(i=1; i<uart_data_typedef.len; i++)//取数据校验数据 长度为 = 指令+数据+校验 
+	result = data[0] ^ data[1];
+	for(i=2;i<len;i++)
 	{
-		get_command_data.data_buffer[i] = get_buffer_data();//取出数据
-		uart_data_typedef.xor_verify ^= get_command_data.data_buffer[i];//校验数据
-		if((i+1) == uart_data_typedef.len)//减去 指令+低位长度+帧尾 =校验位
-		{
-//			memset(&uart_data_typedef,0,sizeof(uart_data_typedef));
-			if(uart_data_typedef.xor_verify == get_buffer_data())
-			{
-				memset(&Buffer_t,0,sizeof(Buffer));
-				//校验成功
-				if (uart_data_typedef.command == 0xF1)
-					UART_Send_t(TX_OTA_ACK);
-				else 
-					{
-						WriteUartBuf(packet_num);
-						WriteUartBuf(0x00);
-						UART_Send_t(TX_OTA_DATA_ACK);
-					}
-				memset(&uart_data_typedef,0,sizeof(uart_data_typedef)); //清除状态
-				
-//				get_command_data.flag = true; //BUF 满标
-
-			}else{
-				
-				memset(&Buffer_t,0,sizeof(Buffer));
-				//校验失败
-				if (uart_data_typedef.command == 0xF2)
-				{
-					WriteUartBuf(packet_num);
-					WriteUartBuf(0x01);
-					UART_Send_t(TX_OTA_DATA_ACK);
-				}
-				memset(&uart_data_typedef,0,sizeof(uart_data_typedef));
-				memset(&get_command_data,0,sizeof(get_command_data)); //清空BUF
-				
-			}	
-		
-		}
+		result ^= data[i]; 
 	}
-
-
-}
-
-
-
-void UART0_IRQHandler(void)
-{
-	
-	if( 1 == UART0->INTSTATUS.bit.TXEINT)
-    {
-		/*clean interrupt */
-		UART0->INTSTATUS.bit.TXEINT = 1;
-    }
-   
-   if( 1 == UART0->INTSTATUS.bit.RXNEINT)
-    {
-			
-		Buffer_t.buffer[Buffer_t.tail]	=  UART0->DAT.bit.DATA;
-		Buffer_t.tail = get_len(Buffer_t.tail);					
-
-		
-		/*clean interrupt */
-        UART0->INTSTATUS.bit.RXNEINT = 1;
-    }
-    
-	/*clean interrupt status */
-	//UART_ClearIntFlag(UART0);
-	return;
-}
-
-#endif
-
-#if 1
-
-typedef enum state {
-	recv_start,
-	packet_num,
-	len,
-	len_high,
-	command,
-	len_low,
-	frame_number,
-	state_xor_verify,
-	valid_data,
-	recv_end
-}_serial_state;
-
-typedef struct recv_data_config {
-	uint8_t recv_packet_num;
-	uint8_t recv_command;
-	uint8_t recv_len;
-	uint16_t recv_data_len;
-	uint8_t recv_len_low;
-	uint8_t total_packet_num;
-	uint8_t now_packet_num;
-	uint8_t recv_xor_verify;
-	uint8_t recv_stop;
-	uint8_t recv_update_data[1026];
-}_recv_data_config;
-
-
-uint8_t recv_data = 0;
-uint8_t recv_update_flag = 0;
-uint8_t receive_complete_flag = 0;
-uint8_t receive_ota_flag = 0;
-uint16_t recv_ptr = 0;
-uint8_t recv_state = recv_start;
-
-uint8_t toal_packet_num = 0;
-uint8_t has_receive_packet_num = 0;
-
-_recv_data_config packet_data;
-
-
-uint8_t XorVerify(void)
-{
-	uint8_t result;
-	result ^= packet_data.recv_command;
-	result ^= packet_data.recv_len;
-	result ^= packet_data.total_packet_num;
+	//printf("checkout:%02x %02x\n",data[0],data[len-1]);
 	return result;
 }
 
-void reset_config()
+static unsigned char uart_pkt_count = 0;
+void uart_pkt_send_f1()
 {
-	memset(&packet_data,0,sizeof(_recv_data_config));
-	recv_state = recv_start;
-	receive_complete_flag = 0;
-	recv_ptr = 0;
+	char buf[32];
+	struct uart_packet *pkt;
+		
+	pkt = (struct uart_packet*)buf;
+	pkt->start = 0xff;
+	pkt->packet_count = uart_pkt_count++;
+	pkt->len = 0x2;
+	pkt->cmd = 0xf1;
+	buf[4] = get_checkout_result(&pkt->len,2);
+	buf[5] = 0xfe;
 
+	UART2_Send_BUFF(buf,6);
 }
 
-//	uint32_t RamSource; 
-//	
-		uint8_t flag = 0;
-//	uint8_t buf[40] = {0};
-		uint32_t flah_offset = APPLICATION_ADDRESS;   
-//	uint32_t flah_offset_erase = (0x2000);//需要擦除的起始地址
-
-void flash_write()
+void uart_pkt_send_f2(unsigned char packet_num,unsigned char flag)
 {
-	uint32_t write_data;
-	uint16_t i;
-	uint16_t j;
-	#if 0
-	
-	static uint32_t addr_offesr = 0;
-	uint32_t addr_base   = 0x1800;
-	uint32_t data        = 0;
-	uint32_t sector_size = 1024;
-	IAP_FlashProgram(addr_base+addr_offesr,0x55aaaa55);
-	data = *((uint32_t *)(addr_base+addr_offesr));
-	addr_offesr += 4;
-	if(sector_size <= addr_offesr)
-		{
-			addr_offesr = 0;
-			IAP_FlashErase(addr_base);
-      IAP_FlashErase(addr_base+512);   
-			data = *((uint32_t *)(addr_base+addr_offesr));
-		}	
+	char buf[32];
+	struct uart_packet *pkt;
 		
-	#endif
-	
-//	if (flag == 0)
-//	{
-//		if (flah_offset_erase < FLASH_SIZE)
-//		 {
-//			 IAP_FlashErase(flah_offset_erase);
-//			 flah_offset_erase+=512;
-//		 }
-//		 flag = 1;
-//	}
-//	RamSource = ( uint32_t)packet_data.recv_update_data;
-		
-	#if defined C32F0
-	if (flag == 0)
-	{
-		for (i=0; i<FLASH_IMAGE_SIZE; i+=512)
-		{
-			IAP_FlashErase(ApplicationAddress+i);
-		}
-		flag = 1;
-	}
-	
-	#elif defined MM32F031K6
-	if (flag == 0)
-	{
-		Boot_MAL_Erase_app();
-		flag = 1;
-	}
-	
-	#endif
-	
-	if ((packet_data.recv_data_len-2)%4)
-	{
-		
-	}
-  for (j=1; (j<packet_data.recv_data_len-2-2) && (flah_offset<FLASH_SIZE); j+=4)
-   {
+	pkt = (struct uart_packet*)buf;
+	pkt->start = 0xff;
+	pkt->packet_count = uart_pkt_count++;
+	pkt->len = 0x4;
+	pkt->cmd = 0xf2;
+	pkt->data = packet_num;
+	buf[5] = flag;
+	buf[6] = get_checkout_result(&pkt->len,4);
+	buf[7] = 0xfe;
 
-		 write_data = (uint32_t)packet_data.recv_update_data[j];
-		 write_data |= (uint32_t)packet_data.recv_update_data[j+1]<<8;
-		 write_data |= (uint32_t)packet_data.recv_update_data[j+2]<<16;
-		 write_data |= (uint32_t)packet_data.recv_update_data[j+3]<<24;
-		 
-		 #if defined C32F0
-			IAP_FlashProgram(flah_offset,write_data);
-		 #elif defined MM32F031K6
+	UART2_Send_BUFF(buf,8);
+}
+
+void uart_pkt_send_f3(unsigned char flag)
+{
+	char buf[32];
+	struct uart_packet *pkt;
+		
+	pkt = (struct uart_packet*)buf;
+	pkt->start = 0xff;
+	pkt->packet_count = uart_pkt_count++;
+	pkt->len = 0x3;
+	pkt->cmd = 0xf3;
+	pkt->data = flag;
+	buf[5] = get_checkout_result(&pkt->len,3);
+	buf[6] = 0xfe;
+
+	UART2_Send_BUFF(buf,7);
+}
+
+void uart_print(char *str,int len)
+{
+	char buf[32];
+	struct uart_packet *pkt;
+	pkt = (struct uart_packet*)buf;
+	pkt->start = 0xff;
+	pkt->packet_count = uart_pkt_count++;
+	pkt->len = len + 2;
+	pkt->cmd = 0xf;
+	memcpy(&pkt->data,str,len);
+	buf[len+4] = get_checkout_result(&pkt->len,len+2);
+	buf[len+5] = 0xfe;
+	UART2_Send_BUFF(buf,len+6);
+}
+
+extern unsigned char update_down_flag;
+void packet_hd(void)
+{
+	struct uart_packet *pkt;
+	int buf_len;	
+	int pkt_len;
+	int i;
+	int len;
+	unsigned char *data;
+	unsigned char xer = 0;
+	unsigned char *tmp = uart_pkt;
+	char buf[32];
+	
+
+	buf_len = rx_buf_len_get();
+	while(buf_len >= 5){
+		if(uart_rx_buf[rx_start] == 0xff){
+			//printf("receive start, len:%d,rx_start:%d %d\n",buf_len,rx_start,rx_stop);
+			copy_buf();
+			pkt =(struct uart_packet*) &tmp[0];
+			if(pkt->cmd == 0xf2){
+				pkt_len = (pkt->len<<8) + pkt->data;
+				//printf("f2 len :%d %02x %02x %d\n",pkt_len,pkt->len,pkt->data,(pkt->len<<8));
+				// 如果报文长度小于1100
+				if(pkt_len > 1100){
+					rx_start_set(1);
+					buf_len = rx_buf_len_get();
+					continue;
+				}
+			}else{			
+				pkt_len = pkt->len;
+				if(pkt_len > 100){
+					rx_start_set(1);
+					buf_len = rx_buf_len_get();
+					continue;
+				}
+			}
+			//printf("cmd:%x,len:%d\n",pkt->cmd,pkt_len);
+			// 长度不够包长，退出函数，等待新数据
+			if(buf_len < pkt_len+3+3)
+				return;
+
+			// 判断结束标记
+			if(pkt->cmd == 0xf2){
+				xer = (tmp[pkt_len+2+2+1] != 0xfe);
+				//printf("f2 end: %02x\n",tmp[pkt_len+2+2+1]);
+			}else{
+				xer = (tmp[pkt_len+2+2] != 0xfe);
+			}
+			if(xer){
+				rx_start_set(1);
+				buf_len = rx_buf_len_get();
+				continue;
+			}
 			
-		  FLASH_Unlock();
-			FLASH_ClearFlag(FLASH_FLAG_BSY | FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);
-			FLASH_ProgramWord(flah_offset,write_data);
-			FLASH_Lock();   //
-		 
-		 #endif
-     flah_offset += 4;
-   }
 
+			// 校验
+			if(pkt->cmd == 0xf2){
+				xer = get_checkout_result(&tmp[2],pkt_len+2);
+				//printf("xet:: %02x %02x\n",xer,tmp[pkt_len+4]);
+				xer = (xer != tmp[pkt_len+4]);
 
-}
-
-void data_handle(uint8_t data)
-{
-	uint16_t data_length;
-	switch (recv_state)
-	{
-		case recv_start:
-			if (data == 0xFF)
-			{
-				recv_state = frame_number;
+				
+			}else{
+				xer = get_checkout_result(&tmp[2],pkt_len+1);
+				xer = (xer != tmp[pkt_len+3]);
 			}
-			break;
-		case frame_number:
-			packet_data.recv_packet_num = data;
-			recv_state = len;
-			break;
-		case len:
-			if (data <=4)
-			{
-				packet_data.recv_len = data;
-				recv_state = command;
-			}
-			else
-				reset_config();
-			break;
-		case len_low:
-			packet_data.recv_len_low = data;
-			packet_data.recv_data_len = (uint16_t)(packet_data.recv_len<<8)|packet_data.recv_len_low ;
-			recv_state = valid_data;
-			break;
-		case command:
-			packet_data.recv_command = data;
-			if (packet_data.recv_command == 0xF1)
-				{
-					recv_state = valid_data;
-					recv_update_flag = 1;			
-				}
-			else if (packet_data.recv_command == 0xF2)
-				{
-					recv_state = len_low;
-				}
-			break;
-//		case packet_num:
-//			if (recv_update_flag)
-//			{
-//				recv_state = xor_verify;
-//				packet_data.total_packet_num = data;
-//			}
-//			else
-//			{
-//				recv_state = valid_data;
-//				packet_data.now_packet_num = data;
-//			}
-//			break;
-		case state_xor_verify:
-			packet_data.recv_xor_verify = data;
-			recv_state = recv_end;
-			break;
-		case recv_end:
-			packet_data.recv_stop = data;
-			if (packet_data.recv_stop == 0xFE)
-			{
-				receive_complete_flag = 1;
-					
-			}
-			else
-				reset_config();
-			break;
-		case valid_data:
-			if (packet_data.recv_command == 0xF1)
-				data_length = packet_data.recv_len;
-			else if(packet_data.recv_command == 0xF2)
-				data_length = packet_data.recv_data_len;
-			if (data_length !=0)
-			{
-				packet_data.recv_update_data[recv_ptr] = data;
-				recv_ptr++;
+			//printf("xer:%x\n",xer);
 
-				if (recv_ptr > data_length-2)
-				{
-					recv_state = state_xor_verify;
-	//			recv_ptr = 0;
-				}
+			if(xer){
+				rx_start_set(1);
+				buf_len = rx_buf_len_get();
+				//printf("no xer cmd:%x \n",pkt->cmd);
+				continue;
 			}
-			else
-				reset_config();
-			break;
-	}
-}
 
-
-
-void packet_handle()
-{
-	uint8_t xor_verify = 0;
-	uint8_t data_xor_verify = 0;
-	uint16_t i = 0;
-	if (receive_complete_flag == 1)
-	{
-		data_xor_verify ^= packet_data.recv_command;
-		if (packet_data.recv_command == 0xF1)
-			data_xor_verify ^= packet_data.recv_len;
-		else
-		{
-			data_xor_verify ^= packet_data.recv_len;
-			data_xor_verify ^= packet_data.recv_len_low;
-		}
-			
-		for (i=0;i<recv_ptr;i++)
-		{
-			data_xor_verify ^= packet_data.recv_update_data[i];
-		}
-		if (data_xor_verify == packet_data.recv_xor_verify)
-		{
-			if (packet_data.recv_command == 0xF1)
-			{
-				toal_packet_num= packet_data.recv_update_data[0];
-				UART_Send_t(TX_OTA_ACK);
-			}
-			else if (packet_data.recv_command == 0xF2)
-			{
-				receive_ota_flag = 1;
-				has_receive_packet_num = packet_data.recv_update_data[0];
-				WriteUartBuf(packet_data.recv_update_data[0]);
-				flash_write();
-				WriteUartBuf(0x00);
-				UART_Send_t(TX_OTA_DATA_ACK);
-				reset_config();
-				if (has_receive_packet_num == toal_packet_num)
-				{
-					WriteUartBuf(0x00);
-					UART_Send_t(TX_OTA_LAST_DATA_ACK);
-					
-					#if defined C32F0
-						IAP_FlashProgram(0x7800,0x55aaaa55);
-					#elif defined MM32F031K6
-					
-						FLASH_Unlock();
+			//printf("receive command :%02x \n",pkt->cmd);
+			switch(pkt->cmd){
+				case 0xf1:
+					total_pkt = tmp[4];
+					//current_pkt = 0;
+					uart_pkt_send_f1();
+					break;
+				case 0xf2:
+					if(current_pkt+1 != tmp[5]){
+						if(current_pkt+1 > tmp[5])
+							uart_pkt_send_f2(tmp[5],0);
+						else{
+							uart_pkt_send_f2(current_pkt+1,0x2);
+						}
+						break;
+					}
+					current_pkt++;
+					flash_write(&tmp[6],pkt_len-2);
+					if(current_pkt == total_pkt){
+						uart_pkt_send_f2(tmp[5],0);
+						uart_pkt_send_f3(0);
+						FLASH_Unlock();  
+						FLASH_ClearFlag(FLASH_FLAG_BSY | FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);
+						
+						FLASH_ErasePage(0x08007800);
+						FLASH_ErasePage(0x08007c00);
 						FLASH_ClearFlag(FLASH_FLAG_BSY | FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);
 						FLASH_ProgramWord(0x8007800,0x55aaaa55);
-						FLASH_Lock();   //
-					
-					#endif
-				}
+						FLASH_Lock(); 
+						
+						update_down_flag = 2;
+					}else{
+						update_down_flag = 1;
+						uart_pkt_send_f2(tmp[5],0);
+					}
+					break;
 			}
-			reset_config();
-		}
-		else
-		{
-			if (packet_data.recv_command == 0xF1)
-			{
-				WriteUartBuf(0x01);
-				UART_Send_t(TX_OTA_ACK);
-			}
-			else if (packet_data.recv_command == 0xF2)
-			{
-				WriteUartBuf(packet_data.recv_update_data[0]);
-				WriteUartBuf(0x01);
-				UART_Send_t(TX_OTA_DATA_ACK);
-			}
-			reset_config();
+ 
+			rx_start_set(pkt_len+2);
+
+		}else{
+			rx_start_set(1);
+			buf_len = rx_buf_len_get();
 		}
 	}
-}
-
-
-
-#if defined C32F0
-void UART0_IRQHandler(void)
-{
 	
-	if( 1 == UART0->INTSTATUS.bit.TXEINT)
-    {
-		/*clean interrupt */
-		UART0->INTSTATUS.bit.TXEINT = 1;
-    }
-   
-   if( 1 == UART0->INTSTATUS.bit.RXNEINT)
-    {
-			
-				recv_data =  UART0->DAT.bit.DATA;			
-
-				data_handle(recv_data);
-		/*clean interrupt */
-        UART0->INTSTATUS.bit.RXNEINT = 1;
-    }
-    
-	/*clean interrupt status */
-	//UART_ClearIntFlag(UART0);
-	return;
 }
-
-#elif defined MM32F031K6
 
 void UART2_IRQHandler(void)                	//
 {
@@ -783,13 +425,23 @@ void UART2_IRQHandler(void)                	//
   if(UART_GetITStatus(UART2, UART_IT_RXIEN))       
 	{
      UART_ClearITPendingBit(UART2,UART_IT_RXIEN);
-     recv_data = UART_ReceiveData(UART2);
-		 data_handle(recv_data);
+     uart_rx_buf[rx_stop++] = UART_ReceiveData(UART2);
+	 if(rx_stop >= sizeof(uart_rx_buf)){
+		rx_stop = 0;
+	 }
+	 
   } 
 }
 
-#endif
+int fputc(int ch, FILE *f) 
+{
+	while((UART2->CSR&UART_IT_TXIEN)==0);
+	UART2->TDR = (ch & (uint16_t)0x00FF);      
+	return ch;
 
-#endif
+}
+
+
+
 
 
