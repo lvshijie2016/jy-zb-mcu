@@ -16,7 +16,7 @@ static uint8_t 	bat_value = 100;
 static uint8_t  bat_last_value = 50;
 static uint8_t  get_Com[10] = {0};
 static uint16_t sleep_off_timer = SLEEP_DEFAULT_OFF_TIMER; //睡眠关机时间
-static uint8_t FIRMWARE_VERSION[3]= {3,0,8};
+static uint8_t FIRMWARE_VERSION[3]= {3,0,9};
 
 extern _GetLedComData_t GetLedComData_t;
 static void dly1us(uint32_t dlytime) {while(dlytime--);}
@@ -742,6 +742,7 @@ static void kar_connect(void)
 				WriteUartBuf(0x00);
 				UART_Send_t(0xF0);
 				update_flash_flag_set();
+				dly1us(1000000);
 				NVIC_SystemReset();
 				break;
 			default:break;
