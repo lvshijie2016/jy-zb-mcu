@@ -37,7 +37,7 @@ static void app_MAL_Erase()
 	uint32_t Address;
 	uint8_t index,temp;
 	//   UART_Send_Buffer[0] = UART_Receive_Buffer[0] | 0xC0;
-	temp = 2;  //100 K
+	temp = 1;  //100 K
 	Address = IAP_UPDATE_FLAG_ADDR;         			
 	FLASH_Unlock();  
 	FLASH_ClearFlag(FLASH_FLAG_BSY | FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);

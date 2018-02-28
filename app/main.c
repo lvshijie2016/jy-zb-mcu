@@ -643,7 +643,7 @@ static void state_run_monitoring(void)
 	}	
 }
 
-
+static unsigned char *iap_version_addr = (unsigned char*)0x8007c00;
 
 static void kar_connect(void)
 {
@@ -659,6 +659,11 @@ static void kar_connect(void)
 				{
 					WriteUartBuf(FIRMWARE_VERSION[i]);
 				}
+				for (i=0;i<3;i++)
+				{
+					WriteUartBuf(iap_version_addr[i]);
+				}
+
 				UART_Send_t(HANDSHAKE_COMMAND);
 
 #if defined( DeBug )
