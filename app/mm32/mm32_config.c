@@ -400,6 +400,6 @@ static void Tim16_Init(void)
 void uni_timer_init(void)
 {
 	Tim16_Init();		// used for software interrupt.
-	Tim2_Init(47,99);	// 100us one cycle, used for motor PWM signal.
+	Tim2_Init(47,9);	// 100us one cycle, used for motor PWM signal.
 }
 

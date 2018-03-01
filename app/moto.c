@@ -487,7 +487,7 @@ void moto_timer_handler(void)
 
 	pwm_flag = (pwm_flag+1) == DUTY ? 0 : pwm_flag+1;
 	i = pwm_flag;
-	i = (i/DUTY)*100;
+	//i = (i/DUTY)*100;
 	if(i < MOTO_t.L_duty && moto_R_current_state) PWM_1_HIGH;	
 	else PWM_1_LOW;
 	if(i < MOTO_t.R_duty && moto_L_current_state) PWM_2_HIGH;	

@@ -17,7 +17,7 @@
 #define MOTO_Clear                                        0x00   //电机等待运行
 #define ACTIONNUM											20     //BUF动作序列包
 
-#define DUTY                          					  10
+#define DUTY                          					  100
 
 
 typedef struct
