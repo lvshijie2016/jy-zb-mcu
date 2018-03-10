@@ -8,6 +8,7 @@
 #endif
 
 static unsigned char moto_flag = 0;
+static unsigned char moto_current_flag = 0;
 static bool 		 moto_R_current_state = true;
 static bool 		 moto_L_current_state = true;
 
@@ -278,6 +279,19 @@ void GetMotoCom(unsigned char *com)
 		#if defined( DeBug )
 			LOG(LOG_DEBUG,"receive MOTO_SINGLE_STEP command ... \r\n");
 		#endif
+		MOTO_t.timer 	= com[MOTO_RUN_TIMER];
+		if(moto_flag){		// 有动作在执行
+			if(MOTO_t.model == com[MOTO_ASP]){	// 当前执行的动作和新下发的动作一样,更新运行时间
+				if (MOTO_t.timer != 0xFF)
+					set_soft_timer(TIMER_MOTO,(MOTO_t.timer*25));
+				else
+					set_soft_timer(TIMER_MOTO,(MOTO_t.timer*100*25));
+				return;
+			}else{		// 当前执行的动作和新下发的不一样，停止动作。500ms后开始新动作
+				moto_P();
+				set_soft_timer(TIMER_MOTO,200);
+			}	
+		}
 		MOTO_t.timer 	= com[MOTO_RUN_TIMER];
 		MOTO_t.L_duty	= com[MOTO_RUN_L_DUTY];
 		MOTO_t.R_duty	= com[MOTO_RUN_R_DUTY];
