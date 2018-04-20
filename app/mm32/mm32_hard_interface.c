@@ -192,10 +192,10 @@ static void Sys_Stop(void)
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2; 
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_InitStructure.GPIO_Mode =  GPIO_Mode_IN_FLOATING;	
-    //GPIO_Init(GPIOA, &GPIO_InitStructure);
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
 	
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);	//使能PWR外设时钟
-		//RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART2, DISABLE);	
+		RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART2, DISABLE);	
 		//UART_ITConfig(UART2, UART_IT_RXIEN, DISABLE);
   //  PWR_WakeUpPinCmd(ENABLE);  //使能唤醒管脚功能
 	RCC_SYSCLKConfig(RCC_SYSCLKSource_HSI); 
