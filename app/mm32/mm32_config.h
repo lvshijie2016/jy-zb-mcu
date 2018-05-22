@@ -18,6 +18,7 @@ power_key
 /*==========================================================================
 5V_DRV_EN
 ============================================================================*/
+	#define DRV_CHECK_VALUE										GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_12)
 	#define DRV_Enable   										GPIO_SetBits(GPIOB,GPIO_Pin_8)
 	#define DRV_Disable    				  						GPIO_ResetBits(GPIOB,GPIO_Pin_8)
 	//#define DRV_Disable											GPIO_SetBits(GPIOB,GPIO_Pin_8)

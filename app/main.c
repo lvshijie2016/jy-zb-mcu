@@ -16,7 +16,7 @@ static uint8_t 	bat_value = 100;
 static uint8_t  bat_last_value = 50;
 static uint8_t  get_Com[10] = {0};
 static uint16_t sleep_off_timer = SLEEP_DEFAULT_OFF_TIMER; //睡眠关机时间
-static uint8_t FIRMWARE_VERSION[3]= {3,0,14};
+static uint8_t FIRMWARE_VERSION[3]= {3,0,15};
 
 extern _GetLedComData_t GetLedComData_t;
 static void dly1us(uint32_t dlytime) {while(dlytime--);}
@@ -374,33 +374,43 @@ static void power_OFF_ON(void)
 
 static void Handler_event(void)
 {
-
+	static char DRV_flag = 0;
 	//DRV事件处理
 	if(Information_events&DRV_EVENTS)
 	{
-		#if defined( DeBug )
-				LOG(LOG_DEBUG,"DRV_EVENTS \r\n");
-		#endif
-		if(all_event_flag.DRV)
-		{
-			DRV_Disable;//USB截止输出
-			
-			all_event_flag.DRV = false;
-			WriteUartBuf(0x00);  
-			UART_Send_t(USB_OUT_COMMAN);
-			
+#if defined( DeBug )
+		LOG(LOG_DEBUG,"DRV_EVENTS \r\n");
+#endif
+		if(DRV_CHECK_VALUE){	
+			if(DRV_flag == 2){
+				if(all_event_flag.DRV)
+				{
+					DRV_Disable;//USB截止输出
+
+					all_event_flag.DRV = false;
+					WriteUartBuf(0x00);  
+					UART_Send_t(USB_OUT_COMMAN);
+
+				}
+				else
+				{
+					DRV_Enable;//USB输出
+
+					all_event_flag.DRV = true;
+					WriteUartBuf(0x01);
+					UART_Send_t(USB_OUT_COMMAN);
+
+				}
+
+				Information_events	 &= 	(~DRV_EVENTS);
+				DRV_flag = 0;
+			}else{
+				DRV_flag++;
+			}
+		}else{
+			Information_events	 &= 	(~DRV_EVENTS);
+			DRV_flag = 0;
 		}
-		else
-		{
-			DRV_Enable;//USB输出
-			
-			all_event_flag.DRV = true;
-			WriteUartBuf(0x01);
-			UART_Send_t(USB_OUT_COMMAN);
-				
-		}
-		
-		Information_events	 &= 	(~DRV_EVENTS);
 	}
 	//时钟中断事件处理
 	if(Information_events&RTC_INT_EVENTS)
