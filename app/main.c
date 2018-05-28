@@ -16,10 +16,12 @@ static uint8_t 	bat_value = 100;
 static uint8_t  bat_last_value = 50;
 static uint8_t  get_Com[10] = {0};
 static uint16_t sleep_off_timer = SLEEP_DEFAULT_OFF_TIMER; //睡眠关机时间
-static uint8_t FIRMWARE_VERSION[3]= {3,0,15};
+static uint8_t FIRMWARE_VERSION[3]= {3,0,16};
 
 extern _GetLedComData_t GetLedComData_t;
 static void dly1us(uint32_t dlytime) {while(dlytime--);}
+
+static unsigned char touch_key_time = 0;
 
 uint8_t first_get_value = 1;
 
@@ -374,7 +376,7 @@ static void power_OFF_ON(void)
 
 static void Handler_event(void)
 {
-	static char DRV_flag = 0;
+	static int DRV_flag = 0;
 	//DRV事件处理
 	if(Information_events&DRV_EVENTS)
 	{
@@ -382,7 +384,7 @@ static void Handler_event(void)
 		LOG(LOG_DEBUG,"DRV_EVENTS \r\n");
 #endif
 		if(DRV_CHECK_VALUE){	
-			if(DRV_flag == 2){
+			if(DRV_flag >= 2 + touch_key_time*10){
 				if(all_event_flag.DRV)
 				{
 					DRV_Disable;//USB截止输出
@@ -759,6 +761,11 @@ static void kar_connect(void)
 				update_flash_flag_set();
 				dly1us(1000000);
 				NVIC_SystemReset();
+				break;
+			case SET_TOUCH_KEY_TIME_COMMAN:
+				touch_key_time = get_Com[1];
+				WriteUartBuf(0x1);
+				UART_Send_t(SET_TOUCH_KEY_TIME_COMMAN);
 				break;
 			default:break;
 		}
