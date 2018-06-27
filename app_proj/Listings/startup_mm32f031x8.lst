@@ -347,12 +347,12 @@ ARM Macro Assembler    Page 6
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M0 --apcs=interw
 ork --depend=..\output\startup_mm32f031x8.d -o..\output\startup_mm32f031x8.o -I
-Z:\mm32\22\jy-zb-mcu\app_proj\RTE -IE:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\I
-nclude -IE:\Keil_v5\ARM\PACK\MindMotion\MM32F031_DFP\1.3.6\Device\MM32F031xxn\I
-nclude --predefine="__EVAL SETA 1" --predefine="__MICROLIB SETA 1" --predefine=
-"__UVISION_VERSION SETA 518" --predefine="_RTE_ SETA 1" --predefine="MM32F031K6
-U SETA 1" --list=.\listings\startup_mm32f031x8.lst ..\MM32F0xx_library\MM32F031
-x8\Source\KEIL_StartAsm\startup_MM32F031x8.s
+Z:\mm32\git\jy-zb-mcu\app_proj\RTE -IE:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\
+Include -IE:\Keil_v5\ARM\PACK\MindMotion\MM32F031_DFP\1.3.6\Device\MM32F031xxn\
+Include --predefine="__EVAL SETA 1" --predefine="__MICROLIB SETA 1" --predefine
+="__UVISION_VERSION SETA 518" --predefine="_RTE_ SETA 1" --predefine="MM32F031K
+6U SETA 1" --list=.\listings\startup_mm32f031x8.lst ..\MM32F0xx_library\MM32F03
+1x8\Source\KEIL_StartAsm\startup_MM32F031x8.s
 
 
 
